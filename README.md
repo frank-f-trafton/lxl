@@ -144,7 +144,7 @@ Loads an XML file from disk and converts it to an xmlObject using the default pa
 
 **Notes:**
 
-* This function is intended for use from the console and the Lua interactive prompt. If your host application provides its own functions to load files (like LÖVE's `love.filesystem`), then you should use those instead.
+* This function is intended for use from the console and the Lua interactive prompt. If your host application provides its own functions to load files (like [LÖVE's `love.filesystem`](https://love2d.org/wiki/love.filesystem)), then you should use those functions instead.
 
 
 # API: xmlParser
@@ -1213,12 +1213,12 @@ A general entity reference (`&foobar;`) that could not be expanded into its repl
 Normally, an undeclared entity reference halts processing. These nodes can appear in the output when the following conditions are met:
 
 * The `standalone` property is `no` or was not set
-* A PEReference is encountered in the DTD internal subset and not read (this processor skips all PEReferences; for more info, see §4.4.8 Included as PE)
+* A PEReference is encountered in the DTD internal subset and not read (this processor skips all PEReferences; for more info, see [§4.4.8 Included as PE)](https://www.w3.org/TR/REC-xml/#as-PE)
 * Later, a general entity reference is encountered in the document content, and the XML processor did not collect a declaration that defines it
 
 You will not encounter unexpanded references in a document that lacks a DTD internal subset, or if `standalone` is `yes`, or if the internal subset contains no PEReferences. You will also not see them within attribute values, where failing to dereference a general entity is always an error.
 
-This object addresses the requirement in §4.4.3 to inform the application that an entity was recognized but not dereferenced.
+This object addresses the requirement in [§4.4.3 Included If Validating](https://www.w3.org/TR/REC-xml/#include-if-valid) to inform the application that an entity was recognized but not dereferenced.
 
 You can halt on all unexpanded entities with `xmlParser:setRejectUnexpandedEntities(true)`.
 
@@ -1261,15 +1261,15 @@ Sets the unexpanded entity's name.
 
 (This section originates from a pile of miscellaneous comments for the function *sym.PEReference()* in *lxl_in.lua*.)
 
-As a non-validating processor, we are not obligated to process entity declarations within the replacement text of a PEReference. (See: *Well-formedness constraint: Entity Declared*) In practice, this means that LXL never expands PEReferences.
+As a non-validating processor, we are not obligated to process entity declarations within the replacement text of a PEReference. (See: [Well-formedness constraint: Entity Declared](https://www.w3.org/TR/REC-xml/#vc-entdeclared)) In practice, this means that LXL never expands PEReferences.
 
-Unless `standalone` is `yes`, we are not required to process declarations after the first PEReference that is ignored in the internal subset (see: *§4.4.8 Included as PE*).
+Unless `standalone` is `yes`, we are not required to process declarations after the first PEReference that is ignored in the internal subset (see: [§4.4.8 Included as PE](https://www.w3.org/TR/REC-xml/#as-PE)).
 
 In the DTD internal subset, PEReferences cannot appear inside of markup declarations. (No nesting, basically.) This rule doesn't apply in the case of external subsets, which we don't touch because this is non-validating. (See: *Well-formedness constraint: PEs in Internal Subset*)
 
-There is a rule to expand PEReferences when they appear in the text of an EntityValue (see: *§4.4.5 Included in Literal*). In the internal subset, this rule never comes into play because it is overridden by *Well-formedness constraint: PEs in Internal Subset*.
+There is a rule to expand PEReferences when they appear in the text of an EntityValue (see: [§4.4.5 Included in Literal](https://www.w3.org/TR/REC-xml/#inliteral)). In the internal subset, this rule never comes into play because it is overridden by [Well-formedness constraint: PEs in Internal Subset](https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset).
 
-The text of *Well-formedness constraint: In DTD* is a little misleading. It says that PEReferences must not appear outside of the DTD. What it means is that substrings like `%foobar;` just won't be recognized as PEReferences elsewhere.
+The text of [Well-formedness constraint: In DTD](https://www.w3.org/TR/REC-xml/#indtd) is a little misleading. It says that PEReferences must not appear outside of the DTD. What it means is that substrings like `%foobar;` just won't be recognized as PEReferences elsewhere.
 
 If you read Tim Bray's annotated version of the spec, be sure to cross reference it with the latest edition.
 
