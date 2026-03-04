@@ -1,4 +1,4 @@
-link:home.html[Home] |
+link:index.html[Home] |
 link:api.html[API] |
 link:appendix.html[Appendix]
 
