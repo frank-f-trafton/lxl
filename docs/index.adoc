@@ -9,7 +9,7 @@ include::snippets/header.adoc[]
 
 LXL is a non-validating XML 1.0 processor for Lua 5.1 - 5.4.
 
-The repo can be found https://www.github.com/frank-f-trafton/lxl[here]. This documentation is https://example.com[online] **TODO** and also within the repo at `docs/html5/…`.
+The repo can be found https://www.github.com/frank-f-trafton/lxl[here]. This documentation is available https://frank-f-trafton.github.io/lxl/index.html[online], and it may also be viewed locally by pointing your web browser to the files in `docs/html5/…`.
 
 
 toc::[]
