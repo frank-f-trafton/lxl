@@ -4,7 +4,7 @@
 
 LXL is a non-validating XML 1.0 processor for Lua 5.1 - 5.4.
 
-The docs can be read [here](https://www.github.com/frank-f-trafton/lxl). For local viewing, you can download the repository and point your web browser to the files in `docs/html5`.
+The docs can be read [here](https://frank-f-trafton.github.io/lxl/). For local viewing, you can download the repository and point your web browser to the files in `docs/html5`.
 
 
 # License (MIT)
