@@ -1,0 +1,1481 @@
+= Lua XML Library: API
+:source-highlighter: rouge
+:linkcss:
+:toc: macro
+
+
+include::snippets/header.adoc[]
+
+
+toc::[]
+
+
+== API: lxl.lua
+
+
+=== lxl.newParser
+
+Makes a new xmlParser object.
+
+[source,lua]
+----
+local parser = lxl.newParser()
+----
+
+**Returns:** An xmlParser with default settings.
+
+
+[#lxl-to-table]
+=== lxl.toTable
+
+Converts an XML string to an xmlObject, with default parser settings.
+
+
+[source,lua]
+----
+local xml_obj = lxl.toTable(str)
+----
+
+* `str`: The XML string to convert.
+
+**Returns:** An xmlObject.
+
+
+=== lxl.toString
+
+Converts an xmlObject to an XML string, with default parser settings.
+
+[source,lua]
+----
+local str = lxl.toString(xml_obj)
+----
+
+* `xml_obj`: The xmlObject to convert.
+
+**Returns:** An XML string.
+
+
+[#lxl-new-xml-object]
+=== lxl.newXMLObject
+
+Creates a new xmlObject with no nodes.
+
+[source,lua]
+----
+local xml_obj = lxl.newXMLObject()
+----
+
+**Returns:** The new xmlObject.
+
+
+=== lxl.load
+
+Loads an XML file from disk and converts it to an xmlObject using the default parser settings.
+
+[source,lua]
+----
+local xml_obj = lxl.load(path)
+----
+
+* `path`: The file path.
+
+**Returns:** The xmlObject.
+
+
+[discrete]
+==== Notes
+
+This function is intended for use from the console and the Lua interactive prompt. If your host application provides its own functions to load files (like LÖVE's https://love2d.org/wiki/love.filesystem[love.filesystem]), then you should probably use those functions instead.
+
+
+== API: xmlParser
+
+
+=== xmlParser:setCheckCharacters
+
+__Default: true__
+
+When true, the xmlParser checks incoming XML strings for UTF-8 encoding issues and for code points that are forbidden by the XML spec.
+
+[source,lua]
+----
+xmlParser:setCheckCharacters(enabled)
+----
+
+* `enabled`: `true` to enable character checking, `false/nil` to disable it.
+
+
+[discrete]
+==== Notes
+
+This setting is **required** by the spec. You should only disable it if you can check the input ahead of time with an XML linter.
+
+
+=== xmlParser:getCheckCharacters
+
+Gets the setting for checking the encoding of incoming XML strings.
+
+[source,lua]
+----
+local enabled = xmlParser:getCheckCharacters()
+----
+
+**Returns:** `true` if the setting is enabled, `false` otherwise.
+
+
+=== xmlParser:setNamespaceMode
+
+__Default: nil__
+
+Sets the xmlParser's XML Namespace mode.
+
+[source,lua]
+----
+xmlParser:setNamespaceVersion(mode)
+----
+
+* `mode`: `nil` for no namespace functionality while parsing, or the XML Namespace version string (`1.0`, `1.1`).
+
+[discrete]
+==== Notes
+
+This setting is copied to any xmlObjects created by the xmlParser. (See: <<xml-obj-set-namespace-mode>>)
+
+
+=== xmlParser:getNamespaceMode
+
+Gets the parser's current XML Namespace mode.
+
+[source,lua]
+----
+local version = xmlParser:getNamespaceMode()
+----
+
+**Returns:** `nil` (namespace state is not active while parsing), `1.0` or `1.1`.
+
+
+=== xmlParser:setCollectComments
+
+__Default: true__
+
+Makes the xmlParser collect or discard XML comments.
+
+[source,lua]
+----
+xmlParser:setCollectComments(enabled)
+----
+
+* `enabled`: `true` to collect comments and attach them to the xmlObject output, `false/nil` to discard them.
+
+
+=== xmlParser:getCollectComments
+
+Gets the current state for collecting comments.
+
+[source,lua]
+----
+local enabled = xmlParser:getCollectComments()
+----
+
+* `enabled`: `true` (comments are collected) or `false`
+
+
+=== xmlParser:setCollectProcessingInstructions
+
+__Default: true__
+
+Makes the xmlParser collect or discard XML processing instructions.
+
+[source,lua]
+----
+xmlParser:setCollectProcessingInstructions(enabled)
+----
+
+* `enabled`: `true` to collect PIs and attach them to the xmlObject output, `false/nil` to discard them.
+
+
+=== xmlParser:getCollectProcessingInstructions
+
+Gets the current state for collecting processing instructions.
+
+[source,lua]
+----
+local enabled = xmlParser:getCollectProcessingInstructions()
+----
+
+* `enabled`: `true` (PIs are collected) or `false`
+
+
+=== xmlParser:setNormalizeLineEndings
+
+__Default: true__
+
+When true, the xmlParser converts instances of `\r\n` and `\r` to just `\n` before processing the document.
+
+[source,lua]
+----
+xmlParser:setNormalizeLineEndings(enabled)
+----
+
+* `enabled`: `true` to normalize newlines, `false/nil` to skip this step.
+
+[discrete]
+==== Notes
+
+This step is **required** by the XML spec. You should only disable line ending normalization if your application already guarantees that the incoming strings have had this transformation applied.
+
+
+=== xmlParser:getNormalizeLineEndings
+
+Gets the xmlParser state for normalizing line endings.
+
+[source,lua]
+----
+local enabled = xmlParser:getNormalizeLineEndings()
+----
+
+**Returns:** `true` if the parser normalizes line endings, `false` if not.
+
+
+=== xmlParser:setCheckEncodingMismatch
+
+__Default: true__
+
+Makes the xmlParser raise an error if the perceived encoding (based on checking the first few bytes of the document) does not match the encoding specified in the XML declaration.
+
+In other words: if the xmlParser sees `<?xml version="1.0" encoding="UTF-8" …?>` but the actual encoding is UTF-16, then it raises an error.
+
+[source,lua]
+----
+xmlParser:setCheckEncodingMismatch(enabled)
+----
+
+* `enabled`: `true` (mismatches raise errors) or `false/nil`.
+
+
+=== xmlParser:getCheckEncodingMismatch
+
+Gets the current state for encoding mismatches.
+
+[source,lua]
+----
+local enabled = xmlParser:getCheckEncodingMismatch()
+----
+
+**Returns:** `true` (mismatches raise errors) or `false`.
+
+
+=== xmlParser:setMaxEntityBytes
+
+__Default: math.huge__
+
+Sets the maximum number of bytes to read from the replacement text of General Entities. When this amount is exceeded, the xmlParser raises an error.
+
+[source,lua]
+----
+xmlParser:setMaxEntityBytes(n)
+----
+
+* `n`: The number of bytes to read. Use `math.huge` to disable the feature.
+
+[discrete]
+==== Notes
+
+This is a https://en.wikipedia.org/wiki/Billion_laughs_attack[Billion laughs attack] mitigation.
+
+Predefined Entities do not contribute to the count. Otherwise, all other replacement text is included: any yet-to-be-processed markup that is nested within a just-expanded general entity will contribute to the total.
+
+
+=== xmlParser:getMaxEntityBytes
+
+Gets the current max entity bytes number.
+
+[source,lua]
+----
+local n = xmlParser:getMaxEntityBytes()
+----
+
+**Returns:** The max entity bytes number.
+
+
+=== xmlParser:setRejectDoctype
+
+__Default: false__
+
+Makes the xmlParser raise an error upon encountering `<!DOCTYPE>`. Some formats based on XML forbid this tag.
+
+[source,lua]
+----
+xmlParser:setRejectDoctype(enabled)
+----
+
+* `enabled`: `true` to reject the DOCTYPE, `false/nil` to accept and parse it (in a non-validating manner).
+
+
+=== xmlParser:getRejectDoctype
+
+Gets the current state for rejecting `<!DOCTYPE>`.
+
+[source,lua]
+----
+local rejecting = xmlParser:getRejectDoctype()
+----
+
+**Returns:** `true` (`<!DOCTYPE>` is being rejected) or `false`.
+
+
+=== xmlParser:setRejectInternalSubset
+
+__Default: false__
+
+Makes the xmlParser raise an error upon encountering a DTD internal subset (the bit that's enclosed in square brackets) within the DOCTYPE.
+
+[source,lua]
+----
+xmlParser:setRejectInternalSubset(enabled)
+----
+
+* `enabled`: `true` to reject DOCTYPEs containing internal subsets, `false/nil` to accept and parse it.
+
+[discrete]
+==== Notes
+
+Some XML documents contain a harmless DOCTYPE tag that just specifies the root element name, like `<!DOCTYPE foobar>`. This has no effect in a non-validating processor.
+
+
+=== xmlParser:getRejectInternalSubset
+
+Gets the current state for rejecting documents with an internal subset.
+
+[source,lua]
+----
+local rejecting = xmlParser:getRejectInternalSubset()
+----
+
+**Returns:** `true` if internal subsets are being rejected, `false` if not.
+
+
+=== xmlParser:setCopyDocType
+
+__Default: false__
+
+When true, if a `!DOCTYPE` declaration is present, the xmlParser stores a substring copy in `xmlObject.doctype_str`.
+
+[source,lua]
+----
+xmlParser:setCopyDocType(enabled)
+----
+
+* `enabled`: `true` to store `!DOCTYPE` substrings, `false/nil` otherwise.
+
+
+=== xmlParser:getCopyDocType
+
+Gets the current state for making a copy of the `!DOCTYPE` declaration.
+
+[source,lua]
+----
+local enabled = xmlParser:getCopyDocType()
+----
+
+**Returns:** `true` (copy the substring) or `false` (don't).
+
+
+=== xmlParser:setRejectUnexpandedEntities
+
+__Default: false__
+
+When true, halts processing when an Unexpanded entity node would be created and added to the tree. __(See <<api-unexp>> for more info.)__
+
+[source,lua]
+----
+xmlParser:setRejectUnexpandedEntities(enabled)
+----
+
+* `enabled`: `true` to halt on Unexpanded Entities, `false/nil` to attach them to the output tree.
+
+
+=== xmlParser:getRejectUnexpandedEntities
+
+Gets the current state for rejecting Unexpanded Entities.
+
+[source,lua]
+----
+local enabled = xmlParser:getRejectUnexpandedEntities()
+----
+
+**Returns:** `true` (Unexpanded Entities are rejected) or `false` (they are included in the tree).
+
+
+=== xmlParser:setWarnDuplicateEntityDeclarations
+
+__Default: false__
+
+When true, prints a warning to the console when multiple `!ENTITY` declarations with the same name are encountered.
+
+[source,lua]
+----
+xmlParser:setWarnDuplicateEntityDeclarations(enabled)
+----
+
+* `enabled`: `true` to warn about duplicate entity declarations, `false/nil` otherwise.
+
+[discrete]
+==== Notes
+
+When duplicate entity declarations appear in the internal subset, only the first-encountered declaration is registered.
+
+
+=== xmlParser:getWarnDuplicateEntityDeclarations
+
+Gets the current state for warning about duplicate entity declarations.
+
+[source,lua]
+----
+local enabled = xmlParser:getWarnDuplicateEntityDeclarations()
+----
+
+**Returns:** `true` (warnings are issued to the console) or `false`.
+
+
+=== xmlParser:setWriteXMLDeclaration
+
+__Default: true__
+
+Sets whether the XML declaration is written when serializing out an xmlObject.
+
+[source,lua]
+----
+xmlParser:setWriteXMLDeclaration(enabled)
+----
+
+* `enabled`: `true` to write out the XML declaration, `false/nil` to skip it.
+
+
+=== xmlParser:getWriteXMLDeclaration
+
+Gets the current setting for writing out XML declarations.
+
+[source,lua]
+----
+local enabled = xmlParser:getWriteXMLDeclaration()
+----
+
+**Returns:** `true` (XML declarations are written out) or `false`.
+
+
+=== xmlParser:setWriteDocType
+
+__Default: false__
+
+Sets whether the xmlParser writes a DOCTYPE tag when serializing out an xmlObject.
+
+[source,lua]
+----
+xmlParser:setWriteDocType(enabled)
+----
+
+* `enabled`: `true` to serialize DOCTYPE, `false/nil` otherwise.
+
+[discrete]
+==== Notes
+
+xmlParsers and xmlObjects don't fully track DOCTYPE state. Instead, if `xml_object.doctype_str` is a string, then its contents are inserted before the root element.
+
+
+=== xmlParser:getWriteDocType
+
+Gets the current setting for writing out the DOCTYPE tag.
+
+[source,lua]
+----
+local enabled = xmlParser:getWriteDocType()
+----
+
+**Returns:** `true` (DOCTYPE is being written) or `false`.
+
+
+=== xmlParser:setWritePretty
+
+__Default: true__
+
+Sets the xmlParser state for pretty-printing (added line endings and indentations when serializing out).
+
+[source,lua]
+----
+xmlParser:setWritePretty(enabled)
+----
+
+* `enabled`: `true` to insert line endings and indentations, `false/nil` otherwise.
+
+
+=== xmlParser:getWritePretty
+
+Gets the xmlParser state for pretty-printing.
+
+[source,lua]
+----
+local enabled = xmlParser:getWritePretty()
+----
+
+* `enabled`: `true` (pretty-printing is active) or `false`.
+
+
+=== xmlParser:setWriteIndent
+
+__Default: " ", 1__
+
+Sets the indentation character and quantity for pretty-printing.
+
+[source,lua]
+----
+xmlParser:setWriteIndent(ch, [qty])
+----
+
+* `ch`: The whitespace character to use: `++ ++` or `\t`.
+
+* `[qty]`: __(1)__ The number of `ch` characters to write per indentation level.
+
+
+=== xmlParser:getWriteIndent
+
+Gets the indentation character and quantity for pretty-printing.
+
+[source,lua]
+----
+local ch, qty = xmlParser:getWriteIndent()
+----
+
+**Returns:** The whitespace character (`++ ++` or `\t`) and the number of `ch` characters to write per indentation level.
+
+
+=== xmlParser:setWriteBigEndian
+
+__Default: false (lttle endian)__
+
+Sets the endianness for serialized output when the encoding is UTF-16.
+
+[source,lua]
+----
+xmlParser:setWriteBigEndian(enabled)
+----
+
+* `enabled`: `true` to order bytes as big endian, `false/nil` to order as little endian.
+
+
+=== xmlParser:getWriteBigEndian
+
+Gets the setting for UTF-16 endianness.
+
+[source,lua]
+----
+local enabled = xmlParser:getWriteBigEndian()
+----
+
+**Returns:** `true` (the serialized UTF-16 output is big endian) or `false` (little endian)
+
+
+[#xml-parser-to-table]
+=== xmlParser:toTable
+
+Converts an XML string to an xmlObject node tree.
+
+[source,lua]
+----
+local xml_obj = xmlParser:toTable(str)
+----
+
+* `str`: The XML string to convert.
+
+**Returns:** An xmlObject.
+
+
+=== xmlParser:toString
+
+Converts an xmlObject to an XML string.
+
+[source,lua]
+----
+xmlParser:toString(xml_obj)
+----
+
+* `xml_obj`: The xmlObject to convert.
+
+**Returns:** An XML string.
+
+[discrete]
+==== Notes
+
+The string encoding is controlled by the xmlObject's encoding setting. See: <<xml-obj-set-xml-encoding>>
+
+ 
+== API: Tree Nodes
+
+All nodes in an xmlObject tree share a set of basic navigation methods.
+
+
+=== Node:getSiblings
+
+Gets the `children` table in which this node is placed.
+
+
+[source,lua]
+----
+local siblings = Node:getSiblings()
+----
+
+**Returns:** The table of siblings, or `nil` if the node is the xmlObject (which does not have a parent).
+
+
+=== Node:next
+
+Gets the node's next sibling.
+
+[source,lua]
+----
+local sibling = Node:next()
+----
+
+**Returns:** The node's next sibling, or `nil` if either the node does not have siblings or it is the last sibling in the table.
+
+
+=== Node:prev
+
+Gets the node's previous sibling.
+
+[source,lua]
+----
+local sibling = Node:prev()
+----
+
+**Returns:** The node's previous sibling, or `nil` if either the node does not have siblings or it is the first sibling in the table.
+
+
+=== Node:descend
+
+Gets the node's first child.
+
+[source,lua]
+----
+local child_no_1 = Node:descend()
+----
+
+**Returns:** The node's first child, or `nil` if the node has no children.
+
+
+=== Node:ascend
+
+Gets the node's parent.
+
+[source,lua]
+----
+local parent = Node:ascend()
+----
+
+**Returns:** The node's parent, or `nil` if the node does not have a parent.
+
+
+=== Node:top
+
+Gets the root node (the xmlObject, not the XML root element).
+
+[source,lua]
+----
+local xml_obj = Node:top()
+----
+
+**Returns:** The root node in the tree.
+
+
+=== Node:path
+
+Looks for an element based on a path string. **Paths are not namespace-aware.**
+
+[source,lua]
+----
+local resolved = Node:path(path)
+----
+
+* `path`: The path string.
+
+**Returns:** The resolved node, or `nil` if the node could not be found.
+
+[discrete]
+==== Notes
+
+The path string contains element names separated by forward slashes. The call `Node:path("foo/bar/baz")` would look for a child of `Node` named `foo`, and then a grandchild named `bar`, and finally a great-grandchild named `baz`. For each generation, the first matching name is selected.
+
+Paths starting with a forward slash are absolute, always starting from the root xmlObject node (__not__ the root element). In this case, the first name in the path must match the root element name. `Node:path("/myroot/foo")`
+
+As a special case, a single forward slash will select the xmlObject node. `Node:path("/")` is equivalent to `Node:top()`.
+
+`..` may be used to move up one level, though attempting to go above the xmlObject node will fail. `Node:path("../goback")`
+
+Only elements and the xmlObject root are eligible for selection, but `Node:path()` can be called by any node object that is attached to the tree. This includes comments and PIs from within the internal subset.
+
+
+=== Node:find
+
+Looks for a node among the calling node's children.
+
+[source,lua]
+----
+local result = Node:find(id, [name], [i])
+----
+
+* `id`: The node's ID tag (type): `cdata`, `comment`, `doctype`, `element`, `pi`, `unexp`, `xml_object`.
+
+* `[name]`: The node's name, if applicable. Pass nothing or `nil` for node types which do not have a name (see notes).
+
+* `i`: *(1)* Index of the first child to check.
+
+**Returns:** A node that matches the search criteria, plus the node's sibling index, or `nil` if there was no match.
+
+[discrete]
+==== Notes
+
+**This method is not namespace-aware.** See <<node-find-ns>> for finding namespaced elements.
+
+The search does not include grandchildren, great-grandchildren, etc.
+
+Searches for `cdata`, `comment` and `xml_object` must use `nil` for the name, because these node types do not have names.
+
+
+[#node-find-ns]
+=== Node:findNS
+
+Looks for a namespaced element among the calling node's children.
+
+[source,lua]
+----
+local result = Node:findNS(ns_uri, ns_local, [i])
+----
+
+* `ns_uri`: The namespace URI (__not__ the prefix).
+
+* `ns_local`: The local name.
+
+* `i`: __(1)__ Index of the first child to check.
+
+**Returns:** A node that matches the search criteria, plus the node's sibling index, or `nil` if there was no match.
+
+[discrete]
+==== Notes
+
+The search includes namespaced element nodes only, as XML Namespaces do not apply to any other node type.
+
+This method always returns `nil` when no namespace mode is set.
+
+
+=== Node:destroy
+
+"Destroys" the node and all of its descendants. The reference to the node within its parent is also removed.
+
+[source,lua]
+----
+Node:destroy()
+----
+
+[discrete]
+==== Notes
+
+The following occurs when destroying a node:
+
+* (If applicable) Destroy all descendants recursively
+
+* (If applicable) Remove node from parent's list of siblings
+
+* Unset metatable
+
+* Erase all table contents
+
+
+== API: xmlObject
+
+xmlObjects represent a document as a tree of nodes. They can be created from a string (<<lxl-to-table>>, <<xml-parser-to-table>>) or by API calls (<<lxl-new-xml-object>>).
+
+
+=== xmlObject:setXMLVersion
+
+Sets the version string in the XML declaration.
+
+[source,lua]
+----
+xmlObject:setXMLVersion(v)
+----
+
+* `v`: The XML declaration version string. Use `nil` to clear the value.
+
+[discrete]
+==== Notes
+
+When not set, assume the default value is `1.0`.
+
+
+=== xmlObject:getXMLVersion
+
+Gets the version string in the XML declaration.
+
+[source,lua]
+----
+local v = xmlObject:getXMLVersion()
+----
+
+**Returns:** The XML declaration version string, or `nil` if it was not set.
+
+
+[#xml-obj-set-xml-encoding]
+=== xmlObject:setXMLEncoding
+
+Sets the XML declaration encoding string.
+
+[source,lua]
+----
+xmlObject:setXMLEncoding(e)
+----
+
+* `e`: The XML declaration encoding string: `UTF-8`, `UTF-16`, or `nil` to clear the value.
+
+[discrete]
+==== Notes
+
+When not set, assume the default value is `UTF-8`.
+
+A value of `UTF-16` makes `xmlParser:toString()` encode the output as UTF-16. The endianness is controlled by `xmlParser:setWriteBigEndian()`.
+
+
+=== xmlObject:getXMLEncoding
+
+Gets the XML declaration encoding string.
+
+[source,lua]
+----
+local e = xmlObject:getXMLEncoding()
+----
+
+**Returns:** The XML declaration encoding string, or `nil` if it was not set.
+
+
+=== xmlObject:setXMLStandalone
+
+Sets the XML declaration standalone string.
+
+[source,lua]
+----
+xmlObject:setXMLStandalone(s)
+----
+
+* `s`: The XML declaration standalone string: 'yes', 'no', or pass in `nil` to clear the value.
+
+
+=== xmlObject:getXMLStandalone
+
+Gets the XML declaration standalone string.
+
+[source,lua]
+----
+local s = xmlObject:getXMLStandalone()
+----
+
+**Returns:** The XML declaration standalone string, or `nil` if it was not set.
+
+[discrete]
+==== Notes
+
+When not set, assume the default value is `no`.
+
+
+[#xml-obj-set-namespace-mode]
+=== xmlObject:setNamespaceMode
+
+__Default: nil__
+
+Sets the xmlObject's namespace mode.
+
+[source,lua]
+----
+xmlObject:setNamespaceMode(mode)
+----
+
+* `mode`: The XML Namespace mode string (`1.0`, `1.1`), or `nil` to disable namespace features.
+
+
+=== xmlObject:getNamespaceMode
+
+Gets the xmlObject's current XML Namespace mode.
+
+[source,lua]
+----
+local mode = xmlObject:getNamespaceMode()
+----
+
+**Returns:** The namespace mode: `1.0`, `1.1`, or `nil` (disabled).
+
+
+=== xmlObject:checkNamespaceState
+
+Checks the namespace state of the xmlObject node tree, raising an error if any problems are found.
+
+`xmlObject:checkNamespaceState()`
+
+[discrete]
+==== Notes
+
+This method does nothing when namespace mode is inactive. Otherwise, it performs the same checks as xmlParser when loading a string. See xref:appendix.adoc#invalid-namespace-state[Invalid Namespace State] for more info.
+
+
+=== xmlObject:getRoot
+
+Gets the document root element. If the xmlObject does not have any elements, raises an error.
+
+[source,lua]
+----
+local root = xmlObject:getRoot()
+----
+
+**Returns:** The root element.
+
+
+=== xmlObject:getDocType
+
+Gets the DocType node. If the xmlObject does not have a DocType node, returns `nil`.
+
+[source,lua]
+----
+local dt = xmlObject:getDocType()
+----
+
+**Returns:** The DocType node, or `nil`.
+
+
+=== xmlObject:pruneNodes
+
+Removes nodes of a specified type from the xmlObject tree. Nodes that can contain children (`element`, `doctype`, `xml_object`) cannot be pruned, but their descendants will be checked.
+
+[source,lua]
+----
+xmlObject:pruneNodes(...)
+----
+
+* `...`: The list of node IDs to remove: `cdata`, `comment`, `pi`, `unexp`
+
+
+=== xmlObject:mergeCharacterData
+
+Merges all adjacent CharacterData nodes in the xmlObject tree.
+
+[source,lua]
+----
+xmlObject:mergeCharacterData()
+----
+
+[discrete]
+==== Notes
+
+Comment nodes will prevent text before and after the node from being merged.
+
+All affected CharacterData nodes will have their `cd_sect` flag reset to `false`.
+
+
+=== xmlObject:pruneSpace
+
+Deletes all CharacterData nodes which contain only whitespace characters (`\r\n\t\32`).
+
+[source,lua]
+----
+xmlObject:pruneSpace(xml_space)
+----
+
+* `xml_space` When true, do not delete CharacterData nodes where the special attribute `xml:space="preserve"` is in effect.
+
+[discrete]
+==== Notes
+
+This includes CharacterData nodes marked as CDATA Sections (`cd_sect`).
+
+
+=== xmlObject:newComment
+
+Adds a new comment node, outside of the Document root element.
+
+[source,lua]
+----
+local comment = xmlObject:newComment(text, [i])
+----
+
+* `text`: The comment text.
+
+* `[i]`: __(#children + 1)__ Where to insert the comment in the xmlObject's array of children.
+
+**Returns:** A new comment node.
+
+
+=== xmlObject:newProcessingInstruction
+
+Adds a new processing instruction, outside of the Document root element.
+
+[source,lua]
+----
+local pi = xmlObject:newProcessingInstruction(name, text, [i])
+----
+
+
+* `name`: The processing instruction Target.
+
+* `text`: The processing instruction text body.
+
+* `[i]`: __(#children + 1)__ Where to insert the processing instruction in the xmlObject's array of children.
+
+**Returns:** A new processing instruction node.
+
+
+=== xmlObject:newElement
+
+Adds a new element.
+
+[source,lua]
+----
+local element = xmlObject:newElement(name, [i])
+----
+
+* `name`: The element name.
+
+* `[i]`: __(#children + 1)__ Where to insert the element in the xmlObject's array of children.
+
+**Returns:** A new element, attached directly to the xmlObject.
+
+[discrete]
+==== Notes
+
+Attaching more than one top-level element is forbidden by the XML spec.
+
+
+== API: Element
+
+
+=== Element:getName
+
+Gets the element's Name.
+
+[source,lua]
+----
+local name = Element:getName()
+----
+
+**Returns:** The element's Name.
+
+
+=== Element:setName
+
+Sets the element's Name.
+
+[source,lua]
+----
+Element:setName(name)
+----
+
+* `name`: The name to set.
+
+
+=== Element:getAttribute
+
+Gets an attribute value.
+
+[source,lua]
+----
+local val = Element:getAttribute(key)
+----
+
+* `key`: The attribute Name.
+
+**Returns:** The attribute value, or `nil` if the attribute was not found.
+
+
+=== Element:setAttribute
+
+Sets an attribute value.
+
+[source,lua]
+----
+Element:setAttribute(key, value)
+----
+
+* `key`: The attribute Name.
+
+* `value`: The value to set. Pass `nil` to delete the attribute. Otherwise, this must be a string.
+
+
+=== Element:getNamespace
+
+Gets the element's current namespace mapping.
+
+[source,lua]
+----
+local ns_uri = Element:getNamespace()
+----
+
+**Returns:** The namespace URI associated with this element, or `nil` if there isn't one.
+
+[discrete]
+==== Notes
+
+This method always returns `nil` when no namespace mode is set.
+
+
+=== Element:getNamespaceAttribute
+
+Gets an attribute that is mapped to a namespace.
+
+[source,lua]
+----
+local value, prefix = Element:getNamespaceAttribute(ns_uri, ns_local)
+----
+
+* `ns_uri`: The namespace URI.
+
+* `ns_local`: The namespace local part.
+
+**Returns:** The attribute value (or `nil` if it's not populated for this namespace), and the prefix (if bound at this scope).
+
+[discrete]
+==== Notes
+
+This method is unreliable if two attributes with the same local name but different prefixes resolve to the same namespace. Such a state is forbidden by the XML Namespace spec.
+
+If multiple prefixes are mapped to the URI, then there is no defined order as to which prefix is selected and returned by this method.
+
+The default namespace is never used with attributes; unprefixed attributes do not belong to a namespace.
+
+This method always returns `nil` when no namespace mode is set.
+
+
+=== Element:getStableAttributesOrder
+
+Gets a stable order of attribute keys using a simple string sort.
+
+[source,lua]
+----
+local order = Element:getStableAttributesOrder()
+----
+
+**Returns:** An array of keys that correspond to the attributes table.
+
+
+=== Element:getXMLSpecialAttribute
+
+Looks for a special XML attribute in the element and its ancestors, up to the root element. Intended for checking `xml:space` and `xml:lang`.
+
+[source,lua]
+----
+Element:getXMLSpecialAttribute(local_name)
+----
+
+* `local_name`: The second part of the attribute name, after the colon. (`space`, `lang`)
+
+**Returns:** The attribute value and the element in which it was found, or `nil` if there was no match.
+
+
+=== Element:getNamespaceDeclarations
+
+Returns a table containing all namespace declarations from this element and its ancestors.
+
+[source,lua]
+----
+local decl = Element:getNamespaceDeclarations([_decl])
+----
+
+* `[_decl]`: An optional existing table. Used internally to cut down on garbage generation. Note that the table's contents are deleted.
+
+**Returns:** A table of all active namespace declarations for this element.
+
+[discrete]
+==== Notes
+
+This method always returns an empty table when no namespace mode is set.
+
+
+=== Element:GetNamespaceBinding
+
+Gets a bound prefix for a namespace URI.
+
+[source,lua]
+----
+local ns_prefix = Element:GetNamespaceBinding(ns_uri)
+----
+
+* `ns_uri`: The namespace URI to check.
+
+**Returns:** A bound prefix for the namespace URI, or `nil` if there is no binding at this scope.
+
+[discrete]
+==== Notes
+
+If multiple prefixes are mapped to the namespace URI, then there is no defined order as to which prefix is selected and returned by this method.
+
+This method does not consider the predefined prefixes `xml` and `xmlns`.
+
+This method always returns `nil` when no namespace mode is set.
+
+
+=== Element:newComment
+
+Adds a new comment node.
+
+[source,lua]
+----
+local comment = Element:newComment(text, [i])
+----
+
+* `text`: The comment text.
+
+* `[i]`: __(#children + 1)__ Where to insert the comment in the node's array of children.
+
+**Returns:** A new comment node.
+
+
+=== Element:newProcessingInstruction
+
+Adds a processing instruction node.
+
+[source,lua]
+----
+local pi = Element:newProcessingInstruction(name, text, [i])
+----
+
+* `name`: The processing instruction Target.
+
+* `text`: The processing instruction text body.
+
+* `[i]`: __(#children + 1)__ Where to insert the processing instruction in the node's array of children.
+
+**Returns:** A new processing instruction node.
+
+
+=== Element:newElement
+
+Adds a new element.
+
+[source,lua]
+----
+local element = Element:newElement(name, [i])
+----
+
+* `name`: The element name.
+
+* `[i]`: __(#children + 1)__ Where to insert the element in the node's array of children.
+
+**Returns:** A new element, attached directly to the calling element.
+
+
+=== Element:newCharacterData
+
+Adds a new CharacterData (text) node.
+
+[source,lua]
+----
+local char_data = Element:newCharacterData(text, [cd_sect], [i])
+----
+
+* `text`: The CharacterData's text.
+
+* `[cd_sect]`: __(nil)__ `true` if this CharacterData node should be serialized out as a CDATA Section.
+
+* `[i]`: __(#children + 1)__ Where to insert the CharacterData in the node's array of children.
+
+**Returns:** A new CharacterData, attached directly to the calling element.
+
+[discrete]
+==== Notes
+
+When xmlParsers convert a string to an xmlObject, they will turn CDATA sections into CharacterData nodes with `cd_sect` set to true.
+
+
+== API: CharacterData
+
+CharacterData nodes are the document's non-markup text content.
+
+
+=== CharacterData:setText
+
+Sets the CharacterData's text.
+
+[source,lua]
+----
+CharacterData:setText(text)
+----
+
+* `text`: The text to assign.
+
+
+=== CharacterData:getText
+
+Gets the CharacterData's text.
+
+[source,lua]
+----
+local text = CharacterData:getText()
+----
+
+**Returns:** The CharacterData text.
+
+
+=== CharacterData:setCDSect
+
+Sets the CharacterData's `cd_sect` flag. This is a hint to the serializer to output CharacterData in CDATA section form: `<![CDATA[...]]>`
+
+[source,lua]
+----
+CharacterData:setCDSect(enabled)
+----
+
+* `enabled`: `true` to enable CDATA Section output for this node, `false/nil` otherwise.
+
+[discrete]
+==== Notes
+
+A CharacterNode's `cd_sect` flag is reset when `xmlObject:mergeCharacterData()` combines text from other nodes.
+
+The substring `]]>` cannot appear within a CDATA section. If this substring is encountered when serializing, the CDATA section will end, `]]>` will be escaped as `++]]&gt;++`, and a new CDATA section will begin.
+
+
+=== CharacterData:getCDSect
+
+Gets the CharacterData's `cd_sect` flag.
+
+[source,lua]
+----
+local enabled = CharacterData:getCDSect()
+----
+
+**Returns:** `true` (this node would be serialized as a CDATA Section) or `false`.
+
+
+== API: Comment
+
+=== Comment:getText
+
+Gets the comment's text.
+
+[source,lua]
+----
+local text = Comment:getText()
+----
+
+**Returns:** The comment text.
+
+
+=== Comment:setText
+
+Sets the comment's text.
+
+[source,lua]
+----
+Comment:setText(text)
+----
+
+* `text`: The text to assign.
+
+[discrete]
+==== Notes
+
+XML comments are not allowed to contain the substring `--` or to end with `-`.
+
+
+== API: PI (Processing Instruction)
+
+=== PI:setTarget
+
+Sets the PI's target (name).
+
+[source,lua]
+----
+PI:setTarget(target)
+----
+
+* `target`: The target to assign.
+
+
+=== PI:getTarget
+
+Gets the PI's target (name).
+
+[source,lua]
+----
+local target = PI:getTarget()
+----
+
+**Returns:** The PI's target.
+
+
+=== PI:setText
+
+Sets the PI's text.
+
+[source,lua]
+----
+PI:setText(text)
+----
+
+* `text`: The text to assign.
+
+[discrete]
+==== Notes
+
+XML processing instructions cannot contain the substring `?>`.
+
+
+=== PI:getText
+
+Gets the PI's text.
+
+[source,lua]
+----
+local text = PI:getText()
+----
+
+**Returns:** The PI text.
+
+
+== API: DOCTYPE
+
+Holds the DOCTYPE Name, along with comments and PIs that are found in the DTD Internal Subset.
+
+This node does not fully represent the DOCTYPE and DTD internal subset, and it is not included when serializing out. For more info, see: xref:appendix.adoc#serializing-doctype[Serializing DOCTYPE]
+
+There is almost no reason to create this node manually, so no creation method is attached to the xmlObject.
+
+
+[#api-unexp]
+== API: Unexp
+
+An Unexpanded Entity Reference is a general entity reference (e.g. `&foobar;`) that could not be expanded into its replacement text. Unexpanded references are not part of the core XML spec, but they do have an entry in the XML InfoSet.
+
+More about these can be found in the xref:appendix.adoc#unexpanded-entity-references[appendix], but generally speaking, you will rarely (if ever) encounter them.
+
+
+=== Unexp:getName
+
+Gets the unexpanded entity's name. (If the reference is `&foo;`, then the name would be `foo`.)
+
+[source,lua]
+----
+local name = Unexp:getName()
+----
+
+**Returns:** The unexpanded entity's name.
+
+
+=== Unexp:setName
+
+Sets the unexpanded entity's name.
+
+[source,lua]
+----
+Unexp:setName(name)
+----
+
+* `name`: The name to assign.
+
+
+include::snippets/footer.adoc[]
+

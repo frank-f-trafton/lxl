@@ -1,3 +1,9 @@
+# v2.0.6 -- 03 Mar 2026
+
+* Started an AsciiDoc version of the documentation in `docs`. It will replace the README.md as soon as I figure out how to make it accessible on GH Pages.
+* Updated the copyright year.
+
+
 # v2.0.5 -- 02 Jan 2025
 
 * [GitHub Issue #1](https://github.com/rabbitboots/lxl/issues/1): changed `#FIXED` attribute behavior to match [LuaExpat](https://lunarmodules.github.io/luaexpat/).

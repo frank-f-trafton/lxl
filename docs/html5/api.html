@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>Lua XML Library: API</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Lua XML Library: API</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="home.html">Home</a> |
+<a href="api.html">API</a> |
+<a href="appendix.html">Appendix</a></p>
+</div>
+<div class="paragraph">
+<p><strong>Version:</strong> 2.0.6</p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_api_lxl_lua">API: lxl.lua</a>
+<ul class="sectlevel2">
+<li><a href="#_lxl_newparser">lxl.newParser</a></li>
+<li><a href="#lxl-to-table">lxl.toTable</a></li>
+<li><a href="#_lxl_tostring">lxl.toString</a></li>
+<li><a href="#lxl-new-xml-object">lxl.newXMLObject</a></li>
+<li><a href="#_lxl_load">lxl.load</a></li>
+</ul>
+</li>
+<li><a href="#_api_xmlparser">API: xmlParser</a>
+<ul class="sectlevel2">
+<li><a href="#_xmlparsersetcheckcharacters">xmlParser:setCheckCharacters</a></li>
+<li><a href="#_xmlparsergetcheckcharacters">xmlParser:getCheckCharacters</a></li>
+<li><a href="#_xmlparsersetnamespacemode">xmlParser:setNamespaceMode</a></li>
+<li><a href="#_xmlparsergetnamespacemode">xmlParser:getNamespaceMode</a></li>
+<li><a href="#_xmlparsersetcollectcomments">xmlParser:setCollectComments</a></li>
+<li><a href="#_xmlparsergetcollectcomments">xmlParser:getCollectComments</a></li>
+<li><a href="#_xmlparsersetcollectprocessinginstructions">xmlParser:setCollectProcessingInstructions</a></li>
+<li><a href="#_xmlparsergetcollectprocessinginstructions">xmlParser:getCollectProcessingInstructions</a></li>
+<li><a href="#_xmlparsersetnormalizelineendings">xmlParser:setNormalizeLineEndings</a></li>
+<li><a href="#_xmlparsergetnormalizelineendings">xmlParser:getNormalizeLineEndings</a></li>
+<li><a href="#_xmlparsersetcheckencodingmismatch">xmlParser:setCheckEncodingMismatch</a></li>
+<li><a href="#_xmlparsergetcheckencodingmismatch">xmlParser:getCheckEncodingMismatch</a></li>
+<li><a href="#_xmlparsersetmaxentitybytes">xmlParser:setMaxEntityBytes</a></li>
+<li><a href="#_xmlparsergetmaxentitybytes">xmlParser:getMaxEntityBytes</a></li>
+<li><a href="#_xmlparsersetrejectdoctype">xmlParser:setRejectDoctype</a></li>
+<li><a href="#_xmlparsergetrejectdoctype">xmlParser:getRejectDoctype</a></li>
+<li><a href="#_xmlparsersetrejectinternalsubset">xmlParser:setRejectInternalSubset</a></li>
+<li><a href="#_xmlparsergetrejectinternalsubset">xmlParser:getRejectInternalSubset</a></li>
+<li><a href="#_xmlparsersetcopydoctype">xmlParser:setCopyDocType</a></li>
+<li><a href="#_xmlparsergetcopydoctype">xmlParser:getCopyDocType</a></li>
+<li><a href="#_xmlparsersetrejectunexpandedentities">xmlParser:setRejectUnexpandedEntities</a></li>
+<li><a href="#_xmlparsergetrejectunexpandedentities">xmlParser:getRejectUnexpandedEntities</a></li>
+<li><a href="#_xmlparsersetwarnduplicateentitydeclarations">xmlParser:setWarnDuplicateEntityDeclarations</a></li>
+<li><a href="#_xmlparsergetwarnduplicateentitydeclarations">xmlParser:getWarnDuplicateEntityDeclarations</a></li>
+<li><a href="#_xmlparsersetwritexmldeclaration">xmlParser:setWriteXMLDeclaration</a></li>
+<li><a href="#_xmlparsergetwritexmldeclaration">xmlParser:getWriteXMLDeclaration</a></li>
+<li><a href="#_xmlparsersetwritedoctype">xmlParser:setWriteDocType</a></li>
+<li><a href="#_xmlparsergetwritedoctype">xmlParser:getWriteDocType</a></li>
+<li><a href="#_xmlparsersetwritepretty">xmlParser:setWritePretty</a></li>
+<li><a href="#_xmlparsergetwritepretty">xmlParser:getWritePretty</a></li>
+<li><a href="#_xmlparsersetwriteindent">xmlParser:setWriteIndent</a></li>
+<li><a href="#_xmlparsergetwriteindent">xmlParser:getWriteIndent</a></li>
+<li><a href="#_xmlparsersetwritebigendian">xmlParser:setWriteBigEndian</a></li>
+<li><a href="#_xmlparsergetwritebigendian">xmlParser:getWriteBigEndian</a></li>
+<li><a href="#xml-parser-to-table">xmlParser:toTable</a></li>
+<li><a href="#_xmlparsertostring">xmlParser:toString</a></li>
+</ul>
+</li>
+<li><a href="#_api_tree_nodes">API: Tree Nodes</a>
+<ul class="sectlevel2">
+<li><a href="#_nodegetsiblings">Node:getSiblings</a></li>
+<li><a href="#_nodenext">Node:next</a></li>
+<li><a href="#_nodeprev">Node:prev</a></li>
+<li><a href="#_nodedescend">Node:descend</a></li>
+<li><a href="#_nodeascend">Node:ascend</a></li>
+<li><a href="#_nodetop">Node:top</a></li>
+<li><a href="#_nodepath">Node:path</a></li>
+<li><a href="#_nodefind">Node:find</a></li>
+<li><a href="#node-find-ns">Node:findNS</a></li>
+<li><a href="#_nodedestroy">Node:destroy</a></li>
+</ul>
+</li>
+<li><a href="#_api_xmlobject">API: xmlObject</a>
+<ul class="sectlevel2">
+<li><a href="#_xmlobjectsetxmlversion">xmlObject:setXMLVersion</a></li>
+<li><a href="#_xmlobjectgetxmlversion">xmlObject:getXMLVersion</a></li>
+<li><a href="#xml-obj-set-xml-encoding">xmlObject:setXMLEncoding</a></li>
+<li><a href="#_xmlobjectgetxmlencoding">xmlObject:getXMLEncoding</a></li>
+<li><a href="#_xmlobjectsetxmlstandalone">xmlObject:setXMLStandalone</a></li>
+<li><a href="#_xmlobjectgetxmlstandalone">xmlObject:getXMLStandalone</a></li>
+<li><a href="#xml-obj-set-namespace-mode">xmlObject:setNamespaceMode</a></li>
+<li><a href="#_xmlobjectgetnamespacemode">xmlObject:getNamespaceMode</a></li>
+<li><a href="#_xmlobjectchecknamespacestate">xmlObject:checkNamespaceState</a></li>
+<li><a href="#_xmlobjectgetroot">xmlObject:getRoot</a></li>
+<li><a href="#_xmlobjectgetdoctype">xmlObject:getDocType</a></li>
+<li><a href="#_xmlobjectprunenodes">xmlObject:pruneNodes</a></li>
+<li><a href="#_xmlobjectmergecharacterdata">xmlObject:mergeCharacterData</a></li>
+<li><a href="#_xmlobjectprunespace">xmlObject:pruneSpace</a></li>
+<li><a href="#_xmlobjectnewcomment">xmlObject:newComment</a></li>
+<li><a href="#_xmlobjectnewprocessinginstruction">xmlObject:newProcessingInstruction</a></li>
+<li><a href="#_xmlobjectnewelement">xmlObject:newElement</a></li>
+</ul>
+</li>
+<li><a href="#_api_element">API: Element</a>
+<ul class="sectlevel2">
+<li><a href="#_elementgetname">Element:getName</a></li>
+<li><a href="#_elementsetname">Element:setName</a></li>
+<li><a href="#_elementgetattribute">Element:getAttribute</a></li>
+<li><a href="#_elementsetattribute">Element:setAttribute</a></li>
+<li><a href="#_elementgetnamespace">Element:getNamespace</a></li>
+<li><a href="#_elementgetnamespaceattribute">Element:getNamespaceAttribute</a></li>
+<li><a href="#_elementgetstableattributesorder">Element:getStableAttributesOrder</a></li>
+<li><a href="#_elementgetxmlspecialattribute">Element:getXMLSpecialAttribute</a></li>
+<li><a href="#_elementgetnamespacedeclarations">Element:getNamespaceDeclarations</a></li>
+<li><a href="#_elementgetnamespacebinding">Element:GetNamespaceBinding</a></li>
+<li><a href="#_elementnewcomment">Element:newComment</a></li>
+<li><a href="#_elementnewprocessinginstruction">Element:newProcessingInstruction</a></li>
+<li><a href="#_elementnewelement">Element:newElement</a></li>
+<li><a href="#_elementnewcharacterdata">Element:newCharacterData</a></li>
+</ul>
+</li>
+<li><a href="#_api_characterdata">API: CharacterData</a>
+<ul class="sectlevel2">
+<li><a href="#_characterdatasettext">CharacterData:setText</a></li>
+<li><a href="#_characterdatagettext">CharacterData:getText</a></li>
+<li><a href="#_characterdatasetcdsect">CharacterData:setCDSect</a></li>
+<li><a href="#_characterdatagetcdsect">CharacterData:getCDSect</a></li>
+</ul>
+</li>
+<li><a href="#_api_comment">API: Comment</a>
+<ul class="sectlevel2">
+<li><a href="#_commentgettext">Comment:getText</a></li>
+<li><a href="#_commentsettext">Comment:setText</a></li>
+</ul>
+</li>
+<li><a href="#_api_pi_processing_instruction">API: PI (Processing Instruction)</a>
+<ul class="sectlevel2">
+<li><a href="#_pisettarget">PI:setTarget</a></li>
+<li><a href="#_pigettarget">PI:getTarget</a></li>
+<li><a href="#_pisettext">PI:setText</a></li>
+<li><a href="#_pigettext">PI:getText</a></li>
+</ul>
+</li>
+<li><a href="#_api_doctype">API: DOCTYPE</a></li>
+<li><a href="#api-unexp">API: Unexp</a>
+<ul class="sectlevel2">
+<li><a href="#_unexpgetname">Unexp:getName</a></li>
+<li><a href="#_unexpsetname">Unexp:setName</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_lxl_lua">API: lxl.lua</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_lxl_newparser">lxl.newParser</h3>
+<div class="paragraph">
+<p>Makes a new xmlParser object.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">parser</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">newParser</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An xmlParser with default settings.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lxl-to-table">lxl.toTable</h3>
+<div class="paragraph">
+<p>Converts an XML string to an xmlObject, with default parser settings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">toTable</span><span class="p">(</span><span class="n">str</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>str</code>: The XML string to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An xmlObject.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lxl_tostring">lxl.toString</h3>
+<div class="paragraph">
+<p>Converts an xmlObject to an XML string, with default parser settings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">toString</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>xml_obj</code>: The xmlObject to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An XML string.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="lxl-new-xml-object">lxl.newXMLObject</h3>
+<div class="paragraph">
+<p>Creates a new xmlObject with no nodes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">newXMLObject</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The new xmlObject.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lxl_load">lxl.load</h3>
+<div class="paragraph">
+<p>Loads an XML file from disk and converts it to an xmlObject using the default parser settings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>path</code>: The file path.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The xmlObject.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This function is intended for use from the console and the Lua interactive prompt. If your host application provides its own functions to load files (like LÖVE&#8217;s <a href="https://love2d.org/wiki/love.filesystem">love.filesystem</a>), then you should probably use those functions instead.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_xmlparser">API: xmlParser</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_xmlparsersetcheckcharacters">xmlParser:setCheckCharacters</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>When true, the xmlParser checks incoming XML strings for UTF-8 encoding issues and for code points that are forbidden by the XML spec.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setCheckCharacters</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to enable character checking, <code>false/nil</code> to disable it.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This setting is <strong>required</strong> by the spec. You should only disable it if you can check the input ahead of time with an XML linter.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetcheckcharacters">xmlParser:getCheckCharacters</h3>
+<div class="paragraph">
+<p>Gets the setting for checking the encoding of incoming XML strings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getCheckCharacters</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the setting is enabled, <code>false</code> otherwise.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetnamespacemode">xmlParser:setNamespaceMode</h3>
+<div class="paragraph">
+<p><em>Default: nil</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the xmlParser&#8217;s XML Namespace mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setNamespaceVersion</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>mode</code>: <code>nil</code> for no namespace functionality while parsing, or the XML Namespace version string (<code>1.0</code>, <code>1.1</code>).</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This setting is copied to any xmlObjects created by the xmlParser. (See: <a href="#xml-obj-set-namespace-mode">xmlObject:setNamespaceMode</a>)</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetnamespacemode">xmlParser:getNamespaceMode</h3>
+<div class="paragraph">
+<p>Gets the parser&#8217;s current XML Namespace mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">version</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getNamespaceMode</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>nil</code> (namespace state is not active while parsing), <code>1.0</code> or <code>1.1</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetcollectcomments">xmlParser:setCollectComments</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>Makes the xmlParser collect or discard XML comments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setCollectComments</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to collect comments and attach them to the xmlObject output, <code>false/nil</code> to discard them.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetcollectcomments">xmlParser:getCollectComments</h3>
+<div class="paragraph">
+<p>Gets the current state for collecting comments.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getCollectComments</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> (comments are collected) or <code>false</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetcollectprocessinginstructions">xmlParser:setCollectProcessingInstructions</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>Makes the xmlParser collect or discard XML processing instructions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setCollectProcessingInstructions</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to collect PIs and attach them to the xmlObject output, <code>false/nil</code> to discard them.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetcollectprocessinginstructions">xmlParser:getCollectProcessingInstructions</h3>
+<div class="paragraph">
+<p>Gets the current state for collecting processing instructions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getCollectProcessingInstructions</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> (PIs are collected) or <code>false</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetnormalizelineendings">xmlParser:setNormalizeLineEndings</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>When true, the xmlParser converts instances of <code>\r\n</code> and <code>\r</code> to just <code>\n</code> before processing the document.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setNormalizeLineEndings</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to normalize newlines, <code>false/nil</code> to skip this step.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This step is <strong>required</strong> by the XML spec. You should only disable line ending normalization if your application already guarantees that the incoming strings have had this transformation applied.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetnormalizelineendings">xmlParser:getNormalizeLineEndings</h3>
+<div class="paragraph">
+<p>Gets the xmlParser state for normalizing line endings.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getNormalizeLineEndings</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if the parser normalizes line endings, <code>false</code> if not.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetcheckencodingmismatch">xmlParser:setCheckEncodingMismatch</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>Makes the xmlParser raise an error if the perceived encoding (based on checking the first few bytes of the document) does not match the encoding specified in the XML declaration.</p>
+</div>
+<div class="paragraph">
+<p>In other words: if the xmlParser sees <code>&lt;?xml version="1.0" encoding="UTF-8" …?&gt;</code> but the actual encoding is UTF-16, then it raises an error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setCheckEncodingMismatch</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> (mismatches raise errors) or <code>false/nil</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetcheckencodingmismatch">xmlParser:getCheckEncodingMismatch</h3>
+<div class="paragraph">
+<p>Gets the current state for encoding mismatches.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getCheckEncodingMismatch</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (mismatches raise errors) or <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetmaxentitybytes">xmlParser:setMaxEntityBytes</h3>
+<div class="paragraph">
+<p><em>Default: math.huge</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the maximum number of bytes to read from the replacement text of General Entities. When this amount is exceeded, the xmlParser raises an error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setMaxEntityBytes</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>n</code>: The number of bytes to read. Use <code>math.huge</code> to disable the feature.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This is a <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">Billion laughs attack</a> mitigation.</p>
+</div>
+<div class="paragraph">
+<p>Predefined Entities do not contribute to the count. Otherwise, all other replacement text is included: any yet-to-be-processed markup that is nested within a just-expanded general entity will contribute to the total.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetmaxentitybytes">xmlParser:getMaxEntityBytes</h3>
+<div class="paragraph">
+<p>Gets the current max entity bytes number.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">n</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getMaxEntityBytes</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The max entity bytes number.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetrejectdoctype">xmlParser:setRejectDoctype</h3>
+<div class="paragraph">
+<p><em>Default: false</em></p>
+</div>
+<div class="paragraph">
+<p>Makes the xmlParser raise an error upon encountering <code>&lt;!DOCTYPE&gt;</code>. Some formats based on XML forbid this tag.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setRejectDoctype</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to reject the DOCTYPE, <code>false/nil</code> to accept and parse it (in a non-validating manner).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetrejectdoctype">xmlParser:getRejectDoctype</h3>
+<div class="paragraph">
+<p>Gets the current state for rejecting <code>&lt;!DOCTYPE&gt;</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">rejecting</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getRejectDoctype</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (<code>&lt;!DOCTYPE&gt;</code> is being rejected) or <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetrejectinternalsubset">xmlParser:setRejectInternalSubset</h3>
+<div class="paragraph">
+<p><em>Default: false</em></p>
+</div>
+<div class="paragraph">
+<p>Makes the xmlParser raise an error upon encountering a DTD internal subset (the bit that&#8217;s enclosed in square brackets) within the DOCTYPE.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setRejectInternalSubset</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to reject DOCTYPEs containing internal subsets, <code>false/nil</code> to accept and parse it.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_6" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Some XML documents contain a harmless DOCTYPE tag that just specifies the root element name, like <code>&lt;!DOCTYPE foobar&gt;</code>. This has no effect in a non-validating processor.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetrejectinternalsubset">xmlParser:getRejectInternalSubset</h3>
+<div class="paragraph">
+<p>Gets the current state for rejecting documents with an internal subset.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">rejecting</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getRejectInternalSubset</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> if internal subsets are being rejected, <code>false</code> if not.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetcopydoctype">xmlParser:setCopyDocType</h3>
+<div class="paragraph">
+<p><em>Default: false</em></p>
+</div>
+<div class="paragraph">
+<p>When true, if a <code>!DOCTYPE</code> declaration is present, the xmlParser stores a substring copy in <code>xmlObject.doctype_str</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setCopyDocType</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to store <code>!DOCTYPE</code> substrings, <code>false/nil</code> otherwise.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetcopydoctype">xmlParser:getCopyDocType</h3>
+<div class="paragraph">
+<p>Gets the current state for making a copy of the <code>!DOCTYPE</code> declaration.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getCopyDocType</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (copy the substring) or <code>false</code> (don&#8217;t).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetrejectunexpandedentities">xmlParser:setRejectUnexpandedEntities</h3>
+<div class="paragraph">
+<p><em>Default: false</em></p>
+</div>
+<div class="paragraph">
+<p>When true, halts processing when an Unexpanded entity node would be created and added to the tree. <em>(See <a href="#api-unexp">API: Unexp</a> for more info.)</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setRejectUnexpandedEntities</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to halt on Unexpanded Entities, <code>false/nil</code> to attach them to the output tree.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetrejectunexpandedentities">xmlParser:getRejectUnexpandedEntities</h3>
+<div class="paragraph">
+<p>Gets the current state for rejecting Unexpanded Entities.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getRejectUnexpandedEntities</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (Unexpanded Entities are rejected) or <code>false</code> (they are included in the tree).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetwarnduplicateentitydeclarations">xmlParser:setWarnDuplicateEntityDeclarations</h3>
+<div class="paragraph">
+<p><em>Default: false</em></p>
+</div>
+<div class="paragraph">
+<p>When true, prints a warning to the console when multiple <code>!ENTITY</code> declarations with the same name are encountered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setWarnDuplicateEntityDeclarations</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to warn about duplicate entity declarations, <code>false/nil</code> otherwise.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_7" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When duplicate entity declarations appear in the internal subset, only the first-encountered declaration is registered.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetwarnduplicateentitydeclarations">xmlParser:getWarnDuplicateEntityDeclarations</h3>
+<div class="paragraph">
+<p>Gets the current state for warning about duplicate entity declarations.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getWarnDuplicateEntityDeclarations</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (warnings are issued to the console) or <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetwritexmldeclaration">xmlParser:setWriteXMLDeclaration</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>Sets whether the XML declaration is written when serializing out an xmlObject.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setWriteXMLDeclaration</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to write out the XML declaration, <code>false/nil</code> to skip it.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetwritexmldeclaration">xmlParser:getWriteXMLDeclaration</h3>
+<div class="paragraph">
+<p>Gets the current setting for writing out XML declarations.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getWriteXMLDeclaration</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (XML declarations are written out) or <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetwritedoctype">xmlParser:setWriteDocType</h3>
+<div class="paragraph">
+<p><em>Default: false</em></p>
+</div>
+<div class="paragraph">
+<p>Sets whether the xmlParser writes a DOCTYPE tag when serializing out an xmlObject.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setWriteDocType</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to serialize DOCTYPE, <code>false/nil</code> otherwise.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_8" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>xmlParsers and xmlObjects don&#8217;t fully track DOCTYPE state. Instead, if <code>xml_object.doctype_str</code> is a string, then its contents are inserted before the root element.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetwritedoctype">xmlParser:getWriteDocType</h3>
+<div class="paragraph">
+<p>Gets the current setting for writing out the DOCTYPE tag.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getWriteDocType</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (DOCTYPE is being written) or <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetwritepretty">xmlParser:setWritePretty</h3>
+<div class="paragraph">
+<p><em>Default: true</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the xmlParser state for pretty-printing (added line endings and indentations when serializing out).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setWritePretty</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to insert line endings and indentations, <code>false/nil</code> otherwise.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetwritepretty">xmlParser:getWritePretty</h3>
+<div class="paragraph">
+<p>Gets the xmlParser state for pretty-printing.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getWritePretty</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> (pretty-printing is active) or <code>false</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetwriteindent">xmlParser:setWriteIndent</h3>
+<div class="paragraph">
+<p><em>Default: " ", 1</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the indentation character and quantity for pretty-printing.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setWriteIndent</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="p">[</span><span class="n">qty</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ch</code>: The whitespace character to use: <code> </code> or <code>\t</code>.</p>
+</li>
+<li>
+<p><code>[qty]</code>: <em>(1)</em> The number of <code>ch</code> characters to write per indentation level.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetwriteindent">xmlParser:getWriteIndent</h3>
+<div class="paragraph">
+<p>Gets the indentation character and quantity for pretty-printing.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ch</span><span class="p">,</span> <span class="n">qty</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getWriteIndent</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The whitespace character (<code> </code> or <code>\t</code>) and the number of <code>ch</code> characters to write per indentation level.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsersetwritebigendian">xmlParser:setWriteBigEndian</h3>
+<div class="paragraph">
+<p><em>Default: false (lttle endian)</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the endianness for serialized output when the encoding is UTF-16.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">setWriteBigEndian</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to order bytes as big endian, <code>false/nil</code> to order as little endian.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsergetwritebigendian">xmlParser:getWriteBigEndian</h3>
+<div class="paragraph">
+<p>Gets the setting for UTF-16 endianness.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">getWriteBigEndian</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (the serialized UTF-16 output is big endian) or <code>false</code> (little endian)</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="xml-parser-to-table">xmlParser:toTable</h3>
+<div class="paragraph">
+<p>Converts an XML string to an xmlObject node tree.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">toTable</span><span class="p">(</span><span class="n">str</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>str</code>: The XML string to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An xmlObject.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparsertostring">xmlParser:toString</h3>
+<div class="paragraph">
+<p>Converts an xmlObject to an XML string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">toString</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>xml_obj</code>: The xmlObject to convert.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An XML string.</p>
+</div>
+<h4 id="_notes_9" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The string encoding is controlled by the xmlObject&#8217;s encoding setting. See: <a href="#xml-obj-set-xml-encoding">xmlObject:setXMLEncoding</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_tree_nodes">API: Tree Nodes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>All nodes in an xmlObject tree share a set of basic navigation methods.</p>
+</div>
+<div class="sect2">
+<h3 id="_nodegetsiblings">Node:getSiblings</h3>
+<div class="paragraph">
+<p>Gets the <code>children</code> table in which this node is placed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">siblings</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">getSiblings</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The table of siblings, or <code>nil</code> if the node is the xmlObject (which does not have a parent).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodenext">Node:next</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s next sibling.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sibling</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="nb">next</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s next sibling, or <code>nil</code> if either the node does not have siblings or it is the last sibling in the table.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodeprev">Node:prev</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s previous sibling.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sibling</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">prev</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s previous sibling, or <code>nil</code> if either the node does not have siblings or it is the first sibling in the table.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodedescend">Node:descend</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s first child.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">child_no_1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">descend</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s first child, or <code>nil</code> if the node has no children.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodeascend">Node:ascend</h3>
+<div class="paragraph">
+<p>Gets the node&#8217;s parent.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">ascend</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s parent, or <code>nil</code> if the node does not have a parent.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodetop">Node:top</h3>
+<div class="paragraph">
+<p>Gets the root node (the xmlObject, not the XML root element).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">top</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The root node in the tree.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodepath">Node:path</h3>
+<div class="paragraph">
+<p>Looks for an element based on a path string. <strong>Paths are not namespace-aware.</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>path</code>: The path string.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The resolved node, or <code>nil</code> if the node could not be found.</p>
+</div>
+<h4 id="_notes_10" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The path string contains element names separated by forward slashes. The call <code>Node:path("foo/bar/baz")</code> would look for a child of <code>Node</code> named <code>foo</code>, and then a grandchild named <code>bar</code>, and finally a great-grandchild named <code>baz</code>. For each generation, the first matching name is selected.</p>
+</div>
+<div class="paragraph">
+<p>Paths starting with a forward slash are absolute, always starting from the root xmlObject node (<em>not</em> the root element). In this case, the first name in the path must match the root element name. <code>Node:path("/myroot/foo")</code></p>
+</div>
+<div class="paragraph">
+<p>As a special case, a single forward slash will select the xmlObject node. <code>Node:path("/")</code> is equivalent to <code>Node:top()</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>..</code> may be used to move up one level, though attempting to go above the xmlObject node will fail. <code>Node:path("../goback")</code></p>
+</div>
+<div class="paragraph">
+<p>Only elements and the xmlObject root are eligible for selection, but <code>Node:path()</code> can be called by any node object that is attached to the tree. This includes comments and PIs from within the internal subset.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodefind">Node:find</h3>
+<div class="paragraph">
+<p>Looks for a node among the calling node&#8217;s children.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">find</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>id</code>: The node&#8217;s ID tag (type): <code>cdata</code>, <code>comment</code>, <code>doctype</code>, <code>element</code>, <code>pi</code>, <code>unexp</code>, <code>xml_object</code>.</p>
+</li>
+<li>
+<p><code>[name]</code>: The node&#8217;s name, if applicable. Pass nothing or <code>nil</code> for node types which do not have a name (see notes).</p>
+</li>
+<li>
+<p><code>i</code>: <strong>(1)</strong> Index of the first child to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A node that matches the search criteria, plus the node&#8217;s sibling index, or <code>nil</code> if there was no match.</p>
+</div>
+<h4 id="_notes_11" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>This method is not namespace-aware.</strong> See <a href="#node-find-ns">Node:findNS</a> for finding namespaced elements.</p>
+</div>
+<div class="paragraph">
+<p>The search does not include grandchildren, great-grandchildren, etc.</p>
+</div>
+<div class="paragraph">
+<p>Searches for <code>cdata</code>, <code>comment</code> and <code>xml_object</code> must use <code>nil</code> for the name, because these node types do not have names.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="node-find-ns">Node:findNS</h3>
+<div class="paragraph">
+<p>Looks for a namespaced element among the calling node&#8217;s children.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">result</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">findNS</span><span class="p">(</span><span class="n">ns_uri</span><span class="p">,</span> <span class="n">ns_local</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ns_uri</code>: The namespace URI (<em>not</em> the prefix).</p>
+</li>
+<li>
+<p><code>ns_local</code>: The local name.</p>
+</li>
+<li>
+<p><code>i</code>: <em>(1)</em> Index of the first child to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A node that matches the search criteria, plus the node&#8217;s sibling index, or <code>nil</code> if there was no match.</p>
+</div>
+<h4 id="_notes_12" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The search includes namespaced element nodes only, as XML Namespaces do not apply to any other node type.</p>
+</div>
+<div class="paragraph">
+<p>This method always returns <code>nil</code> when no namespace mode is set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_nodedestroy">Node:destroy</h3>
+<div class="paragraph">
+<p>"Destroys" the node and all of its descendants. The reference to the node within its parent is also removed.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Node</span><span class="p">:</span><span class="n">destroy</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<h4 id="_notes_13" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The following occurs when destroying a node:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>(If applicable) Destroy all descendants recursively</p>
+</li>
+<li>
+<p>(If applicable) Remove node from parent&#8217;s list of siblings</p>
+</li>
+<li>
+<p>Unset metatable</p>
+</li>
+<li>
+<p>Erase all table contents</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_xmlobject">API: xmlObject</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>xmlObjects represent a document as a tree of nodes. They can be created from a string (<a href="#lxl-to-table">lxl.toTable</a>, <a href="#xml-parser-to-table">xmlParser:toTable</a>) or by API calls (<a href="#lxl-new-xml-object">lxl.newXMLObject</a>).</p>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectsetxmlversion">xmlObject:setXMLVersion</h3>
+<div class="paragraph">
+<p>Sets the version string in the XML declaration.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">setXMLVersion</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>v</code>: The XML declaration version string. Use <code>nil</code> to clear the value.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_14" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When not set, assume the default value is <code>1.0</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectgetxmlversion">xmlObject:getXMLVersion</h3>
+<div class="paragraph">
+<p>Gets the version string in the XML declaration.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">v</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getXMLVersion</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The XML declaration version string, or <code>nil</code> if it was not set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="xml-obj-set-xml-encoding">xmlObject:setXMLEncoding</h3>
+<div class="paragraph">
+<p>Sets the XML declaration encoding string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">setXMLEncoding</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>e</code>: The XML declaration encoding string: <code>UTF-8</code>, <code>UTF-16</code>, or <code>nil</code> to clear the value.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_15" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When not set, assume the default value is <code>UTF-8</code>.</p>
+</div>
+<div class="paragraph">
+<p>A value of <code>UTF-16</code> makes <code>xmlParser:toString()</code> encode the output as UTF-16. The endianness is controlled by <code>xmlParser:setWriteBigEndian()</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectgetxmlencoding">xmlObject:getXMLEncoding</h3>
+<div class="paragraph">
+<p>Gets the XML declaration encoding string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">e</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getXMLEncoding</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The XML declaration encoding string, or <code>nil</code> if it was not set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectsetxmlstandalone">xmlObject:setXMLStandalone</h3>
+<div class="paragraph">
+<p>Sets the XML declaration standalone string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">setXMLStandalone</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>s</code>: The XML declaration standalone string: 'yes', 'no', or pass in <code>nil</code> to clear the value.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectgetxmlstandalone">xmlObject:getXMLStandalone</h3>
+<div class="paragraph">
+<p>Gets the XML declaration standalone string.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">s</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getXMLStandalone</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The XML declaration standalone string, or <code>nil</code> if it was not set.</p>
+</div>
+<h4 id="_notes_16" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When not set, assume the default value is <code>no</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="xml-obj-set-namespace-mode">xmlObject:setNamespaceMode</h3>
+<div class="paragraph">
+<p><em>Default: nil</em></p>
+</div>
+<div class="paragraph">
+<p>Sets the xmlObject&#8217;s namespace mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">setNamespaceMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>mode</code>: The XML Namespace mode string (<code>1.0</code>, <code>1.1</code>), or <code>nil</code> to disable namespace features.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectgetnamespacemode">xmlObject:getNamespaceMode</h3>
+<div class="paragraph">
+<p>Gets the xmlObject&#8217;s current XML Namespace mode.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getNamespaceMode</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The namespace mode: <code>1.0</code>, <code>1.1</code>, or <code>nil</code> (disabled).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectchecknamespacestate">xmlObject:checkNamespaceState</h3>
+<div class="paragraph">
+<p>Checks the namespace state of the xmlObject node tree, raising an error if any problems are found.</p>
+</div>
+<div class="paragraph">
+<p><code>xmlObject:checkNamespaceState()</code></p>
+</div>
+<h4 id="_notes_17" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method does nothing when namespace mode is inactive. Otherwise, it performs the same checks as xmlParser when loading a string. See <a href="appendix.html#invalid-namespace-state">Invalid Namespace State</a> for more info.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectgetroot">xmlObject:getRoot</h3>
+<div class="paragraph">
+<p>Gets the document root element. If the xmlObject does not have any elements, raises an error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getRoot</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The root element.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectgetdoctype">xmlObject:getDocType</h3>
+<div class="paragraph">
+<p>Gets the DocType node. If the xmlObject does not have a DocType node, returns <code>nil</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getDocType</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The DocType node, or <code>nil</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectprunenodes">xmlObject:pruneNodes</h3>
+<div class="paragraph">
+<p>Removes nodes of a specified type from the xmlObject tree. Nodes that can contain children (<code>element</code>, <code>doctype</code>, <code>xml_object</code>) cannot be pruned, but their descendants will be checked.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">pruneNodes</span><span class="p">(</span><span class="o">...</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>&#8230;&#8203;</code>: The list of node IDs to remove: <code>cdata</code>, <code>comment</code>, <code>pi</code>, <code>unexp</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectmergecharacterdata">xmlObject:mergeCharacterData</h3>
+<div class="paragraph">
+<p>Merges all adjacent CharacterData nodes in the xmlObject tree.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">mergeCharacterData</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<h4 id="_notes_18" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Comment nodes will prevent text before and after the node from being merged.</p>
+</div>
+<div class="paragraph">
+<p>All affected CharacterData nodes will have their <code>cd_sect</code> flag reset to <code>false</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectprunespace">xmlObject:pruneSpace</h3>
+<div class="paragraph">
+<p>Deletes all CharacterData nodes which contain only whitespace characters (<code>\r\n\t\32</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">pruneSpace</span><span class="p">(</span><span class="n">xml_space</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>xml_space</code> When true, do not delete CharacterData nodes where the special attribute <code>xml:space="preserve"</code> is in effect.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_19" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This includes CharacterData nodes marked as CDATA Sections (<code>cd_sect</code>).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectnewcomment">xmlObject:newComment</h3>
+<div class="paragraph">
+<p>Adds a new comment node, outside of the Document root element.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">newComment</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text</code>: The comment text.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the comment in the xmlObject&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new comment node.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectnewprocessinginstruction">xmlObject:newProcessingInstruction</h3>
+<div class="paragraph">
+<p>Adds a new processing instruction, outside of the Document root element.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pi</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">newProcessingInstruction</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: The processing instruction Target.</p>
+</li>
+<li>
+<p><code>text</code>: The processing instruction text body.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the processing instruction in the xmlObject&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new processing instruction node.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlobjectnewelement">xmlObject:newElement</h3>
+<div class="paragraph">
+<p>Adds a new element.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">element</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">newElement</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: The element name.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the element in the xmlObject&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new element, attached directly to the xmlObject.</p>
+</div>
+<h4 id="_notes_20" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>Attaching more than one top-level element is forbidden by the XML spec.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_element">API: Element</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_elementgetname">Element:getName</h3>
+<div class="paragraph">
+<p>Gets the element&#8217;s Name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">getName</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The element&#8217;s Name.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementsetname">Element:setName</h3>
+<div class="paragraph">
+<p>Sets the element&#8217;s Name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Element</span><span class="p">:</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: The name to set.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetattribute">Element:getAttribute</h3>
+<div class="paragraph">
+<p>Gets an attribute value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">val</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>key</code>: The attribute Name.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The attribute value, or <code>nil</code> if the attribute was not found.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementsetattribute">Element:setAttribute</h3>
+<div class="paragraph">
+<p>Sets an attribute value.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Element</span><span class="p">:</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>key</code>: The attribute Name.</p>
+</li>
+<li>
+<p><code>value</code>: The value to set. Pass <code>nil</code> to delete the attribute. Otherwise, this must be a string.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetnamespace">Element:getNamespace</h3>
+<div class="paragraph">
+<p>Gets the element&#8217;s current namespace mapping.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ns_uri</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">getNamespace</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The namespace URI associated with this element, or <code>nil</code> if there isn&#8217;t one.</p>
+</div>
+<h4 id="_notes_21" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method always returns <code>nil</code> when no namespace mode is set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetnamespaceattribute">Element:getNamespaceAttribute</h3>
+<div class="paragraph">
+<p>Gets an attribute that is mapped to a namespace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">value</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">getNamespaceAttribute</span><span class="p">(</span><span class="n">ns_uri</span><span class="p">,</span> <span class="n">ns_local</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ns_uri</code>: The namespace URI.</p>
+</li>
+<li>
+<p><code>ns_local</code>: The namespace local part.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The attribute value (or <code>nil</code> if it&#8217;s not populated for this namespace), and the prefix (if bound at this scope).</p>
+</div>
+<h4 id="_notes_22" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method is unreliable if two attributes with the same local name but different prefixes resolve to the same namespace. Such a state is forbidden by the XML Namespace spec.</p>
+</div>
+<div class="paragraph">
+<p>If multiple prefixes are mapped to the URI, then there is no defined order as to which prefix is selected and returned by this method.</p>
+</div>
+<div class="paragraph">
+<p>The default namespace is never used with attributes; unprefixed attributes do not belong to a namespace.</p>
+</div>
+<div class="paragraph">
+<p>This method always returns <code>nil</code> when no namespace mode is set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetstableattributesorder">Element:getStableAttributesOrder</h3>
+<div class="paragraph">
+<p>Gets a stable order of attribute keys using a simple string sort.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">order</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">getStableAttributesOrder</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An array of keys that correspond to the attributes table.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetxmlspecialattribute">Element:getXMLSpecialAttribute</h3>
+<div class="paragraph">
+<p>Looks for a special XML attribute in the element and its ancestors, up to the root element. Intended for checking <code>xml:space</code> and <code>xml:lang</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Element</span><span class="p">:</span><span class="n">getXMLSpecialAttribute</span><span class="p">(</span><span class="n">local_name</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>local_name</code>: The second part of the attribute name, after the colon. (<code>space</code>, <code>lang</code>)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The attribute value and the element in which it was found, or <code>nil</code> if there was no match.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetnamespacedeclarations">Element:getNamespaceDeclarations</h3>
+<div class="paragraph">
+<p>Returns a table containing all namespace declarations from this element and its ancestors.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">decl</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">getNamespaceDeclarations</span><span class="p">([</span><span class="n">_decl</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>[_decl]</code>: An optional existing table. Used internally to cut down on garbage generation. Note that the table&#8217;s contents are deleted.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A table of all active namespace declarations for this element.</p>
+</div>
+<h4 id="_notes_23" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>This method always returns an empty table when no namespace mode is set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementgetnamespacebinding">Element:GetNamespaceBinding</h3>
+<div class="paragraph">
+<p>Gets a bound prefix for a namespace URI.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">ns_prefix</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">GetNamespaceBinding</span><span class="p">(</span><span class="n">ns_uri</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>ns_uri</code>: The namespace URI to check.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A bound prefix for the namespace URI, or <code>nil</code> if there is no binding at this scope.</p>
+</div>
+<h4 id="_notes_24" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>If multiple prefixes are mapped to the namespace URI, then there is no defined order as to which prefix is selected and returned by this method.</p>
+</div>
+<div class="paragraph">
+<p>This method does not consider the predefined prefixes <code>xml</code> and <code>xmlns</code>.</p>
+</div>
+<div class="paragraph">
+<p>This method always returns <code>nil</code> when no namespace mode is set.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementnewcomment">Element:newComment</h3>
+<div class="paragraph">
+<p>Adds a new comment node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">newComment</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text</code>: The comment text.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the comment in the node&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new comment node.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementnewprocessinginstruction">Element:newProcessingInstruction</h3>
+<div class="paragraph">
+<p>Adds a processing instruction node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">pi</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">newProcessingInstruction</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: The processing instruction Target.</p>
+</li>
+<li>
+<p><code>text</code>: The processing instruction text body.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the processing instruction in the node&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new processing instruction node.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementnewelement">Element:newElement</h3>
+<div class="paragraph">
+<p>Adds a new element.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">newElement</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: The element name.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the element in the node&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new element, attached directly to the calling element.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_elementnewcharacterdata">Element:newCharacterData</h3>
+<div class="paragraph">
+<p>Adds a new CharacterData (text) node.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">char_data</span> <span class="o">=</span> <span class="n">Element</span><span class="p">:</span><span class="n">newCharacterData</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="p">[</span><span class="n">cd_sect</span><span class="p">],</span> <span class="p">[</span><span class="n">i</span><span class="p">])</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text</code>: The CharacterData&#8217;s text.</p>
+</li>
+<li>
+<p><code>[cd_sect]</code>: <em>(nil)</em> <code>true</code> if this CharacterData node should be serialized out as a CDATA Section.</p>
+</li>
+<li>
+<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the CharacterData in the node&#8217;s array of children.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> A new CharacterData, attached directly to the calling element.</p>
+</div>
+<h4 id="_notes_25" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>When xmlParsers convert a string to an xmlObject, they will turn CDATA sections into CharacterData nodes with <code>cd_sect</code> set to true.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_characterdata">API: CharacterData</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>CharacterData nodes are the document&#8217;s non-markup text content.</p>
+</div>
+<div class="sect2">
+<h3 id="_characterdatasettext">CharacterData:setText</h3>
+<div class="paragraph">
+<p>Sets the CharacterData&#8217;s text.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">CharacterData</span><span class="p">:</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text</code>: The text to assign.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_characterdatagettext">CharacterData:getText</h3>
+<div class="paragraph">
+<p>Gets the CharacterData&#8217;s text.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">CharacterData</span><span class="p">:</span><span class="n">getText</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The CharacterData text.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_characterdatasetcdsect">CharacterData:setCDSect</h3>
+<div class="paragraph">
+<p>Sets the CharacterData&#8217;s <code>cd_sect</code> flag. This is a hint to the serializer to output CharacterData in CDATA section form: <code>&lt;![CDATA[&#8230;&#8203;]]&gt;</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">CharacterData</span><span class="p">:</span><span class="n">setCDSect</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>enabled</code>: <code>true</code> to enable CDATA Section output for this node, <code>false/nil</code> otherwise.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_26" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>A CharacterNode&#8217;s <code>cd_sect</code> flag is reset when <code>xmlObject:mergeCharacterData()</code> combines text from other nodes.</p>
+</div>
+<div class="paragraph">
+<p>The substring <code>]]&gt;</code> cannot appear within a CDATA section. If this substring is encountered when serializing, the CDATA section will end, <code>]]&gt;</code> will be escaped as <code>]]&amp;gt;</code>, and a new CDATA section will begin.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_characterdatagetcdsect">CharacterData:getCDSect</h3>
+<div class="paragraph">
+<p>Gets the CharacterData&#8217;s <code>cd_sect</code> flag.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">enabled</span> <span class="o">=</span> <span class="n">CharacterData</span><span class="p">:</span><span class="n">getCDSect</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>true</code> (this node would be serialized as a CDATA Section) or <code>false</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_comment">API: Comment</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_commentgettext">Comment:getText</h3>
+<div class="paragraph">
+<p>Gets the comment&#8217;s text.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">Comment</span><span class="p">:</span><span class="n">getText</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The comment text.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_commentsettext">Comment:setText</h3>
+<div class="paragraph">
+<p>Sets the comment&#8217;s text.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Comment</span><span class="p">:</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text</code>: The text to assign.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_27" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>XML comments are not allowed to contain the substring <code>--</code> or to end with <code>-</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_pi_processing_instruction">API: PI (Processing Instruction)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_pisettarget">PI:setTarget</h3>
+<div class="paragraph">
+<p>Sets the PI&#8217;s target (name).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">PI</span><span class="p">:</span><span class="n">setTarget</span><span class="p">(</span><span class="n">target</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>target</code>: The target to assign.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pigettarget">PI:getTarget</h3>
+<div class="paragraph">
+<p>Gets the PI&#8217;s target (name).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">target</span> <span class="o">=</span> <span class="n">PI</span><span class="p">:</span><span class="n">getTarget</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The PI&#8217;s target.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pisettext">PI:setText</h3>
+<div class="paragraph">
+<p>Sets the PI&#8217;s text.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">PI</span><span class="p">:</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>text</code>: The text to assign.</p>
+</li>
+</ul>
+</div>
+<h4 id="_notes_28" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>XML processing instructions cannot contain the substring <code>?&gt;</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_pigettext">PI:getText</h3>
+<div class="paragraph">
+<p>Gets the PI&#8217;s text.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">text</span> <span class="o">=</span> <span class="n">PI</span><span class="p">:</span><span class="n">getText</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The PI text.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_doctype">API: DOCTYPE</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Holds the DOCTYPE Name, along with comments and PIs that are found in the DTD Internal Subset.</p>
+</div>
+<div class="paragraph">
+<p>This node does not fully represent the DOCTYPE and DTD internal subset, and it is not included when serializing out. For more info, see: <a href="appendix.html#serializing-doctype">Serializing DOCTYPE</a></p>
+</div>
+<div class="paragraph">
+<p>There is almost no reason to create this node manually, so no creation method is attached to the xmlObject.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="api-unexp">API: Unexp</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An Unexpanded Entity Reference is a general entity reference (e.g. <code>&foobar;</code>) that could not be expanded into its replacement text. Unexpanded references are not part of the core XML spec, but they do have an entry in the XML InfoSet.</p>
+</div>
+<div class="paragraph">
+<p>More about these can be found in the <a href="appendix.html#unexpanded-entity-references">appendix</a>, but generally speaking, you will rarely (if ever) encounter them.</p>
+</div>
+<div class="sect2">
+<h3 id="_unexpgetname">Unexp:getName</h3>
+<div class="paragraph">
+<p>Gets the unexpanded entity&#8217;s name. (If the reference is <code>&foo;</code>, then the name would be <code>foo</code>.)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">Unexp</span><span class="p">:</span><span class="n">getName</span><span class="p">()</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The unexpanded entity&#8217;s name.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_unexpsetname">Unexp:setName</h3>
+<div class="paragraph">
+<p>Sets the unexpanded entity&#8217;s name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="n">Unexp</span><span class="p">:</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>name</code>: The name to assign.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-03 22:01:26 -0400
+</div>
+</div>
+</body>
+</html>

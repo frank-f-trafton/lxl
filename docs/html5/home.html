@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>Lua XML Library: Home</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="./rouge-github.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Lua XML Library: Home</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="home.html">Home</a> |
+<a href="api.html">API</a> |
+<a href="appendix.html">Appendix</a></p>
+</div>
+<div class="paragraph">
+<p><strong>Version:</strong> 2.0.6</p>
+</div>
+<div class="paragraph">
+<p>LXL is a non-validating XML 1.0 processor for Lua 5.1 - 5.4.</p>
+</div>
+<div class="paragraph">
+<p>The repo can be found <a href="https://www.github.com/frank-f-trafton/lxl">here</a>. This documentation is <a href="https://example.com">online</a> <strong>TODO</strong> and also within the repo at <code>docs/html5/…</code>.</p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_features">Features</a>
+<ul class="sectlevel2">
+<li><a href="#_not_supported">Not Supported</a></li>
+</ul>
+</li>
+<li><a href="#_example">Example</a></li>
+<li><a href="#_files">Files</a></li>
+<li><a href="#_license_mit">License (MIT)</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_features">Features</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Checks XML 1.0 well-formedness (syntax errors)</p>
+</li>
+<li>
+<p>UTF-8, UTF-16 encoding</p>
+</li>
+<li>
+<p>Namespace 1.0, 1.1 mapping</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_not_supported">Not Supported</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Does not validate XML documents (that is, check them against a DTD)</p>
+</li>
+<li>
+<p>Does not support ignoring syntax errors (like HTML)</p>
+</li>
+<li>
+<p>All PEReferences in the DTD Internal Subset are skipped; non-validating processors are not required to handle them.</p>
+</li>
+<li>
+<p>Does not directly serialize DOCTYPE (see <a href="appendix.html#serializing-doctype">Serializing DOCTYPE</a>)</p>
+</li>
+<li>
+<p>No XML 1.1 features</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_example">Example</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title">example1.lua</div>
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">lxl</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s2">"path.to.lxl"</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">toTable</span><span class="p">(</span><span class="s">[=[
+&lt;foobar&gt;
+ &lt;elem1 a1="Hello" a2="World"&gt;Some text.&lt;/elem1&gt;
+ &lt;empty/&gt;
+&lt;/foobar&gt;
+]=]</span>
+<span class="p">)</span>
+
+<span class="n">xml_obj</span><span class="p">:</span><span class="n">pruneNodes</span><span class="p">(</span><span class="s2">"comment"</span><span class="p">,</span> <span class="s2">"pi"</span><span class="p">)</span>
+<span class="n">xml_obj</span><span class="p">:</span><span class="n">mergeCharacterData</span><span class="p">()</span>
+<span class="n">xml_obj</span><span class="p">:</span><span class="n">pruneSpace</span><span class="p">()</span>
+
+<span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">xml_obj</span><span class="p">:</span><span class="n">getRoot</span><span class="p">()</span>
+
+<span class="kd">local</span> <span class="n">e1</span> <span class="o">=</span> <span class="n">root</span><span class="p">:</span><span class="n">find</span><span class="p">(</span><span class="s2">"element"</span><span class="p">,</span> <span class="s2">"elem1"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">e1</span> <span class="k">then</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">e1</span><span class="p">.</span><span class="n">attr</span><span class="p">)</span> <span class="k">do</span>
+		<span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+	<span class="k">end</span>
+<span class="k">end</span>
+<span class="c1">-- Output (the order may vary):</span>
+<span class="cm">--[[
+a1	Hello
+a2	World
+--]]</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="n">lxl</span><span class="p">.</span><span class="n">toString</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">))</span>
+<span class="c1">-- Output:</span>
+<span class="cm">--[[
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;foobar&gt;
+ &lt;elem1 a1="Hello" a2="World"&gt;Some text.&lt;/elem1&gt;
+ &lt;empty/&gt;
+&lt;/foobar&gt;
+--]]</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_files">Files</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>These files are required:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>lxl.lua</code></p>
+</li>
+<li>
+<p><code>lxl_in.lua</code></p>
+</li>
+<li>
+<p><code>lxl_namespace.lua</code></p>
+</li>
+<li>
+<p><code>lxl_out.lua</code></p>
+</li>
+<li>
+<p><code>lxl_shared.lua</code></p>
+</li>
+<li>
+<p><code>lxl_struct.lua</code></p>
+</li>
+<li>
+<p><code>pile_arg_check.lua</code></p>
+</li>
+<li>
+<p><code>pile_interp.lua</code></p>
+</li>
+<li>
+<p><code>pile_table.lua</code></p>
+</li>
+<li>
+<p><code>pile_utf8.lua</code></p>
+</li>
+<li>
+<p><code>pile_utf8_conv.lua</code></p>
+</li>
+<li>
+<p><code>string_proc.lua</code></p>
+</li>
+<li>
+<p><code>string_walk.lua</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>All files beginning with <code>example</code> or <code>test</code> may be removed.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_license_mit">License (MIT)</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre>Copyright (c) 2022 - 2026 RBTS / Frank F. Trafton
+
+Code from github.com/kikito/utf8_validator.lua:
+Copyright (c) 2013 Enrique García Cota + Adam Baldwin + hanzao + Equi 4 Software
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-03 22:01:23 -0400
+</div>
+</div>
+</body>
+</html>

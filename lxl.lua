@@ -1,5 +1,5 @@
--- Lua XML Library v2.0.5
--- https://github.com/rabbitboots/lxl
+-- Lua XML Library v2.0.6
+-- https://github.com/frank-f-trafton/lxl
 
 
 --[[

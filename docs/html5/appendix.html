@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>Lua XML Library: Appendix</title>
+<link rel="stylesheet" href="./asciidoctor.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Lua XML Library: Appendix</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="home.html">Home</a> |
+<a href="api.html">API</a> |
+<a href="appendix.html">Appendix</a></p>
+</div>
+<div class="paragraph">
+<p><strong>Version:</strong> 2.0.6</p>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle" class="title">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#terminology">Terminology</a></li>
+<li><a href="#handling-of-perefs">Handling of PEReferences</a></li>
+<li><a href="#unexpanded-entity-references">Unexpanded Entity References</a></li>
+<li><a href="#serializing-doctype">Serializing DOCTYPE</a>
+<ul class="sectlevel2">
+<li><a href="#_collecting_doctype_with_xmlparser">Collecting DOCTYPE with xmlParser</a></li>
+<li><a href="#_writing_doctype_with_xmlobject">Writing DOCTYPE with xmlObject</a></li>
+</ul>
+</li>
+<li><a href="#invalid-namespace-state">Invalid Namespace State</a></li>
+<li><a href="#_links">Links</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="terminology">Terminology</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>The term <em>URI</em> is used in place of <em>namespace name</em> because there are already too many things in the XML spec with the word <em>name</em> in their names.</p>
+</li>
+<li>
+<p><em>PEReference</em> is used in place of parameter entity reference.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="handling-of-perefs">Handling of PEReferences</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>(This section originates from a pile of miscellaneous comments for the function <em>sym.PEReference()</em> in <em>lxl_in.lua</em>.)</p>
+</div>
+<div class="paragraph">
+<p>As a non-validating processor, we are not obligated to process entity declarations within the replacement text of a PEReference. (See: <a href="https://www.w3.org/TR/REC-xml/#vc-entdeclared">Well-formedness constraint: Entity Declared</a>.) In practice, this means that LXL never expands PEReferences.</p>
+</div>
+<div class="paragraph">
+<p>Unless <code>standalone</code> is <code>yes</code>, we are not required to process declarations after the first PEReference that is ignored in the internal subset (see: <a href="https://www.w3.org/TR/REC-xml/#as-PE">§4.4.8 Included as PE</a>).</p>
+</div>
+<div class="paragraph">
+<p>In the DTD internal subset, PEReferences cannot appear inside of markup declarations. (No nesting, basically.) This rule doesn&#8217;t apply in the case of external subsets, which we don&#8217;t touch because this is non-validating. (See: <a href="https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset">Well-formedness constraint: PEs in Internal Subset</a></p>
+</div>
+<div class="paragraph">
+<p>There is a rule to expand PEReferences when they appear in the text of an EntityValue (see: <a href="https://www.w3.org/TR/REC-xml/#inliteral">§4.4.5 Included in Literal</a>). In the internal subset, this rule never comes into play because it is overridden by <a href="https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset">Well-formedness constraint: PEs in Internal Subset</a>.</p>
+</div>
+<div class="paragraph">
+<p>As mentioned in <a href="https://www.xml.com/axml/axml.html">Tim Bray&#8217;s annotated version of the original XML spec</a>, The text of <a href="https://www.w3.org/TR/REC-xml/#indtd">Well-formedness constraint: In DTD</a> is a little misleading. It says that PEReferences must not appear outside of the DTD. What it means is that substrings like <code>%foobar;</code> just won&#8217;t be recognized as PEReferences elsewhere.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="unexpanded-entity-references">Unexpanded Entity References</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Here are some more notes about <a href="api.html#api-unexp">Unexp nodes</a>.</p>
+</div>
+<div class="paragraph">
+<p>Normally, an unexpanded entity reference halts processing. These nodes can appear in the output when the following conditions are met:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>standalone</code> property is <code>no</code> or was not set.</p>
+</li>
+<li>
+<p>A PEReference is encountered in the DTD internal subset and not read. (This processor skips all PEReferences; for more info, see: <a href="https://www.w3.org/TR/REC-xml/#as-PE">§4.4.8 Included as PE</a>.)</p>
+</li>
+<li>
+<p>Later, a general entity reference is encountered in the document content, and the XML processor did not collect a declaration that defines it.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You will not encounter unexpanded references in a document that lacks a DTD internal subset, or if <code>standalone</code> is <code>yes</code>, or if the internal subset contains no PEReferences. You will also not see them within attribute values, where failing to dereference a general entity is always an error.</p>
+</div>
+<div class="paragraph">
+<p>This object addresses the requirement in <a href="https://www.w3.org/TR/REC-xml/#include-if-valid">§4.4.3 Included If Validating</a> to inform the application that an entity was recognized but not dereferenced.</p>
+</div>
+<div class="paragraph">
+<p>You can halt on all unexpanded entities with <code>xmlParser:setRejectUnexpandedEntities(true)</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="serializing-doctype">Serializing DOCTYPE</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This library does not fully capture the state of the DOCTYPE tag, and it does not serialize out the <code>doctype</code> node (which just contains the DOCTYPE name, and any comments or PIs found within the DTD internal subset). That said, the following methods are provided for collecting the DOCTYPE substring from a document and writing it out.</p>
+</div>
+<div class="sect2">
+<h3 id="_collecting_doctype_with_xmlparser">Collecting DOCTYPE with xmlParser</h3>
+<div class="paragraph">
+<p>Call <code>xmlParser:setCopyDocType(true)</code>. If the incoming document contains a DOCTYPE tag, then its substring will be assigned to <code>xml_object.doctype_str</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_writing_doctype_with_xmlobject">Writing DOCTYPE with xmlObject</h3>
+<div class="paragraph">
+<p>Call <code>xmlParser:setWriteDocType(true)</code>. If <code>xml_object.doctype_str</code> is a string, then its contents will be inserted before the root element when serializing out. Note that the well-formedness of <code>doctype_str</code> is not verified at all.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="invalid-namespace-state">Invalid Namespace State</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When an xmlParser is configured to handle XML Namespaces, while converting a string to an xmlObject, it will halt when it encounters a namespace-related problem.</p>
+</div>
+<div class="paragraph">
+<p>The namespace state is invalid when:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Entity names, processing instruction targets, or notation declaration names contain <code>:</code>.</p>
+</li>
+<li>
+<p>An element or attribute name contains more than one <code>:</code>, or the prefix or local parts of a QName are empty (<code>:bar</code>, <code>foo:</code>).</p>
+</li>
+<li>
+<p>Any prefix used in an element or attribute name is not declared in the current scope.</p>
+</li>
+<li>
+<p>A namespace declaration attempts to bind the namespace <code><a href="http://www.w3.org/XML/1998/namespace" class="bare">http://www.w3.org/XML/1998/namespace</a></code> to any prefix other than <code>xml</code>.</p>
+</li>
+<li>
+<p>A namespace declaration attempts to bind the namespace <code><a href="http://www.w3.org/2000/xmlns/" class="bare">http://www.w3.org/2000/xmlns/</a></code>.</p>
+</li>
+<li>
+<p>(XML Namespaces 1.0) A namespace declaration undeclares a prefixed namespace with an empty string.</p>
+</li>
+<li>
+<p>An element contains duplicate namespaced attributes which resolve to the same URI + local name pair.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The situation is different when manipulating an xmlObject node tree. The namespace state in elements is not cached (attempts to do so resulted in brittle code), and the tree&#8217;s namespace state can be rendered invalid by just renaming an element. You can call <code>xmlObject:checkNamespaceState()</code> after changing the tree to perform the same checks as the parser.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_links">Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>W3C: <a href="https://www.w3.org/TR/REC-xml/">Extensible Markup Language (XML) 1.0 (Fifth Edition)</a></p>
+</li>
+<li>
+<p>Tim Bray: <a href="https://www.xml.com/axml/axml.html">The Annotated XML Specification</a></p>
+</li>
+<li>
+<p>W3C: <a href="https://www.w3.org/TR/xml-infoset">XML Information Set (Second Edition)</a></p>
+</li>
+<li>
+<p>W3C: <a href="https://www.w3.org/TR/REC-xml-names/">Namespaces in XML 1.0 (Third Edition)</a></p>
+</li>
+<li>
+<p>W3C: <a href="https://www.w3.org/TR/2006/REC-xml-names11-20060816/">Namespaces in XML 1.1 (Second Edition)</a></p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-03-03 22:01:30 -0400
+</div>
+</div>
+</body>
+</html>
