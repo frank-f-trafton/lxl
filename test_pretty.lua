@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- This is not a test, but rather a pretty-printer for other test files.
 -- For unrecognized tables, it falls back to inspect().
 
@@ -102,9 +107,9 @@ pretty.xml_object = function(self, _t, _indent)
 		end
 	end
 
-	if #self.children > 0 then
-		_ind(_t, _indent); _print(_t, "  Children:")
-		for i, child in ipairs(self.children) do
+	if #self.nodes > 0 then
+		_ind(_t, _indent); _print(_t, "  Nodes:")
+		for i, child in ipairs(self.nodes) do
 			pretty.print(child, _t, _indent + 1)
 		end
 	end
@@ -128,9 +133,9 @@ pretty.doctype = function(self, _t, _indent)
 	-- General Entities / Parameter Entities are printed as part of in xml_object.
 
 	-- Besides Entities, we only parse Comments and PIS in the DTD Internal Subset.
-	if #self.children > 0 then
-		_ind(_t, _indent); _print(_t, "  Children:")
-		for i, child in ipairs(self.children) do
+	if #self.nodes > 0 then
+		_ind(_t, _indent); _print(_t, "  Nodes:")
+		for i, child in ipairs(self.nodes) do
 			pretty.print(child, _t, _indent + 1)
 		end
 	end
@@ -148,9 +153,9 @@ pretty.element = function(self, _t, _indent)
 			_ind(_t, _indent); _print(_t, "    " .. name .. " = |" .. value .. "|")
 		end
 	end
-	if #self.children > 0 then
-		_ind(_t, _indent); _print(_t, "  Children:")
-		for i, child in ipairs(self.children) do
+	if #self.nodes > 0 then
+		_ind(_t, _indent); _print(_t, "  Nodes:")
+		for i, child in ipairs(self.nodes) do
 			pretty.print(child, _t, _indent + 1)
 		end
 	end

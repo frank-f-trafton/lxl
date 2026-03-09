@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: XML Bomb mitigations (string expansion macro attacks)
 
 
@@ -52,8 +57,8 @@ self:registerJob("(Small) XML Bomb", function(self)
 	self:print(3, "[+] expand three levels deep to 376 characters")
 	self:print(4, str_thousand_laughs)
 	local tree = lxl.toTable(str_thousand_laughs)
-	local root = tree:getRoot()
-	self:print(4, root.children[1])
+	local root = tree:getRootElement()
+	self:print(4, root.nodes[1])
 end
 )
 --]===]

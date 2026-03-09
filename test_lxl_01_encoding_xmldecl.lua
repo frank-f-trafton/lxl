@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: encoding; XML Declaration
 
 
@@ -44,22 +49,22 @@ self:registerJob("Encoding (prohibited code points, normalizing line endings)", 
 
 	do
 		local tree = self:expectLuaReturn("normalize line endings (1, \\r\\n -> \\n)", lxl.toTable, "<r>\r\n</r>")
-		self:isEqual(tree.children[1].children[1].text, "\n")
+		self:isEqual(tree.nodes[1].nodes[1].text, "\n")
 	end
 
 	do
 		local tree = self:expectLuaReturn("normalize line endings (2, \\r -> \\n)", lxl.toTable, "<r>\r</r>")
-		self:isEqual(tree.children[1].children[1].text, "\n")
+		self:isEqual(tree.nodes[1].nodes[1].text, "\n")
 	end
 
 	do
 		local tree = self:expectLuaReturn("normalize line endings (3, \\r\\r\\n -> \\n\\n)", lxl.toTable, "<r>\r\r\n</r>")
-		self:isEqual(tree.children[1].children[1].text, "\n\n")
+		self:isEqual(tree.nodes[1].nodes[1].text, "\n\n")
 	end
 
 	do
 		local tree = self:expectLuaReturn("normalize line endings (4, \\n\\r -> \\n\\n)", lxl.toTable, "<r>\n\r</r>")
-		self:isEqual(tree.children[1].children[1].text, "\n\n")
+		self:isEqual(tree.nodes[1].nodes[1].text, "\n\n")
 	end
 end
 )
@@ -201,16 +206,16 @@ self:registerJob("prolog", function(self)
 	do
 		local tree = self:expectLuaReturn("comment", lxl.toTable, [=[<!--foo--><r></r>]=])
 		print(pretty.print(tree))
-		self:isEqual(tree.children[1].id, "comment")
-		self:isEqual(tree.children[1].text, "foo")
+		self:isEqual(tree.nodes[1].id, "comment")
+		self:isEqual(tree.nodes[1].text, "foo")
 	end
 
 
 	do
 		local tree = self:expectLuaReturn("doctype", lxl.toTable, [=[<!DOCTYPE r><r></r>]=])
 		print(pretty.print(tree))
-		self:isEqual(tree.children[1].id, "doctype")
-		self:isEqual(tree.children[1].name, "r")
+		self:isEqual(tree.nodes[1].id, "doctype")
+		self:isEqual(tree.nodes[1].name, "r")
 	end
 
 
@@ -237,11 +242,18 @@ self:registerJob("Parser:setCheckCharacters()", function(self)
 		local o = p:toTable(s)
 
 		-- NOTE: The console output is cut off in 5.1 due to null.
-		self:isEqual(o.children[1].children[1].text, "foo\0bar")
+		self:isEqual(o.nodes[1].nodes[1].text, "foo\0bar")
 
 		-- Test the getter while we're at it.
 		p:setCheckCharacters(true)
 		self:isEqual(p:getCheckCharacters(), true)
+	end
+
+	do
+		self:print(4, "Test method chaining")
+		local p = lxl.newParser()
+		local rv = p:setCheckCharacters(true):setCheckCharacters(false)
+		self:isEqual(p, rv)
 	end
 end
 )

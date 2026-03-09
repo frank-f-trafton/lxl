@@ -1,3 +1,39 @@
+# v2.070 -- 09 Mar 2026
+
+* Changed version scheme from `n.n.n` to `n.nnn…`.
+* Upgraded PILE Base from version 1.1.1 to 2.101.
+* Updated license and copyright text to reflect changes to PILE Base.
+* Added `name` parameter to `lxl.toTable()` and `xmlParser:toTable()`, so that applications may include a filename (or some other indication of provenance) in error messages.
+* Added `lxl.fragmentToString()` and `xmlParser:fragmentToString()`.
+* To support method chaining, added `return self` to these xmlParser methods:
+  * `xmlParser:setCheckCharacters()`
+  * `xmlParser:setNamespaceMode()`
+  * `xmlParser:setCollectComments()`
+  * `xmlParser:setCollectProcessingInstructions()`
+  * `xmlParser:setNormalizeLineEndings()`
+  * `xmlParser:setCheckEncodingMismatch()`
+  * `xmlParser:setMaxEntityBytes()`
+  * `xmlParser:setRejectDoctype()`
+  * `xmlParser:setRejectInternalSubset()`
+  * `xmlParser:setCopyDocType()`
+  * `xmlParser:setRejectUnexpandedEntities()`
+  * `xmlParser:setWarnDuplicateEntityDeclarations()`
+  * `xmlParser:setWriteXMLDeclaration()`
+  * `xmlParser:setWriteDocType()`
+  * `xmlParser:setWritePretty()`
+  * `xmlParser:setWriteIndent()`
+  * `xmlParser:setWriteBigEndian()`
+* Replaced some node methods with functions from PILE Tree. The following were renamed: (\* == the behaviour has changed!)
+  * `Node:ascend() -> Node:getParent()`
+  * `Node:descend() -> Node:getChild(1)` \*
+  * `Node:next()` -> `Node:getNextSibling()`
+  * `Node:prev()` -> `Node:getPreviousSibling()`
+  * `Node:top() -> Node:getXMLObject()`
+  * `Node:path()` -> `Node:resolvePath()` \*
+* Renamed `Node:getRoot()` to `Node:getRootElement()`.
+* To support the integration with PILE Tree, all `Node.children` tables have been renamed to `Node.nodes`.
+
+
 # v2.0.6 -- 03 Mar 2026
 
 * Started an AsciiDoc version of the documentation in `docs`. It will replace the README.md as soon as I figure out how to make it accessible on GH Pages.

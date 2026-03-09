@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: namespace feature testing (from a synthetic xmlObject)
 
 

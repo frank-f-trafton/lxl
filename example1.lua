@@ -13,7 +13,7 @@ xml_obj:pruneNodes("comment", "pi")
 xml_obj:mergeCharacterData()
 xml_obj:pruneSpace()
 
-local root = xml_obj:getRoot()
+local root = xml_obj:getRootElement()
 
 local e1 = root:find("element", "elem1")
 

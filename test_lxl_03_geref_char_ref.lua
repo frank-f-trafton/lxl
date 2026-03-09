@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: General Entity References; Character References
 
 
@@ -49,8 +54,8 @@ self:registerJob("General Entity References (&foo;) in content", function(self)
 		self:print(4, str)
 		local tree = lxl.toTable(str)
 		self:print(4, pretty.print(tree))
-		self:isEqual(tree.children[2].children[1].text, "where? oh, ")
-		self:isEqual(tree.children[2].children[2].text, "that's the one.")
+		self:isEqual(tree.nodes[2].nodes[1].text, "where? oh, ")
+		self:isEqual(tree.nodes[2].nodes[2].text, "that's the one.")
 	end
 	-- ]====]
 
@@ -68,9 +73,9 @@ self:registerJob("General Entity References (&foo;) in content", function(self)
 		self:print(4, str)
 		local tree = lxl.toTable(str)
 		self:print(4, pretty.print(tree))
-		self:isEqual(tree.children[2].children[1].text, "where? oh, ")
-		self:isEqual(tree.children[2].children[2].text, "that makes ")
-		self:isEqual(tree.children[2].children[3].text, "two of us")
+		self:isEqual(tree.nodes[2].nodes[1].text, "where? oh, ")
+		self:isEqual(tree.nodes[2].nodes[2].text, "that makes ")
+		self:isEqual(tree.nodes[2].nodes[3].text, "two of us")
 	end
 	--]====]
 
@@ -86,10 +91,10 @@ self:registerJob("General Entity References (&foo;) in content", function(self)
 		self:print(3, "[+] nested General Entity References (2)")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		self:isEqual(tree.children[2].children[1].text, "he told me to tell you to ")
-		self:isEqual(tree.children[2].children[2].text, "check the ")
-		self:isEqual(tree.children[2].children[3].text, "auxiliary")
-		self:isEqual(tree.children[2].children[4].text, " path")
+		self:isEqual(tree.nodes[2].nodes[1].text, "he told me to tell you to ")
+		self:isEqual(tree.nodes[2].nodes[2].text, "check the ")
+		self:isEqual(tree.nodes[2].nodes[3].text, "auxiliary")
+		self:isEqual(tree.nodes[2].nodes[4].text, " path")
 	end
 	--]====]
 
@@ -107,8 +112,8 @@ self:registerJob("General Entity References (&foo;) in content", function(self)
 		self:print(3, "[+] nested General Entity References (3).")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		self:isEqual(tree.children[2].children[1].text, "y")
-		self:isEqual(tree.children[2].children[2].text, "y")
+		self:isEqual(tree.nodes[2].nodes[1].text, "y")
+		self:isEqual(tree.nodes[2].nodes[2].text, "y")
 	end
 	--]====]
 
@@ -261,17 +266,17 @@ self:registerJob("Character References (&#N;, &#xN;)", function(self)
 		self:print(3, "[+] valid character references (in Content).")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		self:isEqual(tree.children[1].children[1].text, "A")
-		self:isEqual(tree.children[1].children[2].text, "B")
-		self:isEqual(tree.children[1].children[3].text, "C")
-		self:isEqual(tree.children[1].children[4].text, "D")
-		self:isEqual(tree.children[1].children[5].text, "E")
+		self:isEqual(tree.nodes[1].nodes[1].text, "A")
+		self:isEqual(tree.nodes[1].nodes[2].text, "B")
+		self:isEqual(tree.nodes[1].nodes[3].text, "C")
+		self:isEqual(tree.nodes[1].nodes[4].text, "D")
+		self:isEqual(tree.nodes[1].nodes[5].text, "E")
 
-		self:isEqual(tree.children[1].children[6].text, "a")
-		self:isEqual(tree.children[1].children[7].text, "b")
-		self:isEqual(tree.children[1].children[8].text, "c")
-		self:isEqual(tree.children[1].children[9].text, "d")
-		self:isEqual(tree.children[1].children[10].text, "e")
+		self:isEqual(tree.nodes[1].nodes[6].text, "a")
+		self:isEqual(tree.nodes[1].nodes[7].text, "b")
+		self:isEqual(tree.nodes[1].nodes[8].text, "c")
+		self:isEqual(tree.nodes[1].nodes[9].text, "d")
+		self:isEqual(tree.nodes[1].nodes[10].text, "e")
 	end
 	--]====]
 
@@ -283,7 +288,7 @@ self:registerJob("Character References (&#N;, &#xN;)", function(self)
 		self:print(3, "[+] valid character references (in AttValue).")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		self:isEqual(tree.children[1].attr["a"], "ABCDEabcde")
+		self:isEqual(tree.nodes[1].attr["a"], "ABCDEabcde")
 	end
 	--]====]
 end

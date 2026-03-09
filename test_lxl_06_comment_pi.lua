@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: Comments, Processing Instructions
 
 
@@ -43,8 +48,8 @@ self:registerJob("Comments", function(self)
 		self:print(3, "[+] Minimum Comment)")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
-		local comment = root.children[1]
+		local root = tree:getRootElement()
+		local comment = root.nodes[1]
 		print(pretty.print(root))
 		self:isEqual(comment.text, "")
 	end
@@ -57,8 +62,8 @@ self:registerJob("Comments", function(self)
 		self:print(3, "[+] Comment)")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
-		local comment = root.children[1]
+		local root = tree:getRootElement()
+		local comment = root.nodes[1]
 		print(pretty.print(root))
 		self:isEqual(comment.text, " Hello World! ")
 	end
@@ -87,7 +92,7 @@ self:registerJob("Processing Instructions", function(self)
 		self:print(3, "[+] Minimum PI")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local pi = tree.children[1]
+		local pi = tree.nodes[1]
 		self:isEqual(pi.name, "pi")
 		self:isEqual(pi.text, "")
 	end
@@ -104,7 +109,7 @@ self:registerJob("Processing Instructions", function(self)
 		self:print(3, "[+] PI")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local pi = tree.children[1]
+		local pi = tree.nodes[1]
 		self:isEqual(pi.name, "pi")
 		self:isEqual(pi.text, "foobar")
 	end

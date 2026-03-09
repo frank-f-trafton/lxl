@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: XML Namespaces (from the parser)
 
 
@@ -48,12 +53,12 @@ self:registerJob("(parser) Namespaced Element Names", function(self)
 		parser:setNamespaceMode("1.0")
 		local o = parser:toTable(str)
 
-		self:isEqual(o.children[1].name, "n1:root")
+		self:isEqual(o.nodes[1].name, "n1:root")
 
 		print(pretty.print(o))
 		--print(inspect(o))
 
-		local ns_uri = o.children[1]:getNamespace()
+		local ns_uri = o.nodes[1]:getNamespace()
 
 		self:isEqual(ns_uri, "foo/bar")
 	end
@@ -80,16 +85,16 @@ self:registerJob("(parser) Default Namespace", function(self)
 		--print(inspect(o))
 
 		local ns_uri
-		ns_uri = o.children[1]:getNamespace()
+		ns_uri = o.nodes[1]:getNamespace()
 		self:isEqual(ns_uri, "x/y/z")
 
 		-- Descendants inherit the default namespace...
-		ns_uri = o.children[1].children[1]:getNamespace()
+		ns_uri = o.nodes[1].nodes[1]:getNamespace()
 
 		self:isEqual(ns_uri, "x/y/z")
 
 		-- ...unless it is undeclared with an empty string.
-		ns_uri = o.children[1].children[1].children[1]:getNamespace()
+		ns_uri = o.nodes[1].nodes[1].nodes[1]:getNamespace()
 
 		self:isEqual(ns_uri, nil)
 	end
@@ -115,7 +120,7 @@ self:registerJob("(parser) Namespace 1.1: undeclaring prefixed namespaces", func
 		print(pretty.print(o))
 		--print(inspect(o))
 
-		self:isEqual(o.children[1].children[1].children[1]:getNamespace(), nil)
+		self:isEqual(o.nodes[1].nodes[1].nodes[1]:getNamespace(), nil)
 	end
 	--]====]
 end)
@@ -137,8 +142,8 @@ self:registerJob("(parser) Namespaced Attributes in Elements", function(self)
 		parser:setNamespaceMode("1.0")
 		local e = parser:toTable(str)
 
-		print(pretty.print(e.children[1].children[1]))
-		self:isEqual(e.children[1].children[1]:getNamespaceAttribute("foo/bar", "ping"), "pong")
+		print(pretty.print(e.nodes[1].nodes[1]))
+		self:isEqual(e.nodes[1].nodes[1]:getNamespaceAttribute("foo/bar", "ping"), "pong")
 	end
 	--]====]
 end

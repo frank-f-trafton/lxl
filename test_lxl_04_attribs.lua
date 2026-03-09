@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: Attributes in Elements
 
 
@@ -43,7 +48,7 @@ self:registerJob("Attribute Value Normalization", function(self)
 		self:print(4, str)
 		local tree = lxl.toTable(str)
 		self:print(4, pretty.print(tree))
-		self:isEqual(tree.children[1].attr["a"], " a b c ")
+		self:isEqual(tree.nodes[1].attr["a"], " a b c ")
 	end
 end
 )
@@ -104,7 +109,7 @@ self:registerJob("Attribute-List Declarations", function(self)
 		self:print(3, "[+] Apply a default value for an attribute (yer_name -> 'zoop')")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 		self:isEqual(tree.attr_defaults["root"]["yer_name"].default, "zoop")
 		self:isEqual(tree.attr_defaults["root"]["yer_name"].type, "CDATA")
 		self:isEqual(root.attr["yer_name"], "zoop")
@@ -126,7 +131,7 @@ self:registerJob("Attribute-List Declarations", function(self)
 		self:print(3, "[+] Ignore #FIXED default values for attributes that are already populated")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 		--self:print(4, pretty.print(tree))
 		self:print(4, "attr_defaults: " .. inspect(tree.attr_defaults))
 		self:print(4, "root attributes: " .. inspect(root.attr))
@@ -149,7 +154,7 @@ self:registerJob("Attribute-List Declarations", function(self)
 		self:print(3, "[+] Test non-CDATA attribute value normalization (delete leading and trailing; merge runs into one character)")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 		self:print(4, "attr_defaults: " .. inspect(tree.attr_defaults))
 		self:print(4, "root attributes: " .. inspect(root.attr))
 		self:isEqual(root.attr["foo"], "a b c")
@@ -191,7 +196,7 @@ self:registerJob("Attribute-List Declarations", function(self)
 		self:print(3, "[+] Entity reference within default attribute value")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 		self:print(4, "attr_defaults: " .. inspect(tree.attr_defaults))
 		self:print(4, "root attributes: " .. inspect(root.attr))
 		self:isEqual(root.attr["zyp"], "foo...")

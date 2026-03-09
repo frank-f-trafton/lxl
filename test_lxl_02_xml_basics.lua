@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: XML basics; Names; CData; CDSect
 
 
@@ -91,10 +96,10 @@ self:registerJob("XML basics", function(self)
 		self:print(4, str)
 
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 
-		self:isEqual(root.children[1].id, "cdata")
-		self:isEqual(root.children[1].text, "foobar")
+		self:isEqual(root.nodes[1].id, "cdata")
+		self:isEqual(root.nodes[1].text, "foobar")
 	end
 	--]====]
 
@@ -106,19 +111,19 @@ self:registerJob("XML basics", function(self)
 		self:print(4, str)
 
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 
-		self:isEqual(root.children[1].id, "cdata")
-		self:isEqual(root.children[1].cd_sect, false)
-		self:isEqual(root.children[1].text, "\"It's ")
+		self:isEqual(root.nodes[1].id, "cdata")
+		self:isEqual(root.nodes[1].cd_sect, false)
+		self:isEqual(root.nodes[1].text, "\"It's ")
 
-		self:isEqual(root.children[2].id, "cdata")
-		self:isEqual(root.children[2].cd_sect, true)
-		self:isEqual(root.children[2].text, "an <odd>")
+		self:isEqual(root.nodes[2].id, "cdata")
+		self:isEqual(root.nodes[2].cd_sect, true)
+		self:isEqual(root.nodes[2].text, "an <odd>")
 
-		self:isEqual(root.children[3].id, "cdata")
-		self:isEqual(root.children[3].cd_sect, false)
-		self:isEqual(root.children[3].text, " thing to do.\"")
+		self:isEqual(root.nodes[3].id, "cdata")
+		self:isEqual(root.nodes[3].cd_sect, false)
+		self:isEqual(root.nodes[3].text, " thing to do.\"")
 	end
 	--]====]
 
@@ -130,8 +135,8 @@ self:registerJob("XML basics", function(self)
 		self:print(4, str)
 
 		local tree = lxl.toTable(str)
-		self:isEqual(tree.children[1].children[1].cd_sect, true)
-		self:isEqual(tree.children[1].children[1].text, "")
+		self:isEqual(tree.nodes[1].nodes[1].cd_sect, true)
+		self:isEqual(tree.nodes[1].nodes[1].text, "")
 	end
 	--]====]
 
@@ -148,14 +153,14 @@ self:registerJob("XML basics", function(self)
 		self:print(4, str)
 
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 
 		print(pretty.print(tree))
-		self:isEqual(root.children[1].text, "<")
-		self:isEqual(root.children[2].text, ">")
-		self:isEqual(root.children[3].text, "&")
-		self:isEqual(root.children[4].text, "'")
-		self:isEqual(root.children[5].text, "\"")
+		self:isEqual(root.nodes[1].text, "<")
+		self:isEqual(root.nodes[2].text, ">")
+		self:isEqual(root.nodes[3].text, "&")
+		self:isEqual(root.nodes[4].text, "'")
+		self:isEqual(root.nodes[5].text, "\"")
 	end
 	--]====]
 
@@ -167,7 +172,7 @@ self:registerJob("XML basics", function(self)
 		self:print(4, str)
 
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 
 		print(inspect(root.attr))
 		self:isEqual(root.attr["lt"], "<")
@@ -181,10 +186,10 @@ self:registerJob("XML basics", function(self)
 		local str = [[<a><b></b></a>]]
 
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 
 		self:isEqual(root.name, "a")
-		self:isEqual(root.children[1].name, "b")
+		self:isEqual(root.nodes[1].name, "b")
 	end
 	--]====]
 
@@ -197,16 +202,16 @@ self:registerJob("XML basics", function(self)
 		self:print(4, str)
 
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 
-		print(pretty.print(tree.children[2]))
+		print(pretty.print(tree.nodes[2]))
 		--print(inspect(tree))
-		self:isEqual(tree.children[1].name, "r") -- DocType node
-		self:isEqual(tree.children[2].name, "r")
-		self:isEqual(tree.children[2].children[1].id, "comment")
-		self:isEqual(tree.children[2].children[1].text, "comment!")
-		self:isEqual(tree.children[2].children[2].id, "pi")
-		self:isEqual(tree.children[2].children[2].text, "PI!")
+		self:isEqual(tree.nodes[1].name, "r") -- DocType node
+		self:isEqual(tree.nodes[2].name, "r")
+		self:isEqual(tree.nodes[2].nodes[1].id, "comment")
+		self:isEqual(tree.nodes[2].nodes[1].text, "comment!")
+		self:isEqual(tree.nodes[2].nodes[2].id, "pi")
+		self:isEqual(tree.nodes[2].nodes[2].text, "PI!")
 	end
 	--]====]
 end
@@ -227,7 +232,7 @@ self:registerJob("XML Names (Elements)", function(self)
 	-- [====[
 	do
 		local tree = self:expectLuaReturn("Multi-byte code point", lxl.toTable, [=[<偐></偐>]=])
-		self:isEqual(tree.children[1].name, "偐")
+		self:isEqual(tree.nodes[1].name, "偐")
 	end
 	--]====]
 
@@ -235,7 +240,7 @@ self:registerJob("XML Names (Elements)", function(self)
 	-- [====[
 	do
 		local tree = self:expectLuaReturn("dot (0xb7)", lxl.toTable, [=[<o_·></o_·>]=])
-		self:isEqual(tree.children[1].name, "o_·")
+		self:isEqual(tree.nodes[1].name, "o_·")
 	end
 	--]====]
 end
@@ -255,7 +260,7 @@ self:registerJob("XML Names (Attributes)", function(self)
 	-- [====[
 	do
 		local tree = self:expectLuaReturn("Multi-byte code point", lxl.toTable, [=[<r a="偐"></r>]=])
-		self:isEqual(tree.children[1].attr["a"], "偐")
+		self:isEqual(tree.nodes[1].attr["a"], "偐")
 	end
 	--]====]
 
@@ -263,7 +268,7 @@ self:registerJob("XML Names (Attributes)", function(self)
 	-- [====[
 	do
 		local tree = self:expectLuaReturn("dot (0xb7)", lxl.toTable, [=[<r o_·="foo"></r>]=])
-		self:isEqual(tree.children[1].attr["o_·"], "foo")
+		self:isEqual(tree.nodes[1].attr["o_·"], "foo")
 	end
 	--]====]
 end

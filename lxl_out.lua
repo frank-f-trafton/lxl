@@ -1,4 +1,8 @@
--- LXL out: Converts an xmlObject table to an XML string.
+-- Lua XML Library: String output.
+-- VERSION: v2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- (Use this module through lxl.lua)
 
 
@@ -9,18 +13,13 @@ local xOut = {}
 
 
 local interp = require(PATH .. "pile_interp")
+local pAssert = require(PATH .. "pile_assert")
 local pUTF8Conv = require(PATH .. "pile_utf8_conv")
 local shared = require(PATH .. "lxl_shared")
 local struct = require(PATH .. "lxl_struct")
 
 
 local lang = shared.lang
-
-
-local _argType = require(PATH .. "pile_arg_check").type
-local _assertXMLName = shared._assertXMLName
-local _assertPITarget = shared._assertPITarget
-local _assertCommentText = shared._assertCommentText
 
 
 local function _checkQuote(s)
@@ -58,7 +57,7 @@ end
 
 
 function xOut.escapeXMLString(s, in_attrib)
-	_argType(1, s, "string")
+	pAssert.type(1, s, "string")
 
 	local enclosing_quote
 	uv_q2, enclosing_quote = _checkQuote(s)
@@ -68,7 +67,7 @@ end
 
 
 function xOut.escapeCDSect(s)
-	_argType(1, s, "string")
+	pAssert.type(1, s, "string")
 	s = "<![CDATA[" .. s:gsub("%]%]>", "]]>]]&gt;<![CDATA[") .. "]]>"
 	return s
 end
@@ -93,7 +92,7 @@ local function _elementXMLString(self)
 		local order = self:getStableAttributesOrder()
 		for j, name in ipairs(order) do
 			local value = self.attr[name]
-			_assertXMLName(name)
+			assert(shared.validateXMLName(name))
 			shared.assertCharacters(value)
 			table.insert(seq, _serializeAttrib(name, value))
 			table.insert(seq, " ")
@@ -104,7 +103,7 @@ local function _elementXMLString(self)
 	while seq[#seq] == " " do
 		table.remove(seq)
 	end
-	if #self.children == 0 then
+	if #self.nodes == 0 then
 		table.insert(seq, "/")
 	end
 	table.insert(seq, ">")
@@ -121,7 +120,7 @@ end
 
 
 local function _hasChildElements(self)
-	for i, child in ipairs(self.children) do
+	for i, child in ipairs(self.nodes) do
 		if child.id == "element" then
 			return true
 		end
@@ -130,9 +129,9 @@ end
 
 
 local function _dumpTree(self, seq, _depth, newline, space, flags)
-	for i, child in ipairs(self.children) do
+	for i, child in ipairs(self.nodes) do
 		if child.id == "element" then
-			_assertXMLName(child.name)
+			assert(shared.validateXMLName(child.name))
 			if self.id == "xml_object" then
 				if flags.wrote_root then
 					error(lang.xml_out_1root)
@@ -141,14 +140,14 @@ local function _dumpTree(self, seq, _depth, newline, space, flags)
 			end
 
 			if self.id == "element" then
-				table.insert(seq, newline)
+				if #seq > 0 then
+					table.insert(seq, newline)
+				end
 				_indent(seq, _depth, space)
 			end
 			table.insert(seq, _elementXMLString(child))
 
-			if #child.children > 0 then
-				--table.insert(seq, newline)
-				--_indent(seq, _depth, space)
+			if #child.nodes > 0 then
 				_dumpTree(child, seq, _depth + 1, newline, space, flags)
 
 				-- close tag
@@ -160,9 +159,9 @@ local function _dumpTree(self, seq, _depth, newline, space, flags)
 			end
 
 		elseif child.id == "pi" then
-			_assertPITarget(child.name)
+			assert(shared.validatePITarget(child.name))
 			shared.assertCharacters(child.text)
-			shared._assertPIText(child.text)
+			assert(shared.checkPIText(child.text))
 			table.insert(seq, "<?" .. child.name .. " " .. child.text .. "?>" .. newline)
 
 		elseif child.id == "cdata" then
@@ -175,19 +174,19 @@ local function _dumpTree(self, seq, _depth, newline, space, flags)
 			end
 
 		elseif child.id == "unexp" then
-			_assertXMLName(child.name)
+			assert(shared.validateXMLName(child.name))
 			table.insert(seq, "&" .. child.name .. ";")
 
 		elseif child.id == "comment" then
 			shared.assertCharacters(child.text)
-			_assertCommentText(child.text)
+			assert(shared.checkXMLCommentText(child.text))
 
 			table.insert(seq, "<!--" .. child.text .. "-->")
 
 		elseif child.id == "doctype" then
 			-- The DocType node is not serialized. This includes any comments or PIs that
 			-- were picked up by the parser. For more info, check xOut.parse() and the
-			-- search the README for 'doctype_str'.
+			-- search the documentation for 'doctype_str'.
 
 		else
 			error(lang.xml_out_bad_node)
@@ -196,19 +195,23 @@ local function _dumpTree(self, seq, _depth, newline, space, flags)
 end
 
 
+local function _getWhitespaceStrings(parser)
+	if parser.out_pretty then
+		return "\n", string.rep(parser.out_indent_ch, parser.out_indent_qty)
+	else
+		return "", ""
+	end
+end
+
+
 function xOut.parse(xml_obj, parser)
-	_argType(1, xml_obj, "table")
+	pAssert.type(1, xml_obj, "table")
 	if xml_obj.id ~= "xml_object" then
 		error(lang.xml_out_expect_xml_obj)
 	end
-	_argType(2, parser, "table")
+	pAssert.type(2, parser, "table")
 
-	local newline, space
-	if parser.out_pretty then
-		newline, space = "\n", string.rep(parser.out_indent_ch, parser.out_indent_qty)
-	else
-		newline, space = "", ""
-	end
+	local newline, space = _getWhitespaceStrings(parser)
 
 	local version = xml_obj.version or "1.0"
 	local encoding = xml_obj.encoding or "UTF-8"
@@ -256,6 +259,23 @@ function xOut.parse(xml_obj, parser)
 			error(interp(lang.xml_out_u16_conv_fail, err))
 		end
 	end
+
+	return str
+end
+
+
+function xOut.parseFragment(element, parser)
+	pAssert.type(1, element, "table")
+	pAssert.type(2, parser, "table")
+
+	local newline, space = _getWhitespaceStrings(parser)
+
+	local seq = {}
+
+	local flags = {}
+	_dumpTree(element, seq, 0, newline, space, flags)
+
+	local str = table.concat(seq)
 
 	return str
 end

@@ -22,7 +22,7 @@
 <a href="appendix.html">Appendix</a></p>
 </div>
 <div class="paragraph">
-<p><strong>Version:</strong> 2.0.6</p>
+<p><strong>Version:</strong> 2.070</p>
 </div>
 <div id="toc" class="toc">
 <div id="toctitle" class="title">Table of Contents</div>
@@ -32,6 +32,7 @@
 <li><a href="#_lxl_newparser">lxl.newParser</a></li>
 <li><a href="#lxl-to-table">lxl.toTable</a></li>
 <li><a href="#_lxl_tostring">lxl.toString</a></li>
+<li><a href="#_lxl_fragmenttostring">lxl.fragmentToString</a></li>
 <li><a href="#lxl-new-xml-object">lxl.newXMLObject</a></li>
 <li><a href="#_lxl_load">lxl.load</a></li>
 </ul>
@@ -74,17 +75,18 @@
 <li><a href="#_xmlparsergetwritebigendian">xmlParser:getWriteBigEndian</a></li>
 <li><a href="#xml-parser-to-table">xmlParser:toTable</a></li>
 <li><a href="#_xmlparsertostring">xmlParser:toString</a></li>
+<li><a href="#_xmlparserfragmenttostring">xmlParser:fragmentToString</a></li>
 </ul>
 </li>
 <li><a href="#_api_tree_nodes">API: Tree Nodes</a>
 <ul class="sectlevel2">
 <li><a href="#_nodegetsiblings">Node:getSiblings</a></li>
-<li><a href="#_nodenext">Node:next</a></li>
-<li><a href="#_nodeprev">Node:prev</a></li>
-<li><a href="#_nodedescend">Node:descend</a></li>
-<li><a href="#_nodeascend">Node:ascend</a></li>
-<li><a href="#_nodetop">Node:top</a></li>
-<li><a href="#_nodepath">Node:path</a></li>
+<li><a href="#_nodegetnextsibling">Node:getNextSibling</a></li>
+<li><a href="#_nodegetprevioussibling">Node:getPreviousSibling</a></li>
+<li><a href="#_nodegetchild">Node:getChild</a></li>
+<li><a href="#_nodegetparent">Node:getParent</a></li>
+<li><a href="#_nodegetxmlobject">Node:getXMLObject</a></li>
+<li><a href="#_noderesolvepath">Node:resolvePath</a></li>
 <li><a href="#_nodefind">Node:find</a></li>
 <li><a href="#node-find-ns">Node:findNS</a></li>
 <li><a href="#_nodedestroy">Node:destroy</a></li>
@@ -101,7 +103,7 @@
 <li><a href="#xml-obj-set-namespace-mode">xmlObject:setNamespaceMode</a></li>
 <li><a href="#_xmlobjectgetnamespacemode">xmlObject:getNamespaceMode</a></li>
 <li><a href="#_xmlobjectchecknamespacestate">xmlObject:checkNamespaceState</a></li>
-<li><a href="#_xmlobjectgetroot">xmlObject:getRoot</a></li>
+<li><a href="#_xmlobjectgetrootelement">xmlObject:getRootElement</a></li>
 <li><a href="#_xmlobjectgetdoctype">xmlObject:getDocType</a></li>
 <li><a href="#_xmlobjectprunenodes">xmlObject:pruneNodes</a></li>
 <li><a href="#_xmlobjectmergecharacterdata">xmlObject:mergeCharacterData</a></li>
@@ -186,13 +188,16 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">toTable</span><span class="p">(</span><span class="n">str</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">toTable</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span><span class="p">])</span></code></pre>
 </div>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p><code>str</code>: The XML string to convert.</p>
+</li>
+<li>
+<p><code>[name]</code>: An optional name to display in warnings and error messages.</p>
 </li>
 </ul>
 </div>
@@ -219,6 +224,31 @@
 </div>
 <div class="paragraph">
 <p><strong>Returns:</strong> An XML string.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_lxl_fragmenttostring">lxl.fragmentToString</h3>
+<div class="paragraph">
+<p>Converts the children of an element to an XML string fragment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">lxl</span><span class="p">.</span><span class="n">fragmentToString</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>element</code>: An element in the xmlObject to begin serialization from. (The element&#8217;s own tags are not included in the output)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An XML string fragment.</p>
+</div>
+<h4 id="_notes" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The returned string never includes the XML Declaration, and its encoding is always UTF-8.</p>
 </div>
 </div>
 <div class="sect2">
@@ -255,7 +285,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> The xmlObject.</p>
 </div>
-<h4 id="_notes" class="discrete">Notes</h4>
+<h4 id="_notes_2" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This function is intended for use from the console and the Lua interactive prompt. If your host application provides its own functions to load files (like LÖVE&#8217;s <a href="https://love2d.org/wiki/love.filesystem">love.filesystem</a>), then you should probably use those functions instead.</p>
 </div>
@@ -285,7 +315,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_2" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_3" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This setting is <strong>required</strong> by the spec. You should only disable it if you can check the input ahead of time with an XML linter.</p>
 </div>
@@ -324,7 +357,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_3" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_4" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This setting is copied to any xmlObjects created by the xmlParser. (See: <a href="#xml-obj-set-namespace-mode">xmlObject:setNamespaceMode</a>)</p>
 </div>
@@ -362,6 +398,9 @@
 <p><code>enabled</code>: <code>true</code> to collect comments and attach them to the xmlObject output, <code>false/nil</code> to discard them.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
 </div>
 </div>
 <div class="sect2">
@@ -402,6 +441,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetcollectprocessinginstructions">xmlParser:getCollectProcessingInstructions</h3>
@@ -441,7 +483,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_4" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_5" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This step is <strong>required</strong> by the XML spec. You should only disable line ending normalization if your application already guarantees that the incoming strings have had this transformation applied.</p>
 </div>
@@ -483,6 +528,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetcheckencodingmismatch">xmlParser:getCheckEncodingMismatch</h3>
@@ -518,7 +566,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_5" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_6" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This is a <a href="https://en.wikipedia.org/wiki/Billion_laughs_attack">Billion laughs attack</a> mitigation.</p>
 </div>
@@ -560,6 +611,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetrejectdoctype">xmlParser:getRejectDoctype</h3>
@@ -595,7 +649,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_6" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_7" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>Some XML documents contain a harmless DOCTYPE tag that just specifies the root element name, like <code>&lt;!DOCTYPE foobar&gt;</code>. This has no effect in a non-validating processor.</p>
 </div>
@@ -634,6 +691,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetcopydoctype">xmlParser:getCopyDocType</h3>
@@ -668,6 +728,9 @@
 <p><code>enabled</code>: <code>true</code> to halt on Unexpanded Entities, <code>false/nil</code> to attach them to the output tree.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
 </div>
 </div>
 <div class="sect2">
@@ -704,7 +767,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_7" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_8" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>When duplicate entity declarations appear in the internal subset, only the first-encountered declaration is registered.</p>
 </div>
@@ -743,6 +809,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetwritexmldeclaration">xmlParser:getWriteXMLDeclaration</h3>
@@ -778,7 +847,10 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_8" class="discrete">Notes</h4>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
+<h4 id="_notes_9" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>xmlParsers and xmlObjects don&#8217;t fully track DOCTYPE state. Instead, if <code>xml_object.doctype_str</code> is a string, then its contents are inserted before the root element.</p>
 </div>
@@ -816,6 +888,9 @@
 <p><code>enabled</code>: <code>true</code> to insert line endings and indentations, <code>false/nil</code> otherwise.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
 </div>
 </div>
 <div class="sect2">
@@ -859,6 +934,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetwriteindent">xmlParser:getWriteIndent</h3>
@@ -894,6 +972,9 @@
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p><strong>Returns:</strong> <code>self</code>, for method chaining.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xmlparsergetwritebigendian">xmlParser:getWriteBigEndian</h3>
@@ -916,13 +997,16 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">toTable</span><span class="p">(</span><span class="n">str</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">toTable</span><span class="p">(</span><span class="n">str</span><span class="p">,</span> <span class="p">[</span><span class="n">name</span><span class="p">])</span></code></pre>
 </div>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p><code>str</code>: The XML string to convert.</p>
+</li>
+<li>
+<p><code>[name]</code>: An optional name to display in warnings and error messages.</p>
 </li>
 </ul>
 </div>
@@ -937,7 +1021,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlParser</span><span class="p">:</span><span class="n">toString</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">toString</span><span class="p">(</span><span class="n">xml_obj</span><span class="p">)</span></code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -950,9 +1034,34 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> An XML string.</p>
 </div>
-<h4 id="_notes_9" class="discrete">Notes</h4>
+<h4 id="_notes_10" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>The string encoding is controlled by the xmlObject&#8217;s encoding setting. See: <a href="#xml-obj-set-xml-encoding">xmlObject:setXMLEncoding</a></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_xmlparserfragmenttostring">xmlParser:fragmentToString</h3>
+<div class="paragraph">
+<p>Converts the children of an element to an XML string fragment.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">str</span> <span class="o">=</span> <span class="n">xmlParser</span><span class="p">:</span><span class="n">fragmentToString</span><span class="p">(</span><span class="n">element</span><span class="p">)</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>element</code>: An element in the xmlObject to begin serialization from. (The element&#8217;s own tags are not included in the output)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> An XML string fragment.</p>
+</div>
+<h4 id="_notes_11" class="discrete">Notes</h4>
+<div class="paragraph">
+<p>The returned string never includes the XML Declaration, and its encoding is always UTF-8.</p>
 </div>
 </div>
 </div>
@@ -966,7 +1075,7 @@
 <div class="sect2">
 <h3 id="_nodegetsiblings">Node:getSiblings</h3>
 <div class="paragraph">
-<p>Gets the <code>children</code> table in which this node is placed.</p>
+<p>Gets the <code>nodes</code> table in which this node is placed.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -978,13 +1087,13 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nodenext">Node:next</h3>
+<h3 id="_nodegetnextsibling">Node:getNextSibling</h3>
 <div class="paragraph">
 <p>Gets the node&#8217;s next sibling.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sibling</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="nb">next</span><span class="p">()</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sibling</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">getNextSibling</span><span class="p">()</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -992,13 +1101,13 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nodeprev">Node:prev</h3>
+<h3 id="_nodegetprevioussibling">Node:getPreviousSibling</h3>
 <div class="paragraph">
 <p>Gets the node&#8217;s previous sibling.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sibling</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">prev</span><span class="p">()</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">sibling</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">getPreviousSibling</span><span class="p">()</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1006,27 +1115,30 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nodedescend">Node:descend</h3>
+<h3 id="_nodegetchild">Node:getChild</h3>
 <div class="paragraph">
-<p>Gets the node&#8217;s first child.</p>
+<p>Gets a node&#8217;s child by index.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">child_no_1</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">descend</span><span class="p">()</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">child</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">getChild</span><span class="p">(</span><span class="n">n</span><span class="p">)</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Returns:</strong> The node&#8217;s first child, or <code>nil</code> if the node has no children.</p>
+<p><code>n</code>: The child index.</p>
+</div>
+<div class="paragraph">
+<p><strong>Returns:</strong> The node&#8217;s <em>Nth</em> child, or <code>nil</code> if the node has no children.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nodeascend">Node:ascend</h3>
+<h3 id="_nodegetparent">Node:getParent</h3>
 <div class="paragraph">
 <p>Gets the node&#8217;s parent.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">ascend</span><span class="p">()</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">getParent</span><span class="p">()</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1034,27 +1146,27 @@
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nodetop">Node:top</h3>
+<h3 id="_nodegetxmlobject">Node:getXMLObject</h3>
 <div class="paragraph">
-<p>Gets the root node (the xmlObject, not the XML root element).</p>
+<p>Gets the root node (the xmlObject, <em>not</em> the XML root element).</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">top</span><span class="p">()</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">xml_obj</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">getXMLObject</span><span class="p">()</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><strong>Returns:</strong> The root node in the tree.</p>
+<p><strong>Returns:</strong> The root xmlObject in the tree.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_nodepath">Node:path</h3>
+<h3 id="_noderesolvepath">Node:resolvePath</h3>
 <div class="paragraph">
 <p>Looks for an element based on a path string. <strong>Paths are not namespace-aware.</strong></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">resolved</span> <span class="o">=</span> <span class="n">Node</span><span class="p">:</span><span class="n">resolvePath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="p">[</span><span class="n">simple</span><span class="p">])</span></code></pre>
 </div>
 </div>
 <div class="ulist">
@@ -1062,26 +1174,35 @@
 <li>
 <p><code>path</code>: The path string.</p>
 </li>
+<li>
+<p><code>[simple]</code>: <strong>(false)</strong> When true, disables <code>.</code> (this node), <code>..</code> (parent node), and the ability to anchor the searches to the root node (by starting with <code>/</code>).</p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
-<p><strong>Returns:</strong> The resolved node, or <code>nil</code> if the node could not be found.</p>
+<p><strong>Returns:</strong> On success, the resolved node. Upon failure, <code>nil</code>, an error string, and the position in the path string where the search failed.</p>
 </div>
-<h4 id="_notes_10" class="discrete">Notes</h4>
+<h4 id="_notes_12" class="discrete">Notes</h4>
 <div class="paragraph">
-<p>The path string contains element names separated by forward slashes. The call <code>Node:path("foo/bar/baz")</code> would look for a child of <code>Node</code> named <code>foo</code>, and then a grandchild named <code>bar</code>, and finally a great-grandchild named <code>baz</code>. For each generation, the first matching name is selected.</p>
-</div>
-<div class="paragraph">
-<p>Paths starting with a forward slash are absolute, always starting from the root xmlObject node (<em>not</em> the root element). In this case, the first name in the path must match the root element name. <code>Node:path("/myroot/foo")</code></p>
+<p>The path string contains element names that are separated by slashes. The call <code>Node:resolvePath("foo/bar/baz")</code> would look for a child of <code>Node</code> named <code>foo</code>, and then a grandchild named <code>bar</code>, and finally a great-grandchild named <code>baz</code>. For each generation, the first matching name is selected.</p>
 </div>
 <div class="paragraph">
-<p>As a special case, a single forward slash will select the xmlObject node. <code>Node:path("/")</code> is equivalent to <code>Node:top()</code>.</p>
+<p>Paths starting with a forward slash are absolute, always starting from the root xmlObject node (<em>not</em> the document root). In this case, the first name in the path must match the root element name: <code>Node:resolvePath("/myroot/foo")</code></p>
 </div>
 <div class="paragraph">
-<p><code>..</code> may be used to move up one level, though attempting to go above the xmlObject node will fail. <code>Node:path("../goback")</code></p>
+<p>A single forward slash will select the xmlObject node: <code>Node:resolvePath("/")</code></p>
 </div>
 <div class="paragraph">
-<p>Only elements and the xmlObject root are eligible for selection, but <code>Node:path()</code> can be called by any node object that is attached to the tree. This includes comments and PIs from within the internal subset.</p>
+<p><code>..</code> may be used to move up one level, though attempting to go above the xmlObject node will fail. <code>.</code> also works, though it does nothing in practice.</p>
+</div>
+<div class="paragraph">
+<p>Only elements and the xmlObject root can be selected by name, but <code>Node:resolvePath()</code> can be called by any node object that is attached to the tree. This includes comments and PIs from within the internal subset.</p>
+</div>
+<div class="paragraph">
+<p>When the <code>simple</code> argument is set, the special names <code>.</code> and <code>..</code> will be interpreted literally, and anchoring the path to the root (ie <code>/myroot/foo</code>) will always fail.</p>
+</div>
+<div class="paragraph">
+<p>Backslashes may be used to escape characters. It is an error to end a path string with a single backslash.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1110,7 +1231,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> A node that matches the search criteria, plus the node&#8217;s sibling index, or <code>nil</code> if there was no match.</p>
 </div>
-<h4 id="_notes_11" class="discrete">Notes</h4>
+<h4 id="_notes_13" class="discrete">Notes</h4>
 <div class="paragraph">
 <p><strong>This method is not namespace-aware.</strong> See <a href="#node-find-ns">Node:findNS</a> for finding namespaced elements.</p>
 </div>
@@ -1147,7 +1268,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> A node that matches the search criteria, plus the node&#8217;s sibling index, or <code>nil</code> if there was no match.</p>
 </div>
-<h4 id="_notes_12" class="discrete">Notes</h4>
+<h4 id="_notes_14" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>The search includes namespaced element nodes only, as XML Namespaces do not apply to any other node type.</p>
 </div>
@@ -1158,14 +1279,14 @@
 <div class="sect2">
 <h3 id="_nodedestroy">Node:destroy</h3>
 <div class="paragraph">
-<p>"Destroys" the node and all of its descendants. The reference to the node within its parent is also removed.</p>
+<p>"Destroys" the node and all of its descendants. If the node has a parent, its reference there is also removed.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight"><code data-lang="lua"><span class="n">Node</span><span class="p">:</span><span class="n">destroy</span><span class="p">()</span></code></pre>
 </div>
 </div>
-<h4 id="_notes_13" class="discrete">Notes</h4>
+<h4 id="_notes_15" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>The following occurs when destroying a node:</p>
 </div>
@@ -1211,7 +1332,7 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_14" class="discrete">Notes</h4>
+<h4 id="_notes_16" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>When not set, assume the default value is <code>1.0</code>.</p>
 </div>
@@ -1247,7 +1368,7 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_15" class="discrete">Notes</h4>
+<h4 id="_notes_17" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>When not set, assume the default value is <code>UTF-8</code>.</p>
 </div>
@@ -1300,7 +1421,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> The XML declaration standalone string, or <code>nil</code> if it was not set.</p>
 </div>
-<h4 id="_notes_16" class="discrete">Notes</h4>
+<h4 id="_notes_18" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>When not set, assume the default value is <code>no</code>.</p>
 </div>
@@ -1348,19 +1469,19 @@
 <div class="paragraph">
 <p><code>xmlObject:checkNamespaceState()</code></p>
 </div>
-<h4 id="_notes_17" class="discrete">Notes</h4>
+<h4 id="_notes_19" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This method does nothing when namespace mode is inactive. Otherwise, it performs the same checks as xmlParser when loading a string. See <a href="appendix.html#invalid-namespace-state">Invalid Namespace State</a> for more info.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_xmlobjectgetroot">xmlObject:getRoot</h3>
+<h3 id="_xmlobjectgetrootelement">xmlObject:getRootElement</h3>
 <div class="paragraph">
 <p>Gets the document root element. If the xmlObject does not have any elements, raises an error.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getRoot</span><span class="p">()</span></code></pre>
+<pre class="rouge highlight"><code data-lang="lua"><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">xmlObject</span><span class="p">:</span><span class="n">getRootElement</span><span class="p">()</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1409,7 +1530,7 @@
 <pre class="rouge highlight"><code data-lang="lua"><span class="n">xmlObject</span><span class="p">:</span><span class="n">mergeCharacterData</span><span class="p">()</span></code></pre>
 </div>
 </div>
-<h4 id="_notes_18" class="discrete">Notes</h4>
+<h4 id="_notes_20" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>Comment nodes will prevent text before and after the node from being merged.</p>
 </div>
@@ -1434,7 +1555,7 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_19" class="discrete">Notes</h4>
+<h4 id="_notes_21" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This includes CharacterData nodes marked as CDATA Sections (<code>cd_sect</code>).</p>
 </div>
@@ -1455,7 +1576,7 @@
 <p><code>text</code>: The comment text.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the comment in the xmlObject&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the comment in the xmlObject&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
@@ -1482,7 +1603,7 @@
 <p><code>text</code>: The processing instruction text body.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the processing instruction in the xmlObject&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the processing instruction in the xmlObject&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
@@ -1506,14 +1627,14 @@
 <p><code>name</code>: The element name.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the element in the xmlObject&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the element in the xmlObject&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p><strong>Returns:</strong> A new element, attached directly to the xmlObject.</p>
 </div>
-<h4 id="_notes_20" class="discrete">Notes</h4>
+<h4 id="_notes_22" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>Attaching more than one top-level element is forbidden by the XML spec.</p>
 </div>
@@ -1610,7 +1731,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> The namespace URI associated with this element, or <code>nil</code> if there isn&#8217;t one.</p>
 </div>
-<h4 id="_notes_21" class="discrete">Notes</h4>
+<h4 id="_notes_23" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This method always returns <code>nil</code> when no namespace mode is set.</p>
 </div>
@@ -1638,7 +1759,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> The attribute value (or <code>nil</code> if it&#8217;s not populated for this namespace), and the prefix (if bound at this scope).</p>
 </div>
-<h4 id="_notes_22" class="discrete">Notes</h4>
+<h4 id="_notes_24" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This method is unreliable if two attributes with the same local name but different prefixes resolve to the same namespace. Such a state is forbidden by the XML Namespace spec.</p>
 </div>
@@ -1707,7 +1828,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> A table of all active namespace declarations for this element.</p>
 </div>
-<h4 id="_notes_23" class="discrete">Notes</h4>
+<h4 id="_notes_25" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>This method always returns an empty table when no namespace mode is set.</p>
 </div>
@@ -1732,7 +1853,7 @@
 <div class="paragraph">
 <p><strong>Returns:</strong> A bound prefix for the namespace URI, or <code>nil</code> if there is no binding at this scope.</p>
 </div>
-<h4 id="_notes_24" class="discrete">Notes</h4>
+<h4 id="_notes_26" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>If multiple prefixes are mapped to the namespace URI, then there is no defined order as to which prefix is selected and returned by this method.</p>
 </div>
@@ -1759,7 +1880,7 @@
 <p><code>text</code>: The comment text.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the comment in the node&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the comment in the node&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
@@ -1786,7 +1907,7 @@
 <p><code>text</code>: The processing instruction text body.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the processing instruction in the node&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the processing instruction in the node&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
@@ -1810,7 +1931,7 @@
 <p><code>name</code>: The element name.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the element in the node&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the element in the node&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
@@ -1837,14 +1958,14 @@
 <p><code>[cd_sect]</code>: <em>(nil)</em> <code>true</code> if this CharacterData node should be serialized out as a CDATA Section.</p>
 </li>
 <li>
-<p><code>[i]</code>: <em>(#children + 1)</em> Where to insert the CharacterData in the node&#8217;s array of children.</p>
+<p><code>[i]</code>: <em>(#nodes + 1)</em> Where to insert the CharacterData in the node&#8217;s array of children.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p><strong>Returns:</strong> A new CharacterData, attached directly to the calling element.</p>
 </div>
-<h4 id="_notes_25" class="discrete">Notes</h4>
+<h4 id="_notes_27" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>When xmlParsers convert a string to an xmlObject, they will turn CDATA sections into CharacterData nodes with <code>cd_sect</code> set to true.</p>
 </div>
@@ -1906,7 +2027,7 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_26" class="discrete">Notes</h4>
+<h4 id="_notes_28" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>A CharacterNode&#8217;s <code>cd_sect</code> flag is reset when <code>xmlObject:mergeCharacterData()</code> combines text from other nodes.</p>
 </div>
@@ -1964,7 +2085,7 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_27" class="discrete">Notes</h4>
+<h4 id="_notes_29" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>XML comments are not allowed to contain the substring <code>--</code> or to end with <code>-</code>.</p>
 </div>
@@ -2023,7 +2144,7 @@
 </li>
 </ul>
 </div>
-<h4 id="_notes_28" class="discrete">Notes</h4>
+<h4 id="_notes_30" class="discrete">Notes</h4>
 <div class="paragraph">
 <p>XML processing instructions cannot contain the substring <code>?&gt;</code>.</p>
 </div>
@@ -2105,7 +2226,7 @@
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-03 22:01:26 -0400
+Last updated 2026-03-09 19:53:45 -0300
 </div>
 </div>
 </body>

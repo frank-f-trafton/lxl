@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: xmlObject API
 
 
@@ -126,16 +131,16 @@ self:registerJob("Comment nodes", function(self)
 		self:print(3, "[+] newComment")
 		local o = lxl.newXMLObject()
 		local c = o:newComment("foo")
-		self:isEqual(o.children[1], c)
+		self:isEqual(o.nodes[1], c)
 		self:isEqual(c.id, "comment")
 		self:isEqual(c.text, "foo")
 
-		self:print(3, "[+] test 'i' children index")
+		self:print(3, "[+] test 'i' nodes index")
 		local c1 = o:newComment("first", 1)
 		local c2 = o:newComment("second", 2)
-		self:isEqual(o.children[1], c1)
-		self:isEqual(o.children[2], c2)
-		self:isEqual(o.children[3], c)
+		self:isEqual(o.nodes[1], c1)
+		self:isEqual(o.nodes[2], c2)
+		self:isEqual(o.nodes[3], c)
 
 		self:expectLuaError("newComment() arg #1 invalid XML characters", o.newComment, o, "ab\0cd")
 		self:expectLuaError("'i' out of bounds", o.newComment, o, "xyz", 99)
@@ -171,17 +176,17 @@ self:registerJob("Processing Instruction nodes", function(self)
 		self:print(3, "[+] newProcessingInstruction")
 		local o = lxl.newXMLObject()
 		local p = o:newProcessingInstruction("targ", "inst")
-		self:isEqual(o.children[1], p)
+		self:isEqual(o.nodes[1], p)
 		self:isEqual(p.id, "pi")
 		self:isEqual(p.name, "targ")
 		self:isEqual(p.text, "inst")
 
-		self:print(3, "[+] test 'i' children index")
+		self:print(3, "[+] test 'i' nodes index")
 		local p1 = o:newProcessingInstruction("targ", "first", 1)
 		local p2 = o:newProcessingInstruction("targ", "second", 2)
-		self:isEqual(o.children[1], p1)
-		self:isEqual(o.children[2], p2)
-		self:isEqual(o.children[3], p)
+		self:isEqual(o.nodes[1], p1)
+		self:isEqual(o.nodes[2], p2)
+		self:isEqual(o.nodes[3], p)
 
 		self:expectLuaError("arg #1 bad type", o.newProcessingInstruction, o, {}, "xyz")
 		self:expectLuaError("arg #1 invalid PITarget", o.newProcessingInstruction, o, "xMl", "xyz")
@@ -245,14 +250,14 @@ self:registerJob("Element nodes", function(self)
 		local e = o:newElement("elem")
 		self:isEqual(e.id, "element")
 		self:isEqual(e.name, "elem")
-		self:isEqual(#e.children, 0)
+		self:isEqual(#e.nodes, 0)
 
-		self:print(3, "[+] test 'i' children index")
+		self:print(3, "[+] test 'i' nodes index")
 		local e1 = o:newElement("ele2", 1)
 		local e2 = o:newElement("ele3", 2)
-		self:isEqual(o.children[1], e1)
-		self:isEqual(o.children[2], e2)
-		self:isEqual(o.children[3], e)
+		self:isEqual(o.nodes[1], e1)
+		self:isEqual(o.nodes[2], e2)
+		self:isEqual(o.nodes[3], e)
 
 		self:expectLuaError("arg #1 bad type", o.newElement, e, {})
 		self:expectLuaError("arg #1 empty Name", o.newElement, e, "")
@@ -344,18 +349,18 @@ self:registerJob("CharacterData nodes", function(self)
 		self:isEqual(c.text, "chums")
 		self:isEqual(c.cd_sect, false)
 
-		self:print(3, "[+] test 'i' children index")
+		self:print(3, "[+] test 'i' nodes index")
 		local c1 = e:newCharacterData("cha2", nil, 1)
 		local c2 = e:newCharacterData("cha3", nil, 2)
-		self:isEqual(e.children[1], c1)
-		self:isEqual(e.children[2], c2)
-		self:isEqual(e.children[3], c)
+		self:isEqual(e.nodes[1], c1)
+		self:isEqual(e.nodes[2], c2)
+		self:isEqual(e.nodes[3], c)
 
 		--(self, text, cd_sect, i)
 		self:print(3, "[+] CharData with CDATA Section flag set")
 		local cd = e:newCharacterData("foobar", true, 1)
-		self:isEqual(e.children[1].text, "foobar")
-		self:isEqual(e.children[1].cd_sect, true)
+		self:isEqual(e.nodes[1].text, "foobar")
+		self:isEqual(e.nodes[1].cd_sect, true)
 	end
 	--]====]
 
@@ -408,12 +413,12 @@ self:registerJob("Unexpanded Entity nodes", function(self)
 		self:isEqual(r.id, "unexp")
 		self:isEqual(r.name, "ref")
 
-		self:print(3, "[+] test 'i' children index")
+		self:print(3, "[+] test 'i' nodes index")
 		local r1 = struct.newUnexpandedReference(e, "ref", 1)
 		local r2 = struct.newUnexpandedReference(e, "ref", 2)
-		self:isEqual(e.children[1], r1)
-		self:isEqual(e.children[2], r2)
-		self:isEqual(e.children[3], r)
+		self:isEqual(e.nodes[1], r1)
+		self:isEqual(e.nodes[2], r2)
+		self:isEqual(e.nodes[3], r)
 
 		self:expectLuaError("arg #1 bad type", struct.newUnexpandedReference, e, {})
 		self:expectLuaError("arg #1 empty Name", struct.newUnexpandedReference, e, "")
@@ -465,41 +470,41 @@ self:registerJob("Pruning and Merging", function(self)
 
 		--print(pretty.print(o))
 		-- Verify the node tree
-		self:isEqual(o.children[1].id, "comment")
-		self:isEqual(o.children[1].text, "one")
-		self:isEqual(o.children[2].id, "comment")
-		self:isEqual(o.children[2].text, "two")
-		self:isEqual(o.children[3].id, "element")
-		self:isEqual(o.children[3].name, "root")
-		self:isEqual(o.children[3].children[1].id, "cdata")
-		self:isEqual(o.children[3].children[1].text, "foo")
-		self:isEqual(o.children[3].children[2].id, "comment")
-		self:isEqual(o.children[3].children[2].text, "woo")
-		self:isEqual(o.children[3].children[3].id, "cdata")
-		self:isEqual(o.children[3].children[3].text, "bar")
-		self:isEqual(o.children[4].id, "comment")
-		self:isEqual(o.children[4].text, "three")
-		self:isEqual(o.children[5].id, "pi")
-		self:isEqual(o.children[5].name, "oooo")
-		self:isEqual(o.children[5].text, "OOOO")
+		self:isEqual(o.nodes[1].id, "comment")
+		self:isEqual(o.nodes[1].text, "one")
+		self:isEqual(o.nodes[2].id, "comment")
+		self:isEqual(o.nodes[2].text, "two")
+		self:isEqual(o.nodes[3].id, "element")
+		self:isEqual(o.nodes[3].name, "root")
+		self:isEqual(o.nodes[3].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[3].nodes[1].text, "foo")
+		self:isEqual(o.nodes[3].nodes[2].id, "comment")
+		self:isEqual(o.nodes[3].nodes[2].text, "woo")
+		self:isEqual(o.nodes[3].nodes[3].id, "cdata")
+		self:isEqual(o.nodes[3].nodes[3].text, "bar")
+		self:isEqual(o.nodes[4].id, "comment")
+		self:isEqual(o.nodes[4].text, "three")
+		self:isEqual(o.nodes[5].id, "pi")
+		self:isEqual(o.nodes[5].name, "oooo")
+		self:isEqual(o.nodes[5].text, "OOOO")
 
 		o:pruneNodes("comment")
 
 		--print(pretty.print(o))
 		-- Check the results.
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
-		self:isEqual(o.children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].text, "foo")
-		self:isEqual(o.children[1].children[2].id, "cdata")
-		self:isEqual(o.children[1].children[2].text, "bar")
-		self:isEqual(o.children[2].id, "pi")
-		self:isEqual(o.children[2].name, "oooo")
-		self:isEqual(o.children[2].text, "OOOO")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
+		self:isEqual(o.nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].text, "foo")
+		self:isEqual(o.nodes[1].nodes[2].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].text, "bar")
+		self:isEqual(o.nodes[2].id, "pi")
+		self:isEqual(o.nodes[2].name, "oooo")
+		self:isEqual(o.nodes[2].text, "OOOO")
 
 		o:pruneNodes("pi")
 
-		self:isNil(o.children[2])
+		self:isNil(o.nodes[2])
 
 
 		self:expectLuaError("varargs bad type", o.pruneNodes, o, {})
@@ -528,45 +533,45 @@ self:registerJob("Pruning and Merging", function(self)
 
 		--print(pretty.print(o))
 		-- Verify the node tree
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
-		self:isEqual(o.children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].text, "one ")
-		self:isEqual(o.children[1].children[2].id, "cdata")
-		self:isEqual(o.children[1].children[2].text, "two ")
-		self:isEqual(o.children[1].children[3].id, "cdata")
-		self:isEqual(o.children[1].children[3].text, "three ")
-		self:isEqual(o.children[1].children[4].id, "cdata")
-		self:isEqual(o.children[1].children[4].text, "four ")
-		self:isEqual(o.children[1].children[5].id, "element")
-		self:isEqual(o.children[1].children[5].name, "em")
-		self:isEqual(o.children[1].children[5].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[5].children[1].text, "five ")
-		self:isEqual(o.children[1].children[5].children[2].id, "cdata")
-		self:isEqual(o.children[1].children[5].children[2].text, "six ")
-		self:isEqual(o.children[1].children[6].id, "cdata")
-		self:isEqual(o.children[1].children[6].text, "seven ")
-		self:isEqual(o.children[1].children[7].id, "cdata")
-		self:isEqual(o.children[1].children[7].text, "eight ")
-		self:isEqual(o.children[1].children[8].id, "cdata")
-		self:isEqual(o.children[1].children[8].text, "nine ")
-		self:isEqual(o.children[1].children[9].id, "cdata")
-		self:isEqual(o.children[1].children[9].text, "ten.")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
+		self:isEqual(o.nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].text, "one ")
+		self:isEqual(o.nodes[1].nodes[2].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].text, "two ")
+		self:isEqual(o.nodes[1].nodes[3].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[3].text, "three ")
+		self:isEqual(o.nodes[1].nodes[4].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[4].text, "four ")
+		self:isEqual(o.nodes[1].nodes[5].id, "element")
+		self:isEqual(o.nodes[1].nodes[5].name, "em")
+		self:isEqual(o.nodes[1].nodes[5].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[5].nodes[1].text, "five ")
+		self:isEqual(o.nodes[1].nodes[5].nodes[2].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[5].nodes[2].text, "six ")
+		self:isEqual(o.nodes[1].nodes[6].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[6].text, "seven ")
+		self:isEqual(o.nodes[1].nodes[7].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[7].text, "eight ")
+		self:isEqual(o.nodes[1].nodes[8].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[8].text, "nine ")
+		self:isEqual(o.nodes[1].nodes[9].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[9].text, "ten.")
 
 		o:mergeCharacterData()
 
 		--print(pretty.print(o))
 		-- Check the results.
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
-		self:isEqual(o.children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].text, "one two three four ")
-		self:isEqual(o.children[1].children[2].id, "element")
-		self:isEqual(o.children[1].children[2].name, "em")
-		self:isEqual(o.children[1].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[2].children[1].text, "five six ")
-		self:isEqual(o.children[1].children[3].id, "cdata")
-		self:isEqual(o.children[1].children[3].text, "seven eight nine ten.")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
+		self:isEqual(o.nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].text, "one two three four ")
+		self:isEqual(o.nodes[1].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[2].name, "em")
+		self:isEqual(o.nodes[1].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].nodes[1].text, "five six ")
+		self:isEqual(o.nodes[1].nodes[3].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[3].text, "seven eight nine ten.")
 		--]]
 	end
 	--]====]
@@ -593,46 +598,46 @@ self:registerJob("Pruning and Merging", function(self)
 
 		print(pretty.print(o))
 		-- Verify the node tree
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
-		self:isEqual(o.children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].text, "  ")
-		self:isEqual(o.children[1].children[2].id, "element")
-		self:isEqual(o.children[1].children[2].name, "a")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
+		self:isEqual(o.nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].text, "  ")
+		self:isEqual(o.nodes[1].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[2].name, "a")
 
-		self:isEqual(o.children[1].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[2].children[1].text, "\t")
+		self:isEqual(o.nodes[1].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].nodes[1].text, "\t")
 
-		self:isEqual(o.children[1].children[2].children[2].id, "element")
-		self:isEqual(o.children[1].children[2].children[2].name, "b")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].name, "b")
 
-		self:isEqual(o.children[1].children[2].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[2].children[2].children[1].text, "\n\n")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[1].text, "\n\n")
 
-		self:isEqual(o.children[1].children[2].children[2].children[2].id, "element")
-		self:isEqual(o.children[1].children[2].children[2].children[2].name, "c")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[2].name, "c")
 
-		self:isEqual(o.children[1].children[2].children[2].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[2].children[2].children[2].children[1].text, "    x    ")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[2].nodes[1].text, "    x    ")
 
-		self:isEqual(o.children[1].children[3].id, "cdata")
-		self:isEqual(o.children[1].children[3].text, "   ")
+		self:isEqual(o.nodes[1].nodes[3].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[3].text, "   ")
 
 		o:pruneSpace()
 
 		-- <root><a><b><c>    x    </c></b></a></root>
 		print(pretty.print(o))
 		-- Check the results.
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
-		self:isEqual(o.children[1].children[1].id, "element")
-		self:isEqual(o.children[1].children[1].name, "a")
-		self:isEqual(o.children[1].children[1].children[1].id, "element")
-		self:isEqual(o.children[1].children[1].children[1].name, "b")
-		self:isEqual(o.children[1].children[1].children[1].children[1].id, "element")
-		self:isEqual(o.children[1].children[1].children[1].children[1].name, "c")
-		self:isEqual(o.children[1].children[1].children[1].children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].children[1].children[1].children[1].text, "    x    ")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
+		self:isEqual(o.nodes[1].nodes[1].id, "element")
+		self:isEqual(o.nodes[1].nodes[1].name, "a")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].id, "element")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].name, "b")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].nodes[1].id, "element")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].nodes[1].name, "c")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].nodes[1].nodes[1].text, "    x    ")
 	end
 	--]====]
 
@@ -657,24 +662,24 @@ self:registerJob("Pruning and Merging", function(self)
 
 		print(pretty.print(o))
 		-- Verify the node tree
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
-		self:isEqual(o.children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].text, " ")
-		self:isEqual(o.children[1].children[2].id, "element")
-		self:isEqual(o.children[1].children[2].name, "a")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
+		self:isEqual(o.nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].text, " ")
+		self:isEqual(o.nodes[1].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[2].name, "a")
 
-		self:isEqual(o.children[1].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[2].children[1].text, "  ")
+		self:isEqual(o.nodes[1].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].nodes[1].text, "  ")
 
-		self:isEqual(o.children[1].children[2].children[2].id, "element")
-		self:isEqual(o.children[1].children[2].children[2].name, "b")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].name, "b")
 
-		self:isEqual(o.children[1].children[2].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[2].children[2].children[1].text, "   ")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[2].nodes[2].nodes[1].text, "   ")
 
-		self:isEqual(o.children[1].children[3].id, "cdata")
-		self:isEqual(o.children[1].children[3].text, "    ")
+		self:isEqual(o.nodes[1].nodes[3].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[3].text, "    ")
 
 		o:pruneSpace(true)
 
@@ -682,22 +687,22 @@ self:registerJob("Pruning and Merging", function(self)
 		print(pretty.print(o))
 
 		-- Check the results.
-		self:isEqual(o.children[1].id, "element")
-		self:isEqual(o.children[1].name, "root")
+		self:isEqual(o.nodes[1].id, "element")
+		self:isEqual(o.nodes[1].name, "root")
 
-		self:isEqual(o.children[1].children[1].id, "element")
-		self:isEqual(o.children[1].children[1].name, "a")
+		self:isEqual(o.nodes[1].nodes[1].id, "element")
+		self:isEqual(o.nodes[1].nodes[1].name, "a")
 
-		self:isEqual(o.children[1].children[1].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].children[1].text, "  ")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].nodes[1].text, "  ")
 
-		self:isEqual(o.children[1].children[1].children[2].id, "element")
-		self:isEqual(o.children[1].children[1].children[2].name, "b")
+		self:isEqual(o.nodes[1].nodes[1].nodes[2].id, "element")
+		self:isEqual(o.nodes[1].nodes[1].nodes[2].name, "b")
 
-		self:isEqual(o.children[1].children[1].children[2].children[1].id, "cdata")
-		self:isEqual(o.children[1].children[1].children[2].children[1].text, "   ")
+		self:isEqual(o.nodes[1].nodes[1].nodes[2].nodes[1].id, "cdata")
+		self:isEqual(o.nodes[1].nodes[1].nodes[2].nodes[1].text, "   ")
 
-		self:isNil(o.children[1].children[2])
+		self:isNil(o.nodes[1].nodes[2])
 	end
 	--]====]
 end
@@ -712,12 +717,12 @@ self:registerJob("DocType node", function(self)
 		self:print(3, "[+] struct.newDocType()")
 		local o = lxl.newXMLObject()
 		table.insert(o, struct.newDocType(o, "root"))
-		self:isEqual(o.children[1].id, "doctype")
-		self:isEqual(o.children[1].name, "root")
+		self:isEqual(o.nodes[1].id, "doctype")
+		self:isEqual(o.nodes[1].name, "root")
 
-		self:expectLuaError("arg #1 bad type", struct.newDocType, {children={}}, {})
-		self:expectLuaError("arg #1 empty XML Name", struct.newDocType, {children={}}, "")
-		self:expectLuaError("arg #1 invalid XML characters", struct.newDocType, {children={}}, "\1\2\3")
+		self:expectLuaError("arg #1 bad type", struct.newDocType, {nodes={}}, {})
+		self:expectLuaError("arg #1 empty XML Name", struct.newDocType, {nodes={}}, "")
+		self:expectLuaError("arg #1 invalid XML characters", struct.newDocType, {nodes={}}, "\1\2\3")
 
 		-- An xmlObject tree should have at most one DocType node. If present, it must appear
 		-- before the root element. We're not going to check either condition here, nor in
@@ -739,10 +744,10 @@ end
 
 
 -- [===[
-self:registerJob("getRoot() and getDocType()", function(self)
+self:registerJob("getRootElement() and getDocType()", function(self)
 	-- [====[
 	do
-		self:print(3, "[+] getRoot(), getDocType()")
+		self:print(3, "[+] getRootElement(), getDocType()")
 		local o = lxl.newXMLObject()
 		-- You can call getDocType() without one having been provisioned.
 		self:isNil(o:getDocType())
@@ -750,13 +755,13 @@ self:registerJob("getRoot() and getDocType()", function(self)
 		self:isEqual(o:getDocType().id, "doctype")
 		self:isEqual(o:getDocType().name, "root")
 
-		-- It's an error to call getRoot() without a root element set.
+		-- It's an error to call getRootElement() without a root element set.
 		-- if the xmlObject contains multiple elements as direct descendants
 		-- (which is an invalid state), then only the first element in the
 		-- list will be returned.
-		self:expectLuaError("no document root", o.getRoot, o)
+		self:expectLuaError("no document root", o.getRootElement, o)
 		o:newElement("root")
-		local root = o:getRoot()
+		local root = o:getRootElement()
 		self:isEqual(root.id, "element")
 		self:isEqual(root.name, "root")
 	end
@@ -778,23 +783,23 @@ self:registerJob("Node traversal functions", function(self)
 		local p = o:newProcessingInstruction("zip", "zap")
 
 		local obj = c
-		obj = obj:next()
+		obj = obj:getNextSibling()
 		self:isEqual(obj, e)
 
-		obj = obj:next()
+		obj = obj:getNextSibling()
 		self:isEqual(obj, p)
 
-		obj = obj:next()
+		obj = obj:getNextSibling()
 		self:isNil(obj)
 
 		obj = p
-		obj = obj:prev()
+		obj = obj:getPreviousSibling()
 		self:isEqual(obj, e)
 
-		obj = obj:prev()
+		obj = obj:getPreviousSibling()
 		self:isEqual(obj, c)
 
-		obj = obj:prev()
+		obj = obj:getPreviousSibling()
 		self:isNil(obj)
 	end
 	--]====]
@@ -810,26 +815,26 @@ self:registerJob("Node traversal functions", function(self)
 		local c = b:newElement("c")
 
 		local obj = a
-		obj = obj:descend()
+		obj = obj:getChild(1)
 		self:isEqual(obj, b)
 
-		obj = obj:descend()
+		obj = obj:getChild(1)
 		self:isEqual(obj, c)
 
-		obj = obj:descend()
+		obj = obj:getChild(1)
 		self:isNil(obj)
 
 		obj = c
-		obj = obj:ascend()
+		obj = obj:getParent()
 		self:isEqual(obj, b)
 
-		obj = obj:ascend()
+		obj = obj:getParent()
 		self:isEqual(obj, a)
 
-		obj = obj:ascend()
+		obj = obj:getParent()
 		self:isEqual(obj, o)
 
-		obj = obj:ascend()
+		obj = obj:getParent()
 		self:isNil(obj)
 	end
 	--]====]
@@ -844,7 +849,7 @@ self:registerJob("Node traversal functions", function(self)
 		local c = b:newElement("c")
 
 		local obj = c
-		obj = obj:top()
+		obj = obj:getXMLObject()
 		self:isEqual(obj, o)
 	end
 	--]====]
@@ -852,7 +857,10 @@ self:registerJob("Node traversal functions", function(self)
 
 	-- [====[
 	do
-		self:print(3, "[+] path()")
+		self:print(3, "[+] resolvePath()")
+
+		-- This method wraps PILE Base's 'pTree.nodeResolvePath()'.
+		-- For more testing, see: 'test_tree.lua' in PILE Base.
 
 		--[[
 		<r>
@@ -882,35 +890,36 @@ self:registerJob("Node traversal functions", function(self)
 		local c2 = c:newElement("c2")
 		local c3 = c:newElement("c3")
 
-		self:expectLuaError("arg #1 bad type", o.path, o, false)
+		self:expectLuaError("arg #1 bad type", o.resolvePath, o, false)
 
 		local obj
 
-		self:print(3, "[+] path(): select xmlObject ('/')")
+		self:print(3, "[+] resolvePath(): select xmlObject ('/')")
 		obj = c3
-		obj = obj:path("/")
+		obj = obj:resolvePath("/")
 		self:isEqual(obj, o)
 
-		self:print(3, "[+] path(): absolute path ('/r/a')")
+		self:print(3, "[+] resolvePath(): absolute path ('/r/a')")
 		obj = c3
-		self:isEqual(obj:path("/r"), r)
-		self:isEqual(obj:path("/r/a/a2"), a2)
+		self:isEqual(obj:resolvePath("/r"), r)
+		self:isEqual(obj:resolvePath("/r/a/a2"), a2)
 
-		self:print(3, "[+] path(): relative path")
+		self:print(3, "[+] resolvePath(): relative path")
 		obj = b
-		self:isEqual(obj:path("b2"), b2)
-		self:isEqual(obj:path(".."), r)
-		self:isEqual(obj:path("../a/a3"), a3)
-		self:isEqual(obj:path("../a/../b/../c/../a/../b/b2"), b2)
+		self:isEqual(obj:resolvePath("b2"), b2)
+		self:isEqual(obj:resolvePath(".."), r)
+		self:isEqual(obj:resolvePath("../a/a3"), a3)
+		self:isEqual(obj:resolvePath("../a/../b/../c/../a/../b/b2"), b2)
 
-		self:print(3, "[-] attempt to ascend the xmlObject root")
+		self:print(3, "[-] attempt to ascend to the xmlObject root")
 		obj = a3
-		self:isNil(obj:path("../../../../../.."))
+		self:isNil(obj:resolvePath("../../../../../.."))
 
+		local rv, err, p
 		self:print(3, "[-] invalid path")
-		obj = a3
-		self:expectLuaError("invalid path", obj.path, obj, "/////")
-
+		rv, err, p = obj:resolvePath("/////")
+		self:isNil(rv)
+		self:print(4, "Error: " .. err)
 	end
 	--]====]
 

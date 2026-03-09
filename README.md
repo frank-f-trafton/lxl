@@ -1,4 +1,4 @@
-**Version:** 2.0.6
+VERSION: 2.070
 
 # Lua XML Library
 
@@ -14,6 +14,15 @@ Copyright (c) 2022 - 2026 RBTS / Frank F. Trafton
 
 Code from github.com/kikito/utf8_validator.lua:
 Copyright (c) 2013 Enrique García Cota + Adam Baldwin + hanzao + Equi 4 Software
+
+PILE Base:
+  Copyright (c) 2024 - 2026 PILE Contributors
+
+  LUIGI code: Copyright (c) 2015 airstruck
+    https://github.com/airstruck/luigi
+
+  lume code: Copyright (c) 2020 rxi
+    https://github.com/rxi/lume
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

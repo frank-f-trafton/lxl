@@ -1,4 +1,7 @@
--- XML Namespace logic.
+-- Lua XML Library: XML Namespace logic.
+-- VERSION: v2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""

@@ -1,4 +1,8 @@
--- LXL in: Converts an XML string to a nested Lua table.
+-- Lua XML Library: Parser core.
+-- VERSION: v2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- (Use this module through lxl.lua)
 
 
@@ -8,15 +12,15 @@ local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 local xIn = {}
 
 
-local _argType = require(PATH .. "pile_arg_check").type
 local interp = require(PATH .. "pile_interp")
 local namespace = require(PATH .. "lxl_namespace")
-local shared = require(PATH .. "lxl_shared")
-local stringProc = require(PATH .. "string_proc")
-local stringWalk = require(PATH .. "string_walk")
-local struct = require(PATH .. "lxl_struct")
+local pAssert = require(PATH .. "pile_assert")
+local pStringProc = require(PATH .. "pile_string_proc")
+local pStringWalk = require(PATH .. "pile_string_walk")
 local pUTF8 = require(PATH .. "pile_utf8")
 local pUTF8Conv = require(PATH .. "pile_utf8_conv")
+local shared = require(PATH .. "lxl_shared")
+local struct = require(PATH .. "lxl_struct")
 
 
 local lang = shared.lang
@@ -35,11 +39,11 @@ local ptn_eq = "^["..ptn_space.."]?=["..ptn_space.."]?"
 local ptn_version_info = "^[" .. ptn_space .. "]*version" .. "[" .. ptn_space .. "]*=[" .. ptn_space .. "]*(['\"])(1%.[0-9]+)(%1)"
 
 
-local _grammar = stringProc.toTable
+local _grammar = pStringProc.toTable
 
 
 local _process = function(W, s)
-	return stringProc.traverse(W, s, sym)
+	return pStringProc.traverse(W, s, sym)
 end
 
 
@@ -1276,9 +1280,10 @@ function xIn.normalizeLineEndings(s)
 end
 
 
-function xIn.parse(str, parser)
-	_argType(1, str, "string")
-	_argType(2, parser, "table")
+function xIn.parse(str, parser, name)
+	pAssert.type(1, str, "string")
+	pAssert.type(2, parser, "table")
+	pAssert.typeEval(3, name, "string")
 
 	local guessed_encoding
 	str, guessed_encoding = convertToUTF8(str)
@@ -1297,7 +1302,7 @@ function xIn.parse(str, parser)
 	end
 
 	-- String Walker object
-	local W = stringWalk.new(str)
+	local W = pStringWalk.new(str, name)
 	uv_W = W
 
 	W.guessed_encoding = guessed_encoding

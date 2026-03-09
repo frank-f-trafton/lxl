@@ -1,35 +1,10 @@
--- Common functions and data for the XML library.
+-- Lua XML Library: Shared functions and data
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
-
-
---[[
-MIT License
-
-Copyright (c) 2022 - 2025 RBTS
-
-Code from github.com/kikito/utf8_validator.lua:
-Copyright (c) 2013 Enrique García Cota + Adam Baldwin + hanzao + Equi 4 Software
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
---]]
 
 
 local shared = {}
@@ -187,31 +162,11 @@ local lang = shared.lang
 
 
 local interp = require(PATH .. "pile_interp")
-local _argType = require(PATH .. "pile_arg_check").type
+local pAssert = require(PATH .. "pile_assert")
 local pTable = require(PATH .. "pile_table")
 
 
-local _makeLUT, _invertLUT = pTable.makeLUT, pTable.invertLUT
-
-
-function shared._assertType(v, e)
-	if type(v) ~= e then
-		error(interp(lang.err_assert_fail, e, type(v)))
-	end
-end
-
-
-function shared._genericAssert(f, v)
-	local ok, err = f(v)
-	if not ok then
-		error(err)
-	end
-end
-
-
-function shared._assertXMLName(text)
-	shared._genericAssert(shared.validateXMLName, text)
-end
+local _newLUTV, _invertLUT = pTable.newLUTV, pTable.invertLUT
 
 
 function shared.assertCharacters(s, with_counters)
@@ -223,21 +178,6 @@ function shared.assertCharacters(s, with_counters)
 			error(interp(lang.err_unsup_unicode2))
 		end
 	end
-end
-
-
-function shared._assertPITarget(pi_target)
-	shared._genericAssert(shared.validatePITarget, pi_target)
-end
-
-
-function shared._assertPIText(text)
-	shared._genericAssert(shared.checkPIText, text)
-end
-
-
-function shared._assertCommentText(text)
-	shared._genericAssert(shared.checkXMLCommentText, text)
 end
 
 
@@ -254,7 +194,7 @@ function shared.checkRangeLUT(lut, value)
 end
 
 
-shared.lut_supported_encodings = _makeLUT({"UTF-8", "UTF-16"})
+shared.lut_supported_encodings = _newLUTV("UTF-8", "UTF-16")
 
 
 shared.lut_default_entities = {lt = "<", gt = ">", amp = "&", quot = "\"", apos = "'"}

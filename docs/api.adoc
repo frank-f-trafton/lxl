@@ -33,10 +33,12 @@ Converts an XML string to an xmlObject, with default parser settings.
 
 [source,lua]
 ----
-local xml_obj = lxl.toTable(str)
+local xml_obj = lxl.toTable(str, [name])
 ----
 
 * `str`: The XML string to convert.
+
+* `[name]`: An optional name to display in warnings and error messages.
 
 **Returns:** An xmlObject.
 
@@ -53,6 +55,25 @@ local str = lxl.toString(xml_obj)
 * `xml_obj`: The xmlObject to convert.
 
 **Returns:** An XML string.
+
+
+=== lxl.fragmentToString
+
+Converts the children of an element to an XML string fragment.
+
+[source,lua]
+----
+local str = lxl.fragmentToString(element)
+----
+
+* `element`: An element in the xmlObject to begin serialization from. (The element's own tags are not included in the output)
+
+**Returns:** An XML string fragment.
+
+[discrete]
+==== Notes
+
+The returned string never includes the XML Declaration, and its encoding is always UTF-8.
 
 
 [#lxl-new-xml-object]
@@ -104,6 +125,8 @@ xmlParser:setCheckCharacters(enabled)
 
 * `enabled`: `true` to enable character checking, `false/nil` to disable it.
 
+**Returns:** `self`, for method chaining.
+
 
 [discrete]
 ==== Notes
@@ -136,6 +159,8 @@ xmlParser:setNamespaceVersion(mode)
 
 * `mode`: `nil` for no namespace functionality while parsing, or the XML Namespace version string (`1.0`, `1.1`).
 
+**Returns:** `self`, for method chaining.
+
 [discrete]
 ==== Notes
 
@@ -167,6 +192,8 @@ xmlParser:setCollectComments(enabled)
 
 * `enabled`: `true` to collect comments and attach them to the xmlObject output, `false/nil` to discard them.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getCollectComments
 
@@ -193,6 +220,8 @@ xmlParser:setCollectProcessingInstructions(enabled)
 
 * `enabled`: `true` to collect PIs and attach them to the xmlObject output, `false/nil` to discard them.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getCollectProcessingInstructions
 
@@ -218,6 +247,9 @@ xmlParser:setNormalizeLineEndings(enabled)
 ----
 
 * `enabled`: `true` to normalize newlines, `false/nil` to skip this step.
+
+**Returns:** `self`, for method chaining.
+
 
 [discrete]
 ==== Notes
@@ -252,6 +284,8 @@ xmlParser:setCheckEncodingMismatch(enabled)
 
 * `enabled`: `true` (mismatches raise errors) or `false/nil`.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getCheckEncodingMismatch
 
@@ -277,6 +311,9 @@ xmlParser:setMaxEntityBytes(n)
 ----
 
 * `n`: The number of bytes to read. Use `math.huge` to disable the feature.
+
+**Returns:** `self`, for method chaining.
+
 
 [discrete]
 ==== Notes
@@ -311,6 +348,8 @@ xmlParser:setRejectDoctype(enabled)
 
 * `enabled`: `true` to reject the DOCTYPE, `false/nil` to accept and parse it (in a non-validating manner).
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getRejectDoctype
 
@@ -336,6 +375,9 @@ xmlParser:setRejectInternalSubset(enabled)
 ----
 
 * `enabled`: `true` to reject DOCTYPEs containing internal subsets, `false/nil` to accept and parse it.
+
+**Returns:** `self`, for method chaining.
+
 
 [discrete]
 ==== Notes
@@ -368,6 +410,8 @@ xmlParser:setCopyDocType(enabled)
 
 * `enabled`: `true` to store `!DOCTYPE` substrings, `false/nil` otherwise.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getCopyDocType
 
@@ -394,6 +438,8 @@ xmlParser:setRejectUnexpandedEntities(enabled)
 
 * `enabled`: `true` to halt on Unexpanded Entities, `false/nil` to attach them to the output tree.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getRejectUnexpandedEntities
 
@@ -419,6 +465,9 @@ xmlParser:setWarnDuplicateEntityDeclarations(enabled)
 ----
 
 * `enabled`: `true` to warn about duplicate entity declarations, `false/nil` otherwise.
+
+**Returns:** `self`, for method chaining.
+
 
 [discrete]
 ==== Notes
@@ -451,6 +500,8 @@ xmlParser:setWriteXMLDeclaration(enabled)
 
 * `enabled`: `true` to write out the XML declaration, `false/nil` to skip it.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getWriteXMLDeclaration
 
@@ -476,6 +527,9 @@ xmlParser:setWriteDocType(enabled)
 ----
 
 * `enabled`: `true` to serialize DOCTYPE, `false/nil` otherwise.
+
+**Returns:** `self`, for method chaining.
+
 
 [discrete]
 ==== Notes
@@ -508,6 +562,8 @@ xmlParser:setWritePretty(enabled)
 
 * `enabled`: `true` to insert line endings and indentations, `false/nil` otherwise.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getWritePretty
 
@@ -536,6 +592,8 @@ xmlParser:setWriteIndent(ch, [qty])
 
 * `[qty]`: __(1)__ The number of `ch` characters to write per indentation level.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getWriteIndent
 
@@ -562,6 +620,8 @@ xmlParser:setWriteBigEndian(enabled)
 
 * `enabled`: `true` to order bytes as big endian, `false/nil` to order as little endian.
 
+**Returns:** `self`, for method chaining.
+
 
 === xmlParser:getWriteBigEndian
 
@@ -582,10 +642,12 @@ Converts an XML string to an xmlObject node tree.
 
 [source,lua]
 ----
-local xml_obj = xmlParser:toTable(str)
+local xml_obj = xmlParser:toTable(str, [name])
 ----
 
 * `str`: The XML string to convert.
+
+* `[name]`: An optional name to display in warnings and error messages.
 
 **Returns:** An xmlObject.
 
@@ -596,7 +658,7 @@ Converts an xmlObject to an XML string.
 
 [source,lua]
 ----
-xmlParser:toString(xml_obj)
+local str = xmlParser:toString(xml_obj)
 ----
 
 * `xml_obj`: The xmlObject to convert.
@@ -608,7 +670,26 @@ xmlParser:toString(xml_obj)
 
 The string encoding is controlled by the xmlObject's encoding setting. See: <<xml-obj-set-xml-encoding>>
 
- 
+
+=== xmlParser:fragmentToString
+
+Converts the children of an element to an XML string fragment.
+
+[source,lua]
+----
+local str = xmlParser:fragmentToString(element)
+----
+
+* `element`: An element in the xmlObject to begin serialization from. (The element's own tags are not included in the output)
+
+**Returns:** An XML string fragment.
+
+[discrete]
+==== Notes
+
+The returned string never includes the XML Declaration, and its encoding is always UTF-8.
+
+
 == API: Tree Nodes
 
 All nodes in an xmlObject tree share a set of basic navigation methods.
@@ -616,7 +697,7 @@ All nodes in an xmlObject tree share a set of basic navigation methods.
 
 === Node:getSiblings
 
-Gets the `children` table in which this node is placed.
+Gets the `nodes` table in which this node is placed.
 
 
 [source,lua]
@@ -627,91 +708,99 @@ local siblings = Node:getSiblings()
 **Returns:** The table of siblings, or `nil` if the node is the xmlObject (which does not have a parent).
 
 
-=== Node:next
+=== Node:getNextSibling
 
 Gets the node's next sibling.
 
 [source,lua]
 ----
-local sibling = Node:next()
+local sibling = Node:getNextSibling()
 ----
 
 **Returns:** The node's next sibling, or `nil` if either the node does not have siblings or it is the last sibling in the table.
 
 
-=== Node:prev
+=== Node:getPreviousSibling
 
 Gets the node's previous sibling.
 
 [source,lua]
 ----
-local sibling = Node:prev()
+local sibling = Node:getPreviousSibling()
 ----
 
 **Returns:** The node's previous sibling, or `nil` if either the node does not have siblings or it is the first sibling in the table.
 
 
-=== Node:descend
+=== Node:getChild
 
-Gets the node's first child.
+Gets a node's child by index.
 
 [source,lua]
 ----
-local child_no_1 = Node:descend()
+local child = Node:getChild(n)
 ----
 
-**Returns:** The node's first child, or `nil` if the node has no children.
+`n`: The child index.
+
+**Returns:** The node's __Nth__ child, or `nil` if the node has no children.
 
 
-=== Node:ascend
+=== Node:getParent
 
 Gets the node's parent.
 
 [source,lua]
 ----
-local parent = Node:ascend()
+local parent = Node:getParent()
 ----
 
 **Returns:** The node's parent, or `nil` if the node does not have a parent.
 
 
-=== Node:top
+=== Node:getXMLObject
 
-Gets the root node (the xmlObject, not the XML root element).
+Gets the root node (the xmlObject, __not__ the XML root element).
 
 [source,lua]
 ----
-local xml_obj = Node:top()
+local xml_obj = Node:getXMLObject()
 ----
 
-**Returns:** The root node in the tree.
+**Returns:** The root xmlObject in the tree.
 
 
-=== Node:path
+=== Node:resolvePath
 
 Looks for an element based on a path string. **Paths are not namespace-aware.**
 
 [source,lua]
 ----
-local resolved = Node:path(path)
+local resolved = Node:resolvePath(path, [simple])
 ----
 
 * `path`: The path string.
 
-**Returns:** The resolved node, or `nil` if the node could not be found.
+* `[simple]`: **(false)** When true, disables `.` (this node), `..` (parent node), and the ability to anchor the searches to the root node (by starting with `/`).
+
+**Returns:** On success, the resolved node. Upon failure, `nil`, an error string, and the position in the path string where the search failed.
 
 [discrete]
 ==== Notes
 
-The path string contains element names separated by forward slashes. The call `Node:path("foo/bar/baz")` would look for a child of `Node` named `foo`, and then a grandchild named `bar`, and finally a great-grandchild named `baz`. For each generation, the first matching name is selected.
+The path string contains element names that are separated by slashes. The call `Node:resolvePath("foo/bar/baz")` would look for a child of `Node` named `foo`, and then a grandchild named `bar`, and finally a great-grandchild named `baz`. For each generation, the first matching name is selected.
 
-Paths starting with a forward slash are absolute, always starting from the root xmlObject node (__not__ the root element). In this case, the first name in the path must match the root element name. `Node:path("/myroot/foo")`
+Paths starting with a forward slash are absolute, always starting from the root xmlObject node (__not__ the document root). In this case, the first name in the path must match the root element name: `Node:resolvePath("/myroot/foo")`
 
-As a special case, a single forward slash will select the xmlObject node. `Node:path("/")` is equivalent to `Node:top()`.
+A single forward slash will select the xmlObject node: `Node:resolvePath("/")`
 
-`..` may be used to move up one level, though attempting to go above the xmlObject node will fail. `Node:path("../goback")`
+`..` may be used to move up one level, though attempting to go above the xmlObject node will fail. `.` also works, though it does nothing in practice.
 
-Only elements and the xmlObject root are eligible for selection, but `Node:path()` can be called by any node object that is attached to the tree. This includes comments and PIs from within the internal subset.
+Only elements and the xmlObject root can be selected by name, but `Node:resolvePath()` can be called by any node object that is attached to the tree. This includes comments and PIs from within the internal subset.
+
+When the `simple` argument is set, the special names `.` and `..` will be interpreted literally, and anchoring the path to the root (ie `/myroot/foo`) will always fail.
+
+Backslashes may be used to escape characters. It is an error to end a path string with a single backslash.
 
 
 === Node:find
@@ -769,7 +858,7 @@ This method always returns `nil` when no namespace mode is set.
 
 === Node:destroy
 
-"Destroys" the node and all of its descendants. The reference to the node within its parent is also removed.
+"Destroys" the node and all of its descendants. If the node has a parent, its reference there is also removed.
 
 [source,lua]
 ----
@@ -924,13 +1013,13 @@ Checks the namespace state of the xmlObject node tree, raising an error if any p
 This method does nothing when namespace mode is inactive. Otherwise, it performs the same checks as xmlParser when loading a string. See xref:appendix.adoc#invalid-namespace-state[Invalid Namespace State] for more info.
 
 
-=== xmlObject:getRoot
+=== xmlObject:getRootElement
 
 Gets the document root element. If the xmlObject does not have any elements, raises an error.
 
 [source,lua]
 ----
-local root = xmlObject:getRoot()
+local root = xmlObject:getRootElement()
 ----
 
 **Returns:** The root element.
@@ -1005,7 +1094,7 @@ local comment = xmlObject:newComment(text, [i])
 
 * `text`: The comment text.
 
-* `[i]`: __(#children + 1)__ Where to insert the comment in the xmlObject's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the comment in the xmlObject's array of children.
 
 **Returns:** A new comment node.
 
@@ -1024,7 +1113,7 @@ local pi = xmlObject:newProcessingInstruction(name, text, [i])
 
 * `text`: The processing instruction text body.
 
-* `[i]`: __(#children + 1)__ Where to insert the processing instruction in the xmlObject's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the processing instruction in the xmlObject's array of children.
 
 **Returns:** A new processing instruction node.
 
@@ -1040,7 +1129,7 @@ local element = xmlObject:newElement(name, [i])
 
 * `name`: The element name.
 
-* `[i]`: __(#children + 1)__ Where to insert the element in the xmlObject's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the element in the xmlObject's array of children.
 
 **Returns:** A new element, attached directly to the xmlObject.
 
@@ -1228,7 +1317,7 @@ local comment = Element:newComment(text, [i])
 
 * `text`: The comment text.
 
-* `[i]`: __(#children + 1)__ Where to insert the comment in the node's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the comment in the node's array of children.
 
 **Returns:** A new comment node.
 
@@ -1246,7 +1335,7 @@ local pi = Element:newProcessingInstruction(name, text, [i])
 
 * `text`: The processing instruction text body.
 
-* `[i]`: __(#children + 1)__ Where to insert the processing instruction in the node's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the processing instruction in the node's array of children.
 
 **Returns:** A new processing instruction node.
 
@@ -1262,7 +1351,7 @@ local element = Element:newElement(name, [i])
 
 * `name`: The element name.
 
-* `[i]`: __(#children + 1)__ Where to insert the element in the node's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the element in the node's array of children.
 
 **Returns:** A new element, attached directly to the calling element.
 
@@ -1280,7 +1369,7 @@ local char_data = Element:newCharacterData(text, [cd_sect], [i])
 
 * `[cd_sect]`: __(nil)__ `true` if this CharacterData node should be serialized out as a CDATA Section.
 
-* `[i]`: __(#children + 1)__ Where to insert the CharacterData in the node's array of children.
+* `[i]`: __(#nodes + 1)__ Where to insert the CharacterData in the node's array of children.
 
 **Returns:** A new CharacterData, attached directly to the calling element.
 

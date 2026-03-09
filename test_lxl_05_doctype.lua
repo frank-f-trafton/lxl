@@ -1,3 +1,8 @@
+-- Lua XML Library
+-- VERSION: 2.070
+-- https://github.com/frank-f-trafton/lxl
+-- See LICENSE for licensing and copyright info.
+
 -- Test: DOCTYPE tags; 'standalone'; PEReferences; Unexpanded References
 
 
@@ -46,7 +51,7 @@ self:registerJob("DOCTYPE", function(self)
 		self:print(3, "[+] Minimum DOCTYPE)")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		local root = tree:getRoot()
+		local root = tree:getRootElement()
 		local doctype = tree:getDocType()
 		self:print(4, pretty.print(doctype))
 		self:isEqual(tree:getDocType().name, "root")
@@ -59,9 +64,9 @@ self:registerJob("DOCTYPE", function(self)
 		local str = "<!DOCTYPE foo SYSTEM 'syslit'><r/>"
 		print("[+] DOCTYPE with SYSTEM Declaration: " .. str)
 		local tree = lxl.toTable(str)
-		self:print(4, pretty.print(tree.children[1]))
-		self:isEqual(tree.children[1].external_id.type, "SYSTEM")
-		self:isEqual(tree.children[1].external_id.system_literal, "syslit")
+		self:print(4, pretty.print(tree.nodes[1]))
+		self:isEqual(tree.nodes[1].external_id.type, "SYSTEM")
+		self:isEqual(tree.nodes[1].external_id.system_literal, "syslit")
 	end
 	--]====]
 
@@ -71,10 +76,10 @@ self:registerJob("DOCTYPE", function(self)
 		local str = "<!DOCTYPE foo PUBLIC 'publit' 'syslit'><r/>"
 		print("[+] DOCTYPE with PUBLIC Declaration: " .. str)
 		local tree = lxl.toTable(str)
-		self:print(4, pretty.print(tree.children[1]))
-		self:isEqual(tree.children[1].external_id.type, "PUBLIC")
-		self:isEqual(tree.children[1].external_id.pub_id_literal, "publit")
-		self:isEqual(tree.children[1].external_id.system_literal, "syslit")
+		self:print(4, pretty.print(tree.nodes[1]))
+		self:isEqual(tree.nodes[1].external_id.type, "PUBLIC")
+		self:isEqual(tree.nodes[1].external_id.pub_id_literal, "publit")
+		self:isEqual(tree.nodes[1].external_id.system_literal, "syslit")
 	end
 	--]====]
 
@@ -109,34 +114,34 @@ self:registerJob("DOCTYPE", function(self)
 		self:print(4, str)
 		local tree = lxl.toTable(str)
 
-		self:isEqual(tree.children[1].id, "comment")
-		self:isEqual(tree.children[1].text, "before")
+		self:isEqual(tree.nodes[1].id, "comment")
+		self:isEqual(tree.nodes[1].text, "before")
 
-		self:isEqual(tree.children[2].id, "doctype")
-		self:isEqual(tree.children[2].name, "foo")
+		self:isEqual(tree.nodes[2].id, "doctype")
+		self:isEqual(tree.nodes[2].name, "foo")
 
-		self:isEqual(tree.children[2].children[1].id, "pi")
-		self:isEqual(tree.children[2].children[1].name, "proc1")
-		self:isEqual(tree.children[2].children[1].text, "one")
+		self:isEqual(tree.nodes[2].nodes[1].id, "pi")
+		self:isEqual(tree.nodes[2].nodes[1].name, "proc1")
+		self:isEqual(tree.nodes[2].nodes[1].text, "one")
 
-		self:isEqual(tree.children[2].children[2].id, "comment")
-		self:isEqual(tree.children[2].children[2].text, "two")
+		self:isEqual(tree.nodes[2].nodes[2].id, "comment")
+		self:isEqual(tree.nodes[2].nodes[2].text, "two")
 
-		self:isEqual(tree.children[3].id, "element")
-		self:isEqual(tree.children[3].name, "foo")
+		self:isEqual(tree.nodes[3].id, "element")
+		self:isEqual(tree.nodes[3].name, "foo")
 
-		self:isEqual(tree.children[3].children[1].id, "cdata")
-		self:isEqual(tree.children[3].children[1].text, "\n")
+		self:isEqual(tree.nodes[3].nodes[1].id, "cdata")
+		self:isEqual(tree.nodes[3].nodes[1].text, "\n")
 
-		self:isEqual(tree.children[3].children[2].id, "pi")
-		self:isEqual(tree.children[3].children[2].name, "proc2")
-		self:isEqual(tree.children[3].children[2].text, "in document")
+		self:isEqual(tree.nodes[3].nodes[2].id, "pi")
+		self:isEqual(tree.nodes[3].nodes[2].name, "proc2")
+		self:isEqual(tree.nodes[3].nodes[2].text, "in document")
 
-		self:isEqual(tree.children[3].children[3].id, "cdata")
-		self:isEqual(tree.children[3].children[3].text, "\n")
+		self:isEqual(tree.nodes[3].nodes[3].id, "cdata")
+		self:isEqual(tree.nodes[3].nodes[3].text, "\n")
 
-		self:isEqual(tree.children[4].id, "comment")
-		self:isEqual(tree.children[4].text, " after ")
+		self:isEqual(tree.nodes[4].id, "comment")
+		self:isEqual(tree.nodes[4].text, " after ")
 	end
 	--]====]
 
@@ -198,8 +203,8 @@ self:registerJob("DOCTYPE", function(self)
 		self:print(4, str)
 		local tree = lxl.toTable(str)
 
-		self:isEqual(tree.children[1].id, "doctype")
-		self:isEqual(tree.children[1].name, "r")
+		self:isEqual(tree.nodes[1].id, "doctype")
+		self:isEqual(tree.nodes[1].name, "r")
 
 		-- (!ELEMENT is parsed, but not included.)
 
@@ -218,13 +223,13 @@ self:registerJob("DOCTYPE", function(self)
 		-- (!NOTATION is parsed, but not included.)
 
 		-- Processing Instruction
-		self:isEqual(tree.children[1].children[1].id, "pi")
-		self:isEqual(tree.children[1].children[1].name, "somepi")
-		self:isEqual(tree.children[1].children[1].text, "foo ")
+		self:isEqual(tree.nodes[1].nodes[1].id, "pi")
+		self:isEqual(tree.nodes[1].nodes[1].name, "somepi")
+		self:isEqual(tree.nodes[1].nodes[1].text, "foo ")
 
 		-- Comment
-		self:isEqual(tree.children[1].children[2].id, "comment")
-		self:isEqual(tree.children[1].children[2].text, " comment ")
+		self:isEqual(tree.nodes[1].nodes[2].id, "comment")
+		self:isEqual(tree.nodes[1].nodes[2].text, " comment ")
 	end
 	--]====]
 
@@ -399,9 +404,9 @@ self:registerJob("DOCTYPE: PEReferences", function(self)
 		self:print(3, "[+] Skipping PEReference causes 'unexpanded entity' object creation")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		print(pretty.print(tree.children[2].children[1]))
-		self:isEqual(tree.children[2].children[1].id, "unexp")
-		self:isEqual(tree.children[2].children[1].name, "zip")
+		print(pretty.print(tree.nodes[2].nodes[1]))
+		self:isEqual(tree.nodes[2].nodes[1].id, "unexp")
+		self:isEqual(tree.nodes[2].nodes[1].name, "zip")
 	end
 	--]====]
 
@@ -421,9 +426,9 @@ self:registerJob("DOCTYPE: PEReferences", function(self)
 		self:print(3, "[+] standalone='yes' forces the XML Processor to read declarations after PEReference")
 		self:print(4, str)
 		local tree = lxl.toTable(str)
-		print(pretty.print(tree.children[2].children[1]))
-		self:isEqual(tree.children[2].children[1].id, "cdata")
-		self:isEqual(tree.children[2].children[1].text, "zop")
+		print(pretty.print(tree.nodes[2].nodes[1]))
+		self:isEqual(tree.nodes[2].nodes[1].id, "cdata")
+		self:isEqual(tree.nodes[2].nodes[1].text, "zop")
 	end
 	--]====]
 
@@ -441,8 +446,8 @@ self:registerJob("DOCTYPE: PEReferences", function(self)
 
 		self:print(3, "[+] standalone='no' or undefined: undeclared entities are permitted *if* we chose to ignore at least one PEReference")
 		local tree = lxl.toTable(str)
-		self:isEqual(tree.children[2].children[1].id, "unexp")
-		self:isEqual(tree.children[2].children[1].name, "zip")
+		self:isEqual(tree.nodes[2].nodes[1].id, "unexp")
+		self:isEqual(tree.nodes[2].nodes[1].name, "zip")
 	end
 	--]====]
 
@@ -680,12 +685,12 @@ self:registerJob("DOCTYPE: some additional <!ENTITY> syntax tests", function(sel
 		local tree = lxl.toTable(str)
 		print(pretty.print(tree))
 		self:isEqual(tree.g_entities["e"], "&lt;XY&amp;Z&gt;")
-		self:isEqual(tree.children[2].children[1].text, "<")
-		self:isEqual(tree.children[2].children[2].text, "XY")
-		self:isEqual(tree.children[2].children[3].text, "&")
-		self:isEqual(tree.children[2].children[4].text, "Z")
-		self:isEqual(tree.children[2].children[5].text, ">")
-		self:isNil(tree.children[2].children[6])
+		self:isEqual(tree.nodes[2].nodes[1].text, "<")
+		self:isEqual(tree.nodes[2].nodes[2].text, "XY")
+		self:isEqual(tree.nodes[2].nodes[3].text, "&")
+		self:isEqual(tree.nodes[2].nodes[4].text, "Z")
+		self:isEqual(tree.nodes[2].nodes[5].text, ">")
+		self:isNil(tree.nodes[2].nodes[6])
 	end
 	--]=]
 

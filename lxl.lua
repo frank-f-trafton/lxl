@@ -1,33 +1,7 @@
--- Lua XML Library v2.0.6
+-- Lua XML Library
+-- VERSION: 2.070
 -- https://github.com/frank-f-trafton/lxl
-
-
---[[
-MIT License
-
-Copyright (c) 2022 - 2025 RBTS
-
-Code from github.com/kikito/utf8_validator.lua:
-Copyright (c) 2013 Enrique García Cota + Adam Baldwin + hanzao + Equi 4 Software
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
---]]
+-- See LICENSE for licensing and copyright info.
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -38,6 +12,7 @@ local lxl = {}
 
 local interp = require(PATH .. "pile_interp")
 local namespace = require(PATH .. "lxl_namespace")
+local pAssert = require(PATH .. "pile_assert")
 local shared = require(PATH .. "lxl_shared")
 local struct = require(PATH .. "lxl_struct")
 local xIn = require(PATH .. "lxl_in")
@@ -45,7 +20,6 @@ local xOut = require(PATH .. "lxl_out")
 
 
 local lang = shared.lang
-local _argType = require(PATH .. "pile_arg_check").type
 
 
 local _mt_parser = {}
@@ -81,6 +55,8 @@ end
 
 function _mt_parser:setCheckCharacters(v)
 	self.check_characters = not not v
+
+	return self
 end
 
 
@@ -94,6 +70,8 @@ function _mt_parser:setNamespaceMode(v)
 		error(lang.err_bad_ns_mode)
 	end
 	self.namespace_mode = v
+
+	return self
 end
 
 
@@ -104,6 +82,8 @@ end
 
 function _mt_parser:setCollectComments(enabled)
 	self.collect_comments = not not enabled
+
+	return self
 end
 
 
@@ -114,6 +94,8 @@ end
 
 function _mt_parser:setCollectProcessingInstructions(enabled)
 	self.collect_pi = not not enabled
+
+	return self
 end
 
 
@@ -124,6 +106,8 @@ end
 
 function _mt_parser:setNormalizeLineEndings(enabled)
 	self.normalize_line_endings = not not enabled
+
+	return self
 end
 
 
@@ -134,6 +118,8 @@ end
 
 function _mt_parser:setCheckEncodingMismatch(enabled)
 	self.check_encoding_mismatch = not not enabled
+
+	return self
 end
 
 
@@ -143,9 +129,11 @@ end
 
 
 function _mt_parser:setMaxEntityBytes(n)
-	_argType(1, n, "number")
+	pAssert.type(1, n, "number")
 
 	self.max_entity_bytes = n
+
+	return self
 end
 
 
@@ -156,6 +144,8 @@ end
 
 function _mt_parser:setRejectDoctype(enabled)
 	self.reject_doctype = not not enabled
+
+	return self
 end
 
 
@@ -166,6 +156,8 @@ end
 
 function _mt_parser:setRejectInternalSubset(enabled)
 	self.reject_internal_subset = not not enabled
+
+	return self
 end
 
 
@@ -176,6 +168,8 @@ end
 
 function _mt_parser:setCopyDocType(enabled)
 	self.copy_doctype = not not enabled
+
+	return self
 end
 
 
@@ -186,6 +180,8 @@ end
 
 function _mt_parser:setRejectUnexpandedEntities(enabled)
 	self.reject_unexp_ent = not not enabled
+
+	return self
 end
 
 
@@ -196,6 +192,8 @@ end
 
 function _mt_parser:setWarnDuplicateEntityDeclarations(enabled)
 	self.warn_dupe_decl = not not enabled
+
+	return self
 end
 
 
@@ -206,6 +204,8 @@ end
 
 function _mt_parser:setWriteXMLDeclaration(enabled)
 	self.out_xml_decl = not not enabled
+
+	return self
 end
 
 
@@ -216,6 +216,8 @@ end
 
 function _mt_parser:setWriteDocType(enabled)
 	self.out_doc_type = not not enabled
+
+	return self
 end
 
 
@@ -226,6 +228,8 @@ end
 
 function _mt_parser:setWritePretty(enabled)
 	self.out_pretty = not not enabled
+
+	return self
 end
 
 
@@ -238,12 +242,14 @@ function _mt_parser:setWriteIndent(ch, qty)
 	if ch ~= " " and ch ~= "\t" then
 		error(lang.err_bad_indent)
 	end
-	_argType(2, qty, "nil", "number")
+	pAssert.types(2, qty, "nil", "number")
 	qty = qty or 1
 	qty = math.max(1, math.floor(qty))
 
 	self.out_indent_ch = ch
 	self.out_indent_qty = qty
+
+	return self
 end
 
 
@@ -254,6 +260,8 @@ end
 
 function _mt_parser:setWriteBigEndian(enabled)
 	self.out_big_endian = not not enabled
+
+	return self
 end
 
 
@@ -262,33 +270,49 @@ function _mt_parser:getWriteBigEndian()
 end
 
 
-function _mt_parser:toTable(str)
-	_argType(1, str, "string")
+function _mt_parser:toTable(str, name)
+	pAssert.type(1, str, "string")
 
-	return xIn.parse(str, self)
+	return xIn.parse(str, self, name)
 end
 
 
-function _mt_parser:toString(xml_obj)
-	_argType(1, xml_obj, "table")
+function _mt_parser:toString(xml_obj, name)
+	pAssert.type(1, xml_obj, "table")
 
 	return xOut.parse(xml_obj, self)
 end
 
 
-function lxl.toTable(str)
-	_argType(1, str, "string")
+function _mt_parser:fragmentToString(element)
+	pAssert.type(1, element, "table")
+
+	return xOut.parseFragment(element, self)
+end
+
+
+function lxl.toTable(str, name)
+	pAssert.type(1, str, "string")
+	pAssert.typeEval(2, name, "string")
 
 	local parser = lxl.newParser()
-	return parser:toTable(str)
+	return parser:toTable(str, name)
 end
 
 
 function lxl.toString(xml_obj)
-	_argType(1, xml_obj, "table")
+	pAssert.type(1, xml_obj, "table")
 
 	local parser = lxl.newParser()
 	return parser:toString(xml_obj)
+end
+
+
+function lxl.fragmentToString(element)
+	pAssert.type(1, element, "table")
+
+	local parser = lxl.newParser()
+	return parser:fragmentToString(element)
 end
 
 
@@ -301,7 +325,7 @@ local _mode_all = (_VERSION == "Lua 5.1" or _VERSION == "Lua 5.2") and "*a" or "
 
 
 function lxl.load(path)
-	_argType(1, path, "string")
+	pAssert.type(1, path, "string")
 
 	local f, err = io.open(path, "r")
 	if not f then

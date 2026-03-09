@@ -9,8 +9,6 @@ include::snippets/header.adoc[]
 
 LXL is a non-validating XML 1.0 processor for Lua 5.1 - 5.4.
 
-The repo can be found https://www.github.com/frank-f-trafton/lxl[here]. This documentation is available https://frank-f-trafton.github.io/lxl/index.html[online], and it may also be viewed locally by pointing your web browser to the files in `docs/html5/…`.
-
 
 toc::[]
 
@@ -56,7 +54,7 @@ xml_obj:pruneNodes("comment", "pi")
 xml_obj:mergeCharacterData()
 xml_obj:pruneSpace()
 
-local root = xml_obj:getRoot()
+local root = xml_obj:getRootElement()
 
 local e1 = root:find("element", "elem1")
 
@@ -88,42 +86,54 @@ print(lxl.toString(xml_obj))
 
 These files are required:
 
-* `lxl.lua`
+....
+lxl.lua
+lxl_in.lua
+lxl_namespace.lua
+lxl_out.lua
+lxl_shared.lua
+lxl_struct.lua
+pile_arg_check.lua
+pile_interp.lua
+pile_string_proc.lua
+pile_string_walk.lua
+pile_table.lua
+pile_tree.lua
+pile_utf8.lua
+pile_utf8_conv.lua
+....
 
-* `lxl_in.lua`
-
-* `lxl_namespace.lua`
-
-* `lxl_out.lua`
-
-* `lxl_shared.lua`
-
-* `lxl_struct.lua`
-
-* `pile_arg_check.lua`
-
-* `pile_interp.lua`
-
-* `pile_table.lua`
-
-* `pile_utf8.lua`
-
-* `pile_utf8_conv.lua`
-
-* `string_proc.lua`
-
-* `string_walk.lua`
 
 All files beginning with `example` or `test` may be removed.
+
+
+== Links
+
+* https://www.github.com/frank-f-trafton/lxl[Git repository]
+
+* https://frank-f-trafton.github.io/lxl/index.html[Online documentation]
+
+The docs can be read offline by downloading the repo and pointing your web browser to the files in `docs/html5`.
 
 
 == License (MIT)
 
 ----
+MIT License
+
 Copyright (c) 2022 - 2026 RBTS / Frank F. Trafton
 
 Code from github.com/kikito/utf8_validator.lua:
 Copyright (c) 2013 Enrique García Cota + Adam Baldwin + hanzao + Equi 4 Software
+
+PILE Base:
+  Copyright (c) 2024 - 2026 PILE Contributors
+
+  LUIGI code: Copyright (c) 2015 airstruck
+    https://github.com/airstruck/luigi
+
+  lume code: Copyright (c) 2020 rxi
+    https://github.com/rxi/lume
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -142,6 +152,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 ----
 
 
