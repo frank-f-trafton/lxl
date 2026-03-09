@@ -781,7 +781,7 @@ local resolved = Node:resolvePath(path, [simple])
 
 * `path`: The path string.
 
-* `[simple]`: **(false)** When true, disables `.` (this node), `..` (parent node), and the ability to anchor the searches to the root node (by starting with `/`).
+* `[simple]`: __(false)__ When true, disables `.` (this node), `..` (parent node), and the ability to anchor the searches to the root node (by starting with `/`).
 
 **Returns:** On success, the resolved node. Upon failure, `nil`, an error string, and the position in the path string where the search failed.
 
@@ -816,7 +816,7 @@ local result = Node:find(id, [name], [i])
 
 * `[name]`: The node's name, if applicable. Pass nothing or `nil` for node types which do not have a name (see notes).
 
-* `i`: *(1)* Index of the first child to check.
+* `i`: __(1)__ Index of the first child to check.
 
 **Returns:** A node that matches the search criteria, plus the node's sibling index, or `nil` if there was no match.
 
