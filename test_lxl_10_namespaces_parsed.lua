@@ -1,5 +1,5 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -17,8 +17,6 @@ local inspect = require(PATH .. "test.inspect")
 local lxl = require(PATH .. "lxl")
 local namespace = require(PATH .. "lxl_namespace")
 local pretty = require(PATH .. "test_pretty")
-local pUTF8 = require(PATH .. "pile_utf8")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
 local struct = require(PATH .. "lxl_struct")
 
 
@@ -36,7 +34,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("xmlParser", cli_verbosity)
+local self = errTest.new("XmlParser", cli_verbosity)
 
 
 -- [===[

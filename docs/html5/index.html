@@ -22,10 +22,20 @@
 <a href="appendix.html">Appendix</a></p>
 </div>
 <div class="paragraph">
-<p><strong>Version:</strong> 2.070</p>
+<p>LXL is a non-validating XML 1.0 processor for <a href="https://www.lua.org/"><strong>Lua</strong></a> 5.1 - 5.4.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.github.com/frank-f-trafton/lxl"><strong>Git repository</strong></a></p>
+</li>
+<li>
+<p><a href="https://frank-f-trafton.github.io/lxl/index.html"><strong>Online documentation</strong></a></p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>LXL is a non-validating XML 1.0 processor for Lua 5.1 - 5.4.</p>
+<p>The docs can be read offline by downloading the repo and pointing your web browser to the files in <code>docs/html5</code>.</p>
 </div>
 <div id="toc" class="toc">
 <div id="toctitle" class="title">Table of Contents</div>
@@ -37,7 +47,6 @@
 </li>
 <li><a href="#_example">Example</a></li>
 <li><a href="#_files">Files</a></li>
-<li><a href="#_links">Links</a></li>
 <li><a href="#_license_mit">License (MIT)</a></li>
 </ul>
 </div>
@@ -73,7 +82,7 @@
 <p>All PEReferences in the DTD Internal Subset are skipped; non-validating processors are not required to handle them.</p>
 </li>
 <li>
-<p>Does not directly serialize DOCTYPE (see <a href="appendix.html#serializing-doctype">Serializing DOCTYPE</a>)</p>
+<p>Does not <a href="appendix.html#_serializing_doctype">directly serialize DOCTYPE</a></p>
 </li>
 <li>
 <p>No XML 1.1 features</p>
@@ -146,36 +155,19 @@ lxl_namespace.lua
 lxl_out.lua
 lxl_shared.lua
 lxl_struct.lua
-pile_arg_check.lua
-pile_interp.lua
-pile_string_proc.lua
-pile_string_walk.lua
-pile_table.lua
-pile_tree.lua
-pile_utf8.lua
-pile_utf8_conv.lua</pre>
+p_assert.lua
+p_interp.lua
+p_name.lua
+p_string_proc.lua
+p_string_walk.lua
+p_table.lua
+p_tree.lua
+p_utf8.lua
+p_utf8_conv.lua</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>All files beginning with <code>example</code> or <code>test</code> may be removed.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_links">Links</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://www.github.com/frank-f-trafton/lxl">Git repository</a></p>
-</li>
-<li>
-<p><a href="https://frank-f-trafton.github.io/lxl/index.html">Online documentation</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The docs can be read offline by downloading the repo and pointing your web browser to the files in <code>docs/html5</code>.</p>
 </div>
 </div>
 </div>
@@ -220,12 +212,15 @@ SOFTWARE.</pre>
 </div>
 </div>
 <hr>
+<div class="paragraph">
+<p>VERSION: 2.075</p>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-03-09 19:17:11 -0300
+Last updated 2026-03-18 20:50:08 -0300
 </div>
 </div>
 </body>

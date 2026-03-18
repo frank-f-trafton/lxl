@@ -1,5 +1,5 @@
--- PILE Tree
--- VERSION: 2.101
+-- PILE Base: pTree
+-- VERSION: 2.105
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -40,8 +40,7 @@ local M = {}
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local interp = require(PATH .. "pile_interp")
-local pAssert = require(PATH .. "pile_assert")
+local pAssert = require(PATH .. "p_assert")
 
 
 local ipairs, table, type = ipairs, table, type

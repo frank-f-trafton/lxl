@@ -1,5 +1,5 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -16,8 +16,8 @@ local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 local lxl = require(PATH .. "lxl")
 local pretty = require(PATH .. "test_pretty")
-local pUTF8 = require(PATH .. "pile_utf8")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
+local pUtf8 = require(PATH .. "p_utf8")
+local pUtf8Conv = require(PATH .. "p_utf8_conv")
 
 
 local hex = string.char
@@ -34,7 +34,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("xmlParser", cli_verbosity)
+local self = errTest.new("XmlParser", cli_verbosity)
 
 
 self:registerFunction("lxl.toTable()", lxl.toTable)
@@ -140,7 +140,7 @@ self:registerJob("XML Declaration", function(self)
 
 	do
 		-- FFFE == UTF-16 little endian byte order mark
-		local str = hex(0xff, 0xfe) .. pUTF8Conv.utf8_utf16([=[<?xml version="1.0" encoding="UTF-16"?><r></r>]=])
+		local str = hex(0xff, 0xfe) .. pUtf8Conv.fromUtf8ToUtf16([=[<?xml version="1.0" encoding="UTF-16"?><r></r>]=])
 		local tree = self:expectLuaReturn('encoding "UTF-16" (little endian)', lxl.toTable, str)
 		print(pretty.print(tree))
 		self:isEqual(tree.encoding, "UTF-16")
@@ -149,7 +149,7 @@ self:registerJob("XML Declaration", function(self)
 
 	do
 		-- FEFF == UTF-16 big endian byte order mark
-		local str = hex(0xfe, 0xff) .. pUTF8Conv.utf8_utf16([=[<?xml version="1.0" encoding="UTF-16"?><r></r>]=], true)
+		local str = hex(0xfe, 0xff) .. pUtf8Conv.fromUtf8ToUtf16([=[<?xml version="1.0" encoding="UTF-16"?><r></r>]=], true)
 		local tree = self:expectLuaReturn('encoding "UTF-16" (big endian)', lxl.toTable, str)
 		print(pretty.print(tree))
 		self:isEqual(tree.encoding, "UTF-16")
@@ -190,7 +190,7 @@ self:registerJob("prolog", function(self)
 	do
 		local tree = self:expectLuaReturn("empty prolog", lxl.toTable, [=[<r></r>]=])
 		print(pretty.print(tree))
-		self:isEqual(tree:getDocType(), nil)
+		self:isEqual(tree:getDoctype(), nil)
 	end
 
 

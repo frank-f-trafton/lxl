@@ -1,5 +1,5 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -15,8 +15,8 @@ require(PATH .. "test.strict")
 local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 local pretty = require(PATH .. "test_pretty")
-local pUTF8 = require(PATH .. "pile_utf8")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
+local pUtf8 = require(PATH .. "p_utf8")
+local pUtf8Conv = require(PATH .. "p_utf8_conv")
 local shared = require(PATH .. "lxl_shared")
 local lxl = require(PATH .. "lxl")
 
@@ -35,7 +35,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("xmlParser", cli_verbosity)
+local self = errTest.new("XmlParser", cli_verbosity)
 
 
 self:registerFunction("lxl.toTable()", lxl.toTable)
@@ -45,7 +45,7 @@ self:registerFunction("lxl.toTable()", lxl.toTable)
 
 
 -- [===[
-self:registerJob("xmlParser:setNamespaceMode(), getNamespaceMode()", function(self)
+self:registerJob("XmlParser:setNamespaceMode(), getNamespaceMode()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -70,7 +70,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setCollectComments(), getCollectComments()", function(self)
+self:registerJob("XmlParser:setCollectComments(), getCollectComments()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -95,7 +95,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setCollectProcessingInstructions(), getCollectProcessingInstructions()", function(self)
+self:registerJob("XmlParser:setCollectProcessingInstructions(), getCollectProcessingInstructions()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -120,7 +120,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setNormalizeLineEndings(), getNormalizeLineEndings()", function(self)
+self:registerJob("XmlParser:setNormalizeLineEndings(), getNormalizeLineEndings()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -146,7 +146,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setCheckEncodingMismatch(), getCheckEncodingMismatch()", function(self)
+self:registerJob("XmlParser:setCheckEncodingMismatch(), getCheckEncodingMismatch()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -171,7 +171,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setMaxEntityBytes(), getMaxEntityBytes()", function(self)
+self:registerJob("XmlParser:setMaxEntityBytes(), getMaxEntityBytes()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -199,7 +199,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setRejectDoctype(), getRejectDoctype()", function(self)
+self:registerJob("XmlParser:setRejectDoctype(), getRejectDoctype()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -223,7 +223,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setRejectInternalSubset(), getRejectInternalSubset()", function(self)
+self:registerJob("XmlParser:setRejectInternalSubset(), getRejectInternalSubset()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -247,12 +247,12 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setCopyDocType(), getCopyDocType()", function(self)
+self:registerJob("XmlParser:setCopyDoctype(), getCopyDoctype()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		p:setCopyDocType(true)
-		self:isEqual(p:getCopyDocType(), true)
+		p:setCopyDoctype(true)
+		self:isEqual(p:getCopyDoctype(), true)
 		local o = p:toTable([=[<!DOCTYPE r [<!ENTITY foo "bar">]><r/>]=])
 
 		self:isEqual(o.doctype_str, [=[<!DOCTYPE r [<!ENTITY foo "bar">]>]=])
@@ -263,7 +263,7 @@ self:registerJob("xmlParser:setCopyDocType(), getCopyDocType()", function(self)
 	do
 		self:print(4, "Test method chaining")
 		local p = lxl.newParser()
-		local rv = p:setCopyDocType(true):setCopyDocType(false)
+		local rv = p:setCopyDoctype(true):setCopyDoctype(false)
 		self:isEqual(p, rv)
 	end
 	--]====]
@@ -273,7 +273,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setRejectUnexpandedEntities(), getRejectUnexpandedEntities()", function(self)
+self:registerJob("XmlParser:setRejectUnexpandedEntities(), getRejectUnexpandedEntities()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -303,7 +303,7 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setWarnDuplicateEntityDeclarations(), getWarnDuplicateEntityDeclarations()", function(self)
+self:registerJob("XmlParser:setWarnDuplicateEntityDeclarations(), getWarnDuplicateEntityDeclarations()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -337,14 +337,14 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setWriteXMLDeclaration(), getWriteXMLDeclaration()", function(self)
+self:registerJob("XmlParser:setWriteXmlDeclaration(), getWriteXmlDeclaration()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		p:setWriteXMLDeclaration(false)
-		self:isEqual(p:getWriteXMLDeclaration(), false)
+		p:setWriteXmlDeclaration(false)
+		self:isEqual(p:getWriteXmlDeclaration(), false)
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:newElement("root")
 		local s = p:toString(o)
 		self:isEqual(s, [=[<root/>]=])
@@ -355,7 +355,7 @@ self:registerJob("xmlParser:setWriteXMLDeclaration(), getWriteXMLDeclaration()",
 	do
 		self:print(4, "Test method chaining")
 		local p = lxl.newParser()
-		local rv = p:setWriteXMLDeclaration(true):setWriteXMLDeclaration(false)
+		local rv = p:setWriteXmlDeclaration(true):setWriteXmlDeclaration(false)
 		self:isEqual(p, rv)
 	end
 	--]====]
@@ -365,13 +365,13 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setWriteDocType(), getWriteDocType()", function(self)
+self:registerJob("XmlParser:setWriteDoctype(), getWriteDoctype()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		p:setWriteDocType(true)
-		self:isEqual(p:getWriteDocType(), true)
-		local o = lxl.newXMLObject()
+		p:setWriteDoctype(true)
+		self:isEqual(p:getWriteDoctype(), true)
+		local o = lxl.newXmlObject()
 		o.doctype_str = [=[
 <!DOCTYPE root [
 <!ENTITY foo "bar">
@@ -392,7 +392,7 @@ self:registerJob("xmlParser:setWriteDocType(), getWriteDocType()", function(self
 	do
 		self:print(4, "Test method chaining")
 		local p = lxl.newParser()
-		local rv = p:setWriteDocType(true):setWriteDocType(false)
+		local rv = p:setWriteDoctype(true):setWriteDoctype(false)
 		self:isEqual(p, rv)
 	end
 	--]====]
@@ -402,13 +402,13 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setWritePretty(), getWritePretty()", function(self)
+self:registerJob("XmlParser:setWritePretty(), getWritePretty()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
 		p:setWritePretty(false)
 		self:isEvalFalse(p:getWritePretty())
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e1 = o:newElement("root")
 		local e2 = e1:newElement("a")
 		local e3 = e2:newElement("b")
@@ -433,18 +433,18 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setWriteBigEndian(), getWriteBigEndian()", function(self)
+self:registerJob("XmlParser:setWriteBigEndian(), getWriteBigEndian()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		p:setWriteXMLDeclaration(false)
+		p:setWriteXmlDeclaration(false)
 		p:setWriteBigEndian(true)
 		self:isEqual(p:getWriteBigEndian(), true)
-		local o = lxl.newXMLObject()
-		o:setXMLEncoding("UTF-16")
+		local o = lxl.newXmlObject()
+		o:setXmlEncoding("UTF-16")
 		local e1 = o:newElement("root")
 		local s = p:toString(o)
-		local comparison, c_i, c_err = shared.bom_utf16_be .. pUTF8Conv.utf8_utf16([=[<root/>]=], true)
+		local comparison, c_i, c_err = shared.bom_utf16_be .. pUtf8Conv.fromUtf8ToUtf16([=[<root/>]=], true)
 		if not comparison then error(c_err) end
 		self:isEqual(s, comparison)
 	end
@@ -464,16 +464,16 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:setWriteIndent(), getWriteIndent()", function(self)
+self:registerJob("XmlParser:setWriteIndent(), getWriteIndent()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		p:setWriteXMLDeclaration(false)
+		p:setWriteXmlDeclaration(false)
 		p:setWriteIndent("\t", 2)
 		local ch, qty = p:getWriteIndent()
 		self:isEqual(ch, "\t")
 		self:isEqual(qty, 2)
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e1 = o:newElement("root")
 		local e2 = e1:newElement("a")
 		local s = p:toString(o)
@@ -495,7 +495,26 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:toTable()", function(self)
+self:registerJob("XmlParser:setTerseMode(), getTerseMode()", function(self)
+
+	-- Actual Terse Mode behavior is tested in the 'XmlParser:toTable()' job.
+
+	-- [====[
+	do
+		local p = lxl.newParser()
+		p:setTerseMode(true)
+		self:isEqual(p.terse_mode, true)
+		p:setTerseMode()
+		self:isEqual(p:getTerseMode(), false)
+	end
+	--]====]
+end
+)
+--]===]
+
+
+-- [===[
+self:registerJob("XmlParser:toTable()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
@@ -522,6 +541,20 @@ self:registerJob("xmlParser:toTable()", function(self)
 
 	-- [====[
 	do
+		self:print(3, "Test Terse Mode hiding the name in error output")
+		local p = lxl.newParser()
+		p:setTerseMode(true)
+		local ok, err = pcall(p.toTable, p, [=[<root></bad-tag>]=], "my_cool_document.xml")
+		self:isEvalFalse(ok)
+		local i = err:find("my_cool_document.xml")
+		self:print(4, "The error: " .. err)
+		self:isEvalFalse(i)
+	end
+	--]====]
+
+
+	-- [====[
+	do
 		local p = lxl.newParser()
 		self:expectLuaError("arg #1 bad type", p.toTable, p, {})
 		self:expectLuaError("arg #1 bad input", p.toTable, p, "zyp")
@@ -533,12 +566,12 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:toString()", function(self)
+self:registerJob("XmlParser:toString()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		p:setWriteXMLDeclaration(false)
-		local o = lxl.newXMLObject()
+		p:setWriteXmlDeclaration(false)
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local e2 = e:newCharacterData("foobar")
 		local s = p:toString(o)
@@ -560,11 +593,11 @@ end
 
 
 -- [===[
-self:registerJob("xmlParser:fragmentToString()", function(self)
+self:registerJob("XmlParser:fragmentToString()", function(self)
 	-- [====[
 	do
 		local p = lxl.newParser()
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local e2 = e:newElement("trunk")
 		local e3 = e2:newCharacterData("bark")
@@ -623,7 +656,7 @@ end
 -- [===[
 self:registerJob("lxl.toString()", function(self)
 	-- [====[
-	local o = lxl.newXMLObject()
+	local o = lxl.newXmlObject()
 	local e = o:newElement("root")
 	local e2 = e:newCharacterData("foobar")
 	local s = lxl.toString(o)
@@ -641,7 +674,7 @@ end
 self:registerJob("lxl.fragmentToString()", function(self)
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local e2 = e:newElement("trunk")
 		local e3 = e2:newCharacterData("bark")
@@ -662,7 +695,7 @@ end
 --]===]
 
 
--- lxl.newXMLObject() -- nothing to test.
+-- lxl.newXmlObject() -- nothing to test.
 
 
 -- [===[

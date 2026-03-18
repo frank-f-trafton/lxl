@@ -1,5 +1,5 @@
 -- Lua XML Library: Shared functions and data
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -15,9 +15,6 @@ do
 	local jit = rawget(_G, "jit")
 	jit_tracing = jit and jit.status() or false
 end
-
-
-local pUTF8 = require(PATH .. "pile_utf8")
 
 
 shared.lang = {
@@ -78,7 +75,7 @@ shared.lang = {
 	xml_geref_unbalanced = "general entity reference didn't match the 'content' production rule. (Make sure the replacement text has balanced content.)",
 	xml_peref_unclosed = "unclosed PEReference (%;)",
 	xml_peref_missing_name = "missing name for PEReference",
-	xml_peref_int_subset = "parameter entity references are not allowed within markup declarations",
+	xml_peref_int_subset = "PEReferences are not allowed within markup declarations",
 	xml_peref_bad_name = "invalid Name in PEReference (%;)",
 	xml_peref_bad_ch = "invalid characters within PEReference name",
 	xml_edecl_sp = "expected whitespace in entity declaration",
@@ -123,7 +120,7 @@ shared.lang = {
 
 	-- lxl_out.lua
 	xml_out_1root = "only one root element is allowed per XML document",
-	xml_out_bad_node = "invalid xmlObject node ID",
+	xml_out_bad_node = "invalid XmlObject node ID",
 	xml_out_expect_xml_obj = "expected 'xml_object' table",
 	xml_out_bad_decl = "failed to parse XML Declaration fields: $1",
 	xml_out_0root = "no root element found",
@@ -150,32 +147,30 @@ shared.lang = {
 	struct_insert_oob = "insertion index is out of bounds",
 	struct_invalid_path = "invalid path",
 	struct_2root = "attempted to create multiple root document nodes",
-	struct_doctype_wrong_parent = "DocType nodes can only be attached to xmlObjects",
+	struct_doctype_wrong_parent = "DocType nodes can only be attached to XmlObjects",
 	struct_ns1_undeclare_prefix = "cannot undeclare prefixed namespace declarations in XML Namespaces 1.0",
 	struct_bad_xml_ver = "invalid or unsupported XML Version",
 	struct_bad_xml_enc = "invalid or unsupported XML Encoding",
 	struct_bad_xml_sta = "invalid XML Standalone value",
 	struct_bad_ns_mode = "argument #1: expected nil, '1.0' or '1.1' for namespace mode",
-	struct_missing_xml_obj = "xmlObject root element not found"
+	struct_missing_xml_obj = "XmlObject root element not found"
 }
 local lang = shared.lang
 
 
-local interp = require(PATH .. "pile_interp")
-local pAssert = require(PATH .. "pile_assert")
-local pTable = require(PATH .. "pile_table")
-
-
-local _newLUTV, _invertLUT = pTable.newLUTV, pTable.invertLUT
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
+local pTable = require(PATH .. "p_table")
+local pUtf8 = require(PATH .. "p_utf8")
 
 
 function shared.assertCharacters(s, with_counters)
 	local ok, i, byte = shared.checkXMLCharacters(s)
 	if not ok then
 		if with_counters then
-			error(interp(lang.err_unsup_unicode1, i, byte))
+			error(pInterp(lang.err_unsup_unicode1, i, byte))
 		else
-			error(interp(lang.err_unsup_unicode2))
+			error(pInterp(lang.err_unsup_unicode2))
 		end
 	end
 end
@@ -194,11 +189,11 @@ function shared.checkRangeLUT(lut, value)
 end
 
 
-shared.lut_supported_encodings = _newLUTV("UTF-8", "UTF-16")
+shared.lut_supported_encodings = pTable.newLutV("UTF-8", "UTF-16")
 
 
 shared.lut_default_entities = {lt = "<", gt = ">", amp = "&", quot = "\"", apos = "'"}
-shared.lut_default_rev = _invertLUT(shared.lut_default_entities)
+shared.lut_default_rev = pTable.invertKeysAndValues(shared.lut_default_entities)
 
 
 -- Valid code points and code point ranges for an XML document as a whole.
@@ -262,7 +257,7 @@ function shared.checkXMLCharacters(s)
 
 	if jit_tracing then
 		local n, b = 1, 1
-		local codeFromString = pUTF8.codeFromString
+		local codeFromString = pUtf8.codeFromString
 		local checkRangeLUT = shared.checkRangeLUT
 		local lut = shared.lut_xml_unicode
 		while b <= #s do
@@ -316,7 +311,7 @@ function shared.validateXMLName(name)
 		return nil, lang.xml_name_1cp
 	end
 	while i <= #name do
-		local u8_code, u8_str = pUTF8.codeFromString(name, i)
+		local u8_code, u8_str = pUtf8.codeFromString(name, i)
 		if not u8_code then
 			return nil, lang.xml_u8_err
 		end
@@ -368,13 +363,13 @@ end
 
 function shared.checkXMLDecl(version, encoding, standalone)
 	if version ~= "1.0" then
-		return nil, interp(lang.xml_unsup_ver, tostring(version))
+		return nil, pInterp(lang.xml_unsup_ver, tostring(version))
 
 	elseif encoding and not shared.lut_supported_encodings[encoding] then
-		return nil, interp(lang.xml_unsup_enc, tostring(encoding))
+		return nil, pInterp(lang.xml_unsup_enc, tostring(encoding))
 
 	elseif standalone and standalone ~= "yes" and standalone ~= "no" then
-		return nil, interp(lang.xml_unsup_sta, tostring(standalone))
+		return nil, pInterp(lang.xml_unsup_sta, tostring(standalone))
 	end
 
 	return true

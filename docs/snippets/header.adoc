@@ -1,6 +1,3 @@
 link:index.html[Home] |
 link:api.html[API] |
 link:appendix.html[Appendix]
-
-**Version:** 2.070
-

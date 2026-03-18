@@ -1,5 +1,5 @@
--- PILE StringWalk
--- VERSION: 2.101
+-- PILE Base: pStringWalk
+-- VERSION: 2.105
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -65,8 +65,8 @@ local lang = M.lang
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local interp = require(PATH .. "pile_interp")
-local pAssert = require(PATH .. "pile_assert")
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
 
 
 local _assertInteger = pAssert.integer
@@ -82,19 +82,19 @@ _mt_walk.__index = _mt_walk
 -- Checks the reader object internal state.
 local function _ok(W)
 	if type(W._st) ~= "table" then
-		error(interp(lang.err_st_type, "_st (stack)"), 2)
+		error(pInterp(lang.err_st_type, "_st (stack)"), 2)
 
 	elseif type(W.S) ~= "string" then
-		error(interp(lang.err_st_type, "S"), 2)
+		error(pInterp(lang.err_st_type, "S"), 2)
 
 	elseif type(W.I) ~= "number" then
-		error(interp(lang.state_assert_type, "I"), 2)
+		error(pInterp(lang.state_assert_type, "I"), 2)
 
 	elseif W.I ~= math.floor(W.I) then
-		error(interp(lang.err_st_non_int, "I"), 2)
+		error(pInterp(lang.err_st_non_int, "I"), 2)
 
 	elseif W.I < 1 then
-		error(interp(lang.err_st_bound, "I"), 2)
+		error(pInterp(lang.err_st_bound, "I"), 2)
 	end
 	-- 'I' being beyond #S is considered 'eos'
 end
@@ -166,7 +166,7 @@ end
 function _mt_walk.push(W, s)
 	table.insert(W._st, {W.S, W.I})
 	W.S, W.I = s, 1
-	
+
 	return W
 end
 
@@ -175,7 +175,7 @@ function _mt_walk.pop(W)
 	if #W._st == 0 then error(lang.err_stack_empty) end
 	local fr = table.remove(W._st)
 	W.S, W.I = fr[1], fr[2]
-	
+
 	return W
 end
 
@@ -184,7 +184,7 @@ function _mt_walk.popAll(W)
 	while #W._st > 0 do
 		W:pop()
 	end
-	
+
 	return W
 end
 
@@ -213,16 +213,16 @@ function _mt_walk.setString(W, s)
 
 	W:popAll()
 	W.S, W.I = s, 1
-	
+
 	return W
 end
 
 
 function _mt_walk.setName(W, name)
 	pAssert.typeEval(1, name, "string")
-	
+
 	W._name = name or nil
-	
+
 	return W
 end
 
@@ -237,14 +237,14 @@ function _mt_walk.reset(W)
 	W.I = 1
 
 	_ok(W)
-	
+
 	return W
 end
 
 
 function _mt_walk.setTerseMode(W, enabled)
 	W._terse = not not enabled
-	
+
 	return W
 end
 
@@ -256,7 +256,7 @@ end
 
 function _mt_walk.setByteMode(W, enabled)
 	W._bmode = not not enabled
-	
+
 	return W
 end
 
@@ -269,7 +269,7 @@ end
 function _mt_walk.setLineCharDisplay(W, line, char)
 	W._ln = not not line
 	W._cn = not not char
-	
+
 	return W
 end
 
@@ -435,7 +435,7 @@ end
 
 function _mt_walk.goEOS(W)
 	W.I = #W.S + 1
-	
+
 	return W
 end
 
@@ -451,7 +451,7 @@ function _mt_walk.error(W, s, level)
 	end
 
 	local msg_str, a, b = _getPosInfo(W)
-	error(_nameString(W) .. interp(msg_str, a, b) .. tostring(s), tonumber(level) or 2)
+	error(_nameString(W) .. pInterp(msg_str, a, b) .. tostring(s), tonumber(level) or 2)
 end
 
 
@@ -461,9 +461,9 @@ function _mt_walk.warn(W, ...)
 	end
 
 	local msg_str, a, b = _getPosInfo(W)
-	io.write(lang.warn .. " " .. _nameString(W) .. interp(msg_str, a, b))
+	io.write(lang.warn .. " " .. _nameString(W) .. pInterp(msg_str, a, b))
 	print(...)
-	
+
 	return W
 end
 
@@ -494,7 +494,7 @@ function _mt_walk._status(W)
 	for i, fr in ipairs(W._st) do
 		print("  STACK #" .. i .. ": BYTE: " .. fr[2] .. "/" .. #fr[1])
 	end
-	
+
 	return W
 end
 

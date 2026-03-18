@@ -1,5 +1,5 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -16,7 +16,6 @@ local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 local lxl = require(PATH .. "lxl")
 local pretty = require(PATH .. "test_pretty")
-local pUTF8 = require(PATH .. "pile_utf8")
 
 
 local hex = string.char
@@ -33,7 +32,7 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("xmlParser", cli_verbosity)
+local self = errTest.new("XmlParser", cli_verbosity)
 
 
 self:registerFunction("lxl.toTable()", lxl.toTable)
@@ -52,9 +51,9 @@ self:registerJob("DOCTYPE", function(self)
 		self:print(4, str)
 		local tree = lxl.toTable(str)
 		local root = tree:getRootElement()
-		local doctype = tree:getDocType()
+		local doctype = tree:getDoctype()
 		self:print(4, pretty.print(doctype))
-		self:isEqual(tree:getDocType().name, "root")
+		self:isEqual(tree:getDoctype().name, "root")
 	end
 	--]====]
 

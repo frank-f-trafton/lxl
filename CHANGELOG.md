@@ -1,3 +1,35 @@
+# v2.075 -- 18 Mar 2026
+
+* Upgraded PILE Base from 2.101 to 2.105.
+* Edited the documentation, and tweaked the default AsciiDoc stylesheet to improve the legibility of headers.
+* In the docs and comments, changed the capitalization of some objects:
+  * `xmlObject` -> `XmlObject`
+  * `xmlParser` -> `XmlParser`
+  * `DOCTYPE` -> `Doctype`
+* Added `XmlParser:setTerseMode()` and `XmlParser:getTerseMode()`.
+* Fixed method name: `Element:GetNamespaceBinding()` -> `Element:getNamespaceBinding()`
+* Changed the capitalization of camel cased functions:
+  * `CharacterData:setCDSect()` -> `CharacterData:setCdSect()`
+  * `CharacterData:getCDSect()` -> `CharacterData:getCdSect()`
+  * `Element:getXMLSpecialAttribute()` -> `Element:getXmlSpecialAttribute()`
+  * `lxl.newXMLObject()` -> `lxl.newXmlObject()`
+  * `Node:getXMLObject()` -> `Node:getXmlObject()`
+  * `Node:findNS()` -> `Node:findInNamespace()`
+  * `XmlObject:getDocType()` -> `XmlObject:getDoctype()`
+  * `XmlObject:setXMLVersion()` -> `XmlObject:setXmlVersion()`
+  * `XmlObject:getXMLVersion()` -> `XmlObject:getXmlVersion()`
+  * `XmlObject:setXMLEncoding()` -> `XmlObject:setXmlEncoding()`
+  * `XmlObject:getXMLEncoding()` -> `XmlObject:getXmlEncoding()`
+  * `XmlObject:setXMLStandalone()` -> `XmlObject:setXmlStandalone()`
+  * `XmlObject:getXMLStandalone()` -> `XmlObject:getXmlStandalone()`
+  * `XmlParser:setCopyDocType()` -> `XmlParser:setCopyDoctype()`
+  * `XmlParser:getCopyDocType()` -> `XmlParser:getCopyDoctype()`
+  * `XmlParser:setWriteDocType()` -> `XmlParser:setWriteDoctype()`
+  * `XmlParser:getWriteDocType()` -> `XmlParser:getWriteDoctype()`
+  * `XmlParser:setWriteXMLDeclaration()` -> `XmlParser:setWriteXmlDeclaration()`
+  * `XmlParser:getWriteXMLDeclaration()` -> `XmlParser:getWriteXmlDeclaration()`
+
+
 # v2.070 -- 09 Mar 2026
 
 * Changed version scheme from `n.n.n` to `n.nnn…`.

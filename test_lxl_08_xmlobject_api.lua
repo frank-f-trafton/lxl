@@ -1,9 +1,9 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
--- Test: xmlObject API
+-- Test: XmlObject API
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -16,8 +16,6 @@ local errTest = require(PATH .. "test.err_test")
 local inspect = require(PATH .. "test.inspect")
 local lxl = require(PATH .. "lxl")
 local pretty = require(PATH .. "test_pretty")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
-local pUTF8 = require(PATH .. "pile_utf8")
 local struct = require(PATH .. "lxl_struct")
 
 
@@ -35,19 +33,19 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("xmlParser", cli_verbosity)
+local self = errTest.new("XmlParser", cli_verbosity)
 
 
 self:registerFunction("lxl.toTable()", lxl.toTable)
 
 
 -- [===[
-self:registerFunction("lxl.newXMLObject()", lxl.newXMLObject)
-self:registerJob("lxl.newXMLObject", function(self)
+self:registerFunction("lxl.newXmlObject()", lxl.newXmlObject)
+self:registerJob("lxl.newXmlObject", function(self)
 	--[====[
 	do
-		self:print(3, "[+] new xmlObject creation")
-		local o = lxl.newXMLObject()
+		self:print(3, "[+] new XmlObject creation")
+		local o = lxl.newXmlObject()
 		self:isEqual(o.id, "xml_object")
 	end
 	--]====]
@@ -57,66 +55,66 @@ end)
 self:registerJob("XML Declaration methods", function(self)
 	-- [====[
 	do
-		self:print(3, "[+] getXMLVersion(), setXMLVersion()")
-		local o = lxl.newXMLObject()
+		self:print(3, "[+] getXmlVersion(), setXmlVersion()")
+		local o = lxl.newXmlObject()
 
-		self:isNil(o:getXMLVersion())
-		o:setXMLVersion("1.0")
-		self:isEqual(o:getXMLVersion(), "1.0")
+		self:isNil(o:getXmlVersion())
+		o:setXmlVersion("1.0")
+		self:isEqual(o:getXmlVersion(), "1.0")
 
 		-- We're required by the spec to accept any version string that follows the
 		-- pattern '1.[0-9]+'.
-		o:setXMLVersion("1.0123456789")
-		self:isEqual(o:getXMLVersion(), "1.0123456789")
+		o:setXmlVersion("1.0123456789")
+		self:isEqual(o:getXmlVersion(), "1.0123456789")
 
 		-- unset the version string
-		o:setXMLVersion()
-		self:isNil(o:getXMLVersion())
+		o:setXmlVersion()
+		self:isNil(o:getXmlVersion())
 
-		self:expectLuaError("unsupported version", o.setXMLVersion, o, "2.0")
-		self:expectLuaError("setXMLVersion() arg #1 bad type", o.setXMLVersion, o, {})
+		self:expectLuaError("unsupported version", o.setXmlVersion, o, "2.0")
+		self:expectLuaError("setXmlVersion() arg #1 bad type", o.setXmlVersion, o, {})
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:print(3, "[+] getXMLEncoding(), setXMLEncoding()")
-		local o = lxl.newXMLObject()
+		self:print(3, "[+] getXmlEncoding(), setXmlEncoding()")
+		local o = lxl.newXmlObject()
 
-		self:isNil(o:getXMLEncoding())
-		o:setXMLEncoding("UTF-8")
-		self:isEqual(o:getXMLEncoding(), "UTF-8")
-		o:setXMLEncoding("UTF-16")
-		self:isEqual(o:getXMLEncoding(), "UTF-16")
+		self:isNil(o:getXmlEncoding())
+		o:setXmlEncoding("UTF-8")
+		self:isEqual(o:getXmlEncoding(), "UTF-8")
+		o:setXmlEncoding("UTF-16")
+		self:isEqual(o:getXmlEncoding(), "UTF-16")
 
 		-- unset the encoding string
-		o:setXMLEncoding()
-		self:isNil(o:getXMLEncoding())
+		o:setXmlEncoding()
+		self:isNil(o:getXmlEncoding())
 
-		self:expectLuaError("unsupported encoding", o.setXMLEncoding, o, "UTF-192")
-		self:expectLuaError("setXMLEncoding() arg #1 bad type", o.setXMLEncoding, o, {})
+		self:expectLuaError("unsupported encoding", o.setXmlEncoding, o, "UTF-192")
+		self:expectLuaError("setXmlEncoding() arg #1 bad type", o.setXmlEncoding, o, {})
 	end
 	--]====]
 
 
 	-- [====[
 	do
-		self:print(3, "[+] getXMLStandalone(), setXMLStandalone()")
-		local o = lxl.newXMLObject()
+		self:print(3, "[+] getXmlStandalone(), setXmlStandalone()")
+		local o = lxl.newXmlObject()
 
-		self:isNil(o:getXMLStandalone())
-		o:setXMLStandalone("yes")
-		self:isEqual(o:getXMLStandalone(), "yes")
-		o:setXMLStandalone("no")
-		self:isEqual(o:getXMLStandalone(), "no")
+		self:isNil(o:getXmlStandalone())
+		o:setXmlStandalone("yes")
+		self:isEqual(o:getXmlStandalone(), "yes")
+		o:setXmlStandalone("no")
+		self:isEqual(o:getXmlStandalone(), "no")
 
 		-- unset the standalone string
-		o:setXMLStandalone()
-		self:isNil(o:getXMLStandalone())
+		o:setXmlStandalone()
+		self:isNil(o:getXmlStandalone())
 
-		self:expectLuaError("invalid standalone value", o.setXMLStandalone, o, "maybe")
-		self:expectLuaError("setXMLStandalone() arg #1 bad type", o.setXMLStandalone, o, {})
+		self:expectLuaError("invalid standalone value", o.setXmlStandalone, o, "maybe")
+		self:expectLuaError("setXmlStandalone() arg #1 bad type", o.setXmlStandalone, o, {})
 	end
 	--]====]
 end
@@ -129,7 +127,7 @@ self:registerJob("Comment nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] newComment")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local c = o:newComment("foo")
 		self:isEqual(o.nodes[1], c)
 		self:isEqual(c.id, "comment")
@@ -151,7 +149,7 @@ self:registerJob("Comment nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getText / setText")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local c = o:newComment("foo")
 		self:isEqual(c:getText(), "foo")
 		c:setText("bar")
@@ -174,7 +172,7 @@ self:registerJob("Processing Instruction nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] newProcessingInstruction")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local p = o:newProcessingInstruction("targ", "inst")
 		self:isEqual(o.nodes[1], p)
 		self:isEqual(p.id, "pi")
@@ -203,7 +201,7 @@ self:registerJob("Processing Instruction nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getPITarget / setPITarget")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local p = o:newProcessingInstruction("targ", "inst")
 
 		self:isEqual(p:getTarget(), "targ")
@@ -221,7 +219,7 @@ self:registerJob("Processing Instruction nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getText / setText")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local p = o:newProcessingInstruction("targ", "inst")
 
 		self:isEqual(p:getText(), "inst")
@@ -246,7 +244,7 @@ self:registerJob("Element nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] newElement")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("elem")
 		self:isEqual(e.id, "element")
 		self:isEqual(e.name, "elem")
@@ -271,7 +269,7 @@ self:registerJob("Element nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getName() / setName() (without namespacing)")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("elem")
 		self:isEqual(e:getName(), "elem")
 		e:setName("foo")
@@ -287,7 +285,7 @@ self:registerJob("Element nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getAttribute() / setAttribute() (without namespacing)")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("elem")
 		e:setAttribute("akey", "aval")
 		self:isEqual(e.attr["akey"], "aval")
@@ -308,7 +306,7 @@ self:registerJob("Element nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getStableAttributesOrder() (without namespacing)")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("elem")
 		e:setAttribute("g", "")
 		e:setAttribute("a", "")
@@ -329,7 +327,7 @@ self:registerJob("Element nodes", function(self)
 	end
 	--]====]
 
-	-- The following methods are the same as those attached to xmlObject:
+	-- The following methods are the same as those attached to XmlObject:
 	-- Element:newComment()
 	-- Element:newProcessingInstruction()
 	-- Element:newElement()
@@ -343,7 +341,7 @@ self:registerJob("CharacterData nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] element:newCharacterData()")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local c = e:newCharacterData("chums")
 		self:isEqual(c.text, "chums")
@@ -368,7 +366,7 @@ self:registerJob("CharacterData nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] Element getText() / setText()")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local c = e:newCharacterData("zot")
 		self:isEqual(c:getText(), "zot")
@@ -383,13 +381,13 @@ self:registerJob("CharacterData nodes", function(self)
 
 	-- [====[
 	do
-		self:print(3, "[+] Element getCDSect() / setCDSect()")
-		local o = lxl.newXMLObject()
+		self:print(3, "[+] Element getCdSect() / setCdSect()")
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local c = e:newCharacterData("zot")
-		c:setCDSect(true)
+		c:setCdSect(true)
 		self:isEqual(c.cd_sect, true)
-		c:setCDSect()
+		c:setCdSect()
 		self:isEqual(c.cd_sect, false)
 	end
 	--]====]
@@ -407,7 +405,7 @@ self:registerJob("Unexpanded Entity nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] struct.newUnexpandedReference")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local r = struct.newUnexpandedReference(e, "ref")
 		self:isEqual(r.id, "unexp")
@@ -432,7 +430,7 @@ self:registerJob("Unexpanded Entity nodes", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] getName / setName")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		local r = struct.newUnexpandedReference(e, "ref")
 
@@ -456,9 +454,9 @@ self:registerJob("Pruning and Merging", function(self)
 
 	-- [====[
 	do
-		self:print(3, "[+] xmlObject:pruneNodes()")
+		self:print(3, "[+] XmlObject:pruneNodes()")
 		-- Make this tree: <!--one--><!--two--><root>foo<!--woo-->bar</root><!--three-->
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:newComment("one")
 		o:newComment("two")
 		local e = o:newElement("root")
@@ -514,10 +512,10 @@ self:registerJob("Pruning and Merging", function(self)
 
 	-- [====[
 	do
-		self:print(3, "[+] xmlObject:mergeCharacterData()")
+		self:print(3, "[+] XmlObject:mergeCharacterData()")
 		-- Make this tree, where every content word + trailing whitespace is a separate CDATA entity:
 		-- <root>One two three four <em>five six</em>seven eight <?pi?> nine ten.</root>
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		e:newCharacterData("one ")
 		e:newCharacterData("two ")
@@ -579,13 +577,13 @@ self:registerJob("Pruning and Merging", function(self)
 
 	-- [====[
 	do
-		self:print(3, "[+] xmlObject:pruneSpace() (without xml:space)")
+		self:print(3, "[+] XmlObject:pruneSpace() (without xml:space)")
 		-- Make this tree:
 		-- <root>  <a>\t<b>\n\n<c>    x    </c></b></a>   </root>
 		-- It should be converted to:
 		-- <root><a><b><c>    x    </c></b></a></root>
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		e:newCharacterData("  ")
 		local a = e:newElement("a")
@@ -644,13 +642,13 @@ self:registerJob("Pruning and Merging", function(self)
 
 	-- [====[
 	do
-		self:print(3, "[+] xmlObject:pruneSpace() (with xml:space)")
+		self:print(3, "[+] XmlObject:pruneSpace() (with xml:space)")
 		-- Make this tree:
 		-- <root> <a xml:space="preserve">  <b>   </b</a>    </root>
 		-- It should be converted to:
 		-- <root><a xml:space="preserve">  <b>   </b></a></root>
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		e:newCharacterData(" ")
 		local a = e:newElement("a")
@@ -715,7 +713,7 @@ self:registerJob("DocType node", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] struct.newDocType()")
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		table.insert(o, struct.newDocType(o, "root"))
 		self:isEqual(o.nodes[1].id, "doctype")
 		self:isEqual(o.nodes[1].name, "root")
@@ -724,16 +722,16 @@ self:registerJob("DocType node", function(self)
 		self:expectLuaError("arg #1 empty XML Name", struct.newDocType, {nodes={}}, "")
 		self:expectLuaError("arg #1 invalid XML characters", struct.newDocType, {nodes={}}, "\1\2\3")
 
-		-- An xmlObject tree should have at most one DocType node. If present, it must appear
+		-- An XmlObject tree should have at most one DocType node. If present, it must appear
 		-- before the root element. We're not going to check either condition here, nor in
 		-- the node creation function, since one could easily shift the child references around
 		-- after creating the nodes.
 
-		-- The xmlObject table doesn't have a method to create DocTypes. Except for testing,
+		-- The XmlObject table doesn't have a method to create DocTypes. Except for testing,
 		-- there's almost no reason to create this node manually; you should only see them
-		-- from xmlObjects that were created by the parser. That said, you can write out a
+		-- from XmlObjects that were created by the parser. That said, you can write out a
 		-- pre-written DOCTYPE string using 'xml_object.doctype_str' and
-		-- 'xml_object:setCopyDocType()'.
+		-- 'xml_object:setCopyDoctype()'.
 
 
 	end
@@ -744,19 +742,19 @@ end
 
 
 -- [===[
-self:registerJob("getRootElement() and getDocType()", function(self)
+self:registerJob("getRootElement() and getDoctype()", function(self)
 	-- [====[
 	do
-		self:print(3, "[+] getRootElement(), getDocType()")
-		local o = lxl.newXMLObject()
-		-- You can call getDocType() without one having been provisioned.
-		self:isNil(o:getDocType())
+		self:print(3, "[+] getRootElement(), getDoctype()")
+		local o = lxl.newXmlObject()
+		-- You can call getDoctype() without one having been provisioned.
+		self:isNil(o:getDoctype())
 		table.insert(o, struct.newDocType(o, "root"))
-		self:isEqual(o:getDocType().id, "doctype")
-		self:isEqual(o:getDocType().name, "root")
+		self:isEqual(o:getDoctype().id, "doctype")
+		self:isEqual(o:getDoctype().name, "root")
 
 		-- It's an error to call getRootElement() without a root element set.
-		-- if the xmlObject contains multiple elements as direct descendants
+		-- if the XmlObject contains multiple elements as direct descendants
 		-- (which is an invalid state), then only the first element in the
 		-- list will be returned.
 		self:expectLuaError("no document root", o.getRootElement, o)
@@ -777,7 +775,7 @@ self:registerJob("Node traversal functions", function(self)
 	do
 		self:print(3, "[+] next(), prev()")
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local c = o:newComment("foo")
 		local e = o:newElement("root")
 		local p = o:newProcessingInstruction("zip", "zap")
@@ -809,7 +807,7 @@ self:registerJob("Node traversal functions", function(self)
 	do
 		self:print(3, "[+] descend(), ascend()")
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local a = o:newElement("a")
 		local b = a:newElement("b")
 		local c = b:newElement("c")
@@ -843,13 +841,13 @@ self:registerJob("Node traversal functions", function(self)
 	do
 		self:print(3, "[+] top()")
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local a = o:newElement("a")
 		local b = a:newElement("b")
 		local c = b:newElement("c")
 
 		local obj = c
-		obj = obj:getXMLObject()
+		obj = obj:getXmlObject()
 		self:isEqual(obj, o)
 	end
 	--]====]
@@ -875,7 +873,7 @@ self:registerJob("Node traversal functions", function(self)
 			</c>
 		</r>
 		--]]
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local r = o:newElement("r")
 		local a = r:newElement("a")
 		local a1 = a:newElement("a1")
@@ -894,7 +892,7 @@ self:registerJob("Node traversal functions", function(self)
 
 		local obj
 
-		self:print(3, "[+] resolvePath(): select xmlObject ('/')")
+		self:print(3, "[+] resolvePath(): select XmlObject ('/')")
 		obj = c3
 		obj = obj:resolvePath("/")
 		self:isEqual(obj, o)
@@ -911,7 +909,7 @@ self:registerJob("Node traversal functions", function(self)
 		self:isEqual(obj:resolvePath("../a/a3"), a3)
 		self:isEqual(obj:resolvePath("../a/../b/../c/../a/../b/b2"), b2)
 
-		self:print(3, "[-] attempt to ascend to the xmlObject root")
+		self:print(3, "[-] attempt to ascend to the XmlObject root")
 		obj = a3
 		self:isNil(obj:resolvePath("../../../../../.."))
 
@@ -928,7 +926,7 @@ self:registerJob("Node traversal functions", function(self)
 	do
 		self:print(3, "[+] find()")
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local r = o:newElement("r")
 		local a = r:newElement("a") -- 1
 		local b = r:newElement("b") -- 2
@@ -958,7 +956,7 @@ self:registerJob("Node traversal functions", function(self)
 	do
 		self:print(3, "[+] destroy()")
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local r = o:newElement("r")
 		local a = r:newElement("a") -- 1
 		local b = r:newElement("b") -- 2
@@ -985,7 +983,7 @@ self:registerJob("xml:lang lookup (without namespacing)", function(self)
 	do
 		self:print(3, "[+] xml:lang attribute")
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("one")
 		local e2 = e:newElement("two")
 		e2:setAttribute("xml:lang", "en-CA")
@@ -994,11 +992,11 @@ self:registerJob("xml:lang lookup (without namespacing)", function(self)
 		e4:setAttribute("xml:lang", "")
 		local e5 = e4:newElement("five")
 
-		self:isEqual(e:getXMLSpecialAttribute("lang"), nil)
-		self:isEqual(e2:getXMLSpecialAttribute("lang"), "en-CA")
-		self:isEqual(e3:getXMLSpecialAttribute("lang"), "en-CA")
-		self:isEqual(e4:getXMLSpecialAttribute("lang"), "")
-		self:isEqual(e5:getXMLSpecialAttribute("lang"), "")
+		self:isEqual(e:getXmlSpecialAttribute("lang"), nil)
+		self:isEqual(e2:getXmlSpecialAttribute("lang"), "en-CA")
+		self:isEqual(e3:getXmlSpecialAttribute("lang"), "en-CA")
+		self:isEqual(e4:getXmlSpecialAttribute("lang"), "")
+		self:isEqual(e5:getXmlSpecialAttribute("lang"), "")
 
 		-- No language is set at a given scope if the return value is nil or an empty string.
 	end

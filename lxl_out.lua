@@ -1,5 +1,5 @@
 -- Lua XML Library: String output.
--- VERSION: v2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -12,9 +12,9 @@ local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 local xOut = {}
 
 
-local interp = require(PATH .. "pile_interp")
-local pAssert = require(PATH .. "pile_assert")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
+local pUtf8Conv = require(PATH .. "p_utf8_conv")
 local shared = require(PATH .. "lxl_shared")
 local struct = require(PATH .. "lxl_struct")
 
@@ -66,7 +66,7 @@ function xOut.escapeXMLString(s, in_attrib)
 end
 
 
-function xOut.escapeCDSect(s)
+function xOut.escapeCdSect(s)
 	pAssert.type(1, s, "string")
 	s = "<![CDATA[" .. s:gsub("%]%]>", "]]>]]&gt;<![CDATA[") .. "]]>"
 	return s
@@ -167,7 +167,7 @@ local function _dumpTree(self, seq, _depth, newline, space, flags)
 		elseif child.id == "cdata" then
 			shared.assertCharacters(child.text)
 			if child.cd_sect then
-				table.insert(seq, xOut.escapeCDSect(child.text))
+				table.insert(seq, xOut.escapeCdSect(child.text))
 			else
 				local value = xOut.escapeXMLString(child.text) -- cut off 2nd return value
 				table.insert(seq, value)
@@ -219,7 +219,7 @@ function xOut.parse(xml_obj, parser)
 
 	local ok, err = shared.checkXMLDecl(version, encoding, standalone)
 	if not ok then
-		error(interp(lang.xml_out_bad_decl, err))
+		error(pInterp(lang.xml_out_bad_decl, err))
 	end
 
 	local seq = {}
@@ -254,9 +254,9 @@ function xOut.parse(xml_obj, parser)
 	local str = table.concat(seq)
 	if encoding == "UTF-16" then
 		local err_i, err
-		str, err_i, err = pUTF8Conv.utf8_utf16(str, parser.out_big_endian)
+		str, err_i, err = pUtf8Conv.fromUtf8ToUtf16(str, parser.out_big_endian)
 		if not str then
-			error(interp(lang.xml_out_u16_conv_fail, err))
+			error(pInterp(lang.xml_out_u16_conv_fail, err))
 		end
 	end
 

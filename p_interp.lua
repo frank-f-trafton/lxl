@@ -1,5 +1,5 @@
--- PILE Name Registry
--- VERSION: 2.101
+-- PILE Base: pInterp
+-- VERSION: 2.105
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -34,54 +34,28 @@ SOFTWARE.
 --]]
 
 
-local M = {}
+local min, pairs, select, tostring = math.min, pairs, select, tostring
 
 
-M.lang = {
-	bad_name = "expected string or false/nil for name",
-	not_allowed = "can only associate names with tables, functions, threads and userdata"
-}
-local lang = M.lang
+local v = {}
 
 
-M.allowed = {["function"]=true, table=true, thread=true, userdata=true}
-local _allowed = M.allowed
-
-
-M.names = setmetatable({}, {__mode="v"})
-local names = M.names
-
-
-function M.set(o, name)
-	if not _allowed[type(o)] then
-		error(lang.not_allowed)
-
-	elseif name and type(name) ~= "string" then
-		error(lang.bad_name)
+local function c()
+	for k in pairs(v) do
+		v[k] = nil
 	end
-
-	names[o] = name or nil
-
-	return o
+	v["$"] = "$"
 end
 
 
-function M.get(o)
-	if not _allowed[type(o)] then
-		error(lang.not_allowed)
+c()
+
+
+return function(s, ...)
+	for i = 1, min(10, select("#", ...)) do
+		v[tostring(i)] = tostring(select(i, ...))
 	end
-
-	return names[o]
+	local r = tostring(s):gsub("%$(.)", v)
+	c()
+	return r
 end
-
-
-function M.safeGet(o, fallback)
-	if not _allowed[type(o)] then
-		error(lang.not_allowed)
-	end
-
-	return names[o] or (fallback and tostring(fallback) or "Unknown")
-end
-
-
-return M

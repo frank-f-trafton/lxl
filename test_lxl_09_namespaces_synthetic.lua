@@ -1,9 +1,9 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
--- Test: namespace feature testing (from a synthetic xmlObject)
+-- Test: namespace feature testing (from a synthetic XmlObject)
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -17,8 +17,6 @@ local inspect = require(PATH .. "test.inspect")
 local lxl = require(PATH .. "lxl")
 local namespace = require(PATH .. "lxl_namespace")
 local pretty = require(PATH .. "test_pretty")
-local pUTF8 = require(PATH .. "pile_utf8")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
 local struct = require(PATH .. "lxl_struct")
 
 
@@ -36,11 +34,11 @@ for i = 0, #arg do
 end
 
 
-local self = errTest.new("xmlParser", cli_verbosity)
+local self = errTest.new("XmlParser", cli_verbosity)
 
 
 -- [===[
-self:registerJob("(xmlObject) Namespaced Element Names", function(self)
+self:registerJob("(XmlObject) Namespaced Element Names", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] Element: getNamespace()")
@@ -48,7 +46,7 @@ self:registerJob("(xmlObject) Namespaced Element Names", function(self)
 		-- We aren't required by the XML Namespace spec to verify that the URIs are valid.
 		local n1_uri = "foo/bar"
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 
 		-- This method is namespace-unaware.
@@ -75,15 +73,15 @@ end)
 
 
 -- [===[
-self:registerJob("(xmlObject) Element:findNS()", function(self)
+self:registerJob("(XmlObject) Element:findInNamespace()", function(self)
 	-- [====[
 	do
-		self:print(3, "[+] Element:findNS()")
+		self:print(3, "[+] Element:findInNamespace()")
 
 		local n1_uri = "sneak/snack"
 		local n2_uri = "beep/boop"
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 
 		local e = o:newElement("root")
@@ -97,12 +95,12 @@ self:registerJob("(xmlObject) Element:findNS()", function(self)
 
 		local e4 = e:newElement("bop")
 
-		local child = e:findNS(n2_uri, "baz")
+		local child = e:findInNamespace(n2_uri, "baz")
 		self:isEqual(child, e3)
 
-		self:expectLuaError("arg #1 bad type", e.findNS, e, {}, "prefix", "local")
-		self:expectLuaError("arg #2 bad type", e.findNS, e, "ns", {}, "local")
-		self:expectLuaError("arg #3 bad type", e.findNS, e, "ns", "prefix", {})
+		self:expectLuaError("arg #1 bad type", e.findInNamespace, e, {}, "prefix", "local")
+		self:expectLuaError("arg #2 bad type", e.findInNamespace, e, "ns", {}, "local")
+		self:expectLuaError("arg #3 bad type", e.findInNamespace, e, "ns", "prefix", {})
 	end
 	--]====]
 end
@@ -111,14 +109,14 @@ end
 
 
 -- [===[
-self:registerJob("(xmlObject) Namespaced Attributes in Elements", function(self)
+self:registerJob("(XmlObject) Namespaced Attributes in Elements", function(self)
 	-- [====[
 	do
 		self:print(3, "[+] Element:getNamespaceAttribute()")
 
 		local n1_uri = "o/h"
 
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 
 		local e = o:newElement("root")
@@ -145,10 +143,10 @@ end
 
 
 -- [===[
-self:registerJob("xmlObject:checkNamespaceState()", function(self)
+self:registerJob("XmlObject:checkNamespaceState()", function(self)
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 		local e = o:newElement(":root")
 
@@ -159,7 +157,7 @@ self:registerJob("xmlObject:checkNamespaceState()", function(self)
 
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 		local e = o:newElement("foo:")
 
@@ -170,7 +168,7 @@ self:registerJob("xmlObject:checkNamespaceState()", function(self)
 
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 		local e = o:newElement(":")
 
@@ -181,7 +179,7 @@ self:registerJob("xmlObject:checkNamespaceState()", function(self)
 
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 		local e = o:newElement("foo:root")
 
@@ -191,7 +189,7 @@ self:registerJob("xmlObject:checkNamespaceState()", function(self)
 
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 		local e = o:newElement("root")
 		e:setAttribute("foo:bar", "baz")
@@ -203,7 +201,7 @@ self:registerJob("xmlObject:checkNamespaceState()", function(self)
 
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		o:setNamespaceMode("1.0")
 		local e = o:newElement("root")
 		e:setAttribute("xmlns:a", "foo")
@@ -218,7 +216,7 @@ self:registerJob("xmlObject:checkNamespaceState()", function(self)
 
 	-- [====[
 	do
-		local o = lxl.newXMLObject()
+		local o = lxl.newXmlObject()
 		local e = o:newElement("root")
 		e:setAttribute("xmlns:a", "foo")
 		local e2 = e:newElement("foo")

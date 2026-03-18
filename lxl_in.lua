@@ -1,5 +1,5 @@
 -- Lua XML Library: Parser core.
--- VERSION: v2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -12,13 +12,13 @@ local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 local xIn = {}
 
 
-local interp = require(PATH .. "pile_interp")
 local namespace = require(PATH .. "lxl_namespace")
-local pAssert = require(PATH .. "pile_assert")
-local pStringProc = require(PATH .. "pile_string_proc")
-local pStringWalk = require(PATH .. "pile_string_walk")
-local pUTF8 = require(PATH .. "pile_utf8")
-local pUTF8Conv = require(PATH .. "pile_utf8_conv")
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
+local pStringProc = require(PATH .. "p_string_proc")
+local pStringWalk = require(PATH .. "p_string_walk")
+local pUtf8 = require(PATH .. "p_utf8")
+local pUtf8Conv = require(PATH .. "p_utf8_conv")
 local shared = require(PATH .. "lxl_shared")
 local struct = require(PATH .. "lxl_struct")
 
@@ -72,8 +72,8 @@ end
 
 
 -- Non-validating processors are allowed to stop reading entity declarations and attribute-value
--- declarations in the internal subset as soon as they skip a parameter entity reference, unless
--- standalone="yes". (§5.1)
+-- declarations in the internal subset as soon as they skip a PEReference, unless standalone="yes".
+-- (§5.1)
 local function _docTypeKeepGoing(W)
 	return W.xml_obj.standalone == "yes" or not W.hit_pe_ref
 end
@@ -144,7 +144,7 @@ end
 function sym.NameStartChar(W)
 	if W:isEOS() then return end
 
-	local code, u8_str = pUTF8.codeFromString(W.S, W.I)
+	local code, u8_str = pUtf8.codeFromString(W.S, W.I)
 	if code and shared.checkRangeLUT(shared.lut_name_start_char, code) then
 		W:step(#u8_str)
 		return u8_str
@@ -156,7 +156,7 @@ end
 function sym.NameChar(W)
 	if W:isEOS() then return end
 
-	local code, u8_str = pUTF8.codeFromString(W.S, W.I)
+	local code, u8_str = pUtf8.codeFromString(W.S, W.I)
 	if code and (shared.checkRangeLUT(shared.lut_name_start_char, code) or shared.checkRangeLUT(shared.lut_name_char, code)) then
 		W:step(#u8_str)
 		return u8_str
@@ -251,7 +251,7 @@ local function _CharRef(W)
 		-- The code point must be compatible with the production 'Char'.
 		W:assert(shared.checkRangeLUT(shared.lut_xml_unicode, code), lang.xml_ch_ref_bad_cp)
 
-		local u8_str, err = pUTF8.stringFromCode(code)
+		local u8_str, err = pUtf8.stringFromCode(code)
 		W:assert(u8_str, err)
 
 		return u8_str
@@ -933,7 +933,7 @@ function sym.Reference(W)
 		This codepath is a special case where:
 		* standalone is "no" or not declared
 		* There is a DTD internal subset
-		* We have skipped one or more Parameter Entity References
+		* We have skipped one or more PEReferences
 		--]]
 		if W.parser.reject_unexp_ent then
 			W:error(lang.xml_reject_unexp_ent)
@@ -1043,7 +1043,7 @@ function sym.EntityDecl(W)
 			if _docTypeKeepGoing(W) then
 				if W.xml_obj.p_entities[name] then
 					if W.parser.warn_dupe_decl then
-						W:warn(interp(lang.xml_edecl_warn_dupe_pedef, name))
+						W:warn(pInterp(lang.xml_edecl_warn_dupe_pedef, name))
 					end
 				else
 					W.xml_obj.p_entities[name] = pe_def
@@ -1074,13 +1074,13 @@ function sym.EntityDecl(W)
 						end
 					end
 					if not ok then
-						W:error(interp(lang.xml_edecl_invalid_predefined_decl, name))
+						W:error(pInterp(lang.xml_edecl_invalid_predefined_decl, name))
 					end
 				end
 
 				if W.xml_obj.g_entities[name] then
 					if W.parser.warn_dupe_decl then
-						W:warn(interp(lang.xml_edecl_warn_dupe_gedef, name))
+						W:warn(pInterp(lang.xml_edecl_warn_dupe_gedef, name))
 					end
 				else
 					W.xml_obj.g_entities[name] = entity_def
@@ -1228,9 +1228,9 @@ end
 
 local function assertUTF16Conversion(str, big_endian)
 	local err_i, err
-	str, err_i, err = pUTF8Conv.utf16_utf8(str, big_endian)
+	str, err_i, err = pUtf8Conv.fromUtf16ToUtf8(str, big_endian)
 	if not str then
-		error(interp(lang.xml_u16_u8_fail, err))
+		error(pInterp(lang.xml_u16_u8_fail, err))
 	end
 	return str
 end
@@ -1305,15 +1305,17 @@ function xIn.parse(str, parser, name)
 	local W = pStringWalk.new(str, name)
 	uv_W = W
 
+	W:setTerseMode(parser.terse_mode)
+
 	W.guessed_encoding = guessed_encoding
 
 	-- Parser settings
 	W.parser = parser
 
 	-- The final output
-	W.xml_obj = struct.newXMLObject()
+	W.xml_obj = struct.newXmlObject()
 
-	-- Copy some xmlParser settings to xmlObject
+	-- Copy some XmlParser settings to XmlObject
 	W.xml_obj.namespace_mode = parser.namespace_mode
 
 	-- Current working level
@@ -1340,10 +1342,10 @@ function xIn.parse(str, parser, name)
 	local document = sym.document(W)
 
 	if #W.stack > 1 then
-		error(lang.xml_int_stack_leftover)
+		W:error(lang.xml_int_stack_leftover)
 
 	elseif W.I < #W.S then
-		error(lang.xml_trailing_content)
+		W:error(lang.xml_trailing_content)
 	end
 
 	uv_W = nil

@@ -1,5 +1,5 @@
 -- Lua XML Library: XML Namespace logic.
--- VERSION: v2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 

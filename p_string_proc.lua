@@ -1,5 +1,5 @@
--- PILE StringProc
--- VERSION: 2.101
+-- PILE Base: pStringProc
+-- VERSION: 2.105
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -40,9 +40,9 @@ local M = {}
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local interp = require(PATH .. "pile_interp")
-local pAssert = require(PATH .. "pile_assert")
-local pStringWalk = require(PATH .. "pile_string_walk")
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
+local pStringWalk = require(PATH .. "p_string_walk")
 
 
 local _assertType = pAssert.type
@@ -133,10 +133,10 @@ local function _toTable(W, _depth)
 		else
 			local ch = W:peek()
 			if t_reps[ch] then
-				W:error(interp(lang.err_unexpected_rep, ch))
+				W:error(pInterp(lang.err_unexpected_rep, ch))
 
 			elseif t_post[ch] then
-				W:error(interp(lang.err_unexpected_alt, ch))
+				W:error(pInterp(lang.err_unexpected_alt, ch))
 			end
 			W:error(lang.err_invalid_tok)
 		end
@@ -233,11 +233,11 @@ local function _traverse(W, t, symbols, state)
 				chunk = value
 
 			else
-				W:error(interp(lang.err_bad_lookup, token, val_t))
+				W:error(pInterp(lang.err_bad_lookup, token, val_t))
 			end
 
 		else
-			W:error(interp(lang.err_no_lookup, token))
+			W:error(pInterp(lang.err_no_lookup, token))
 		end
 
 		if chunk then
@@ -256,7 +256,7 @@ local function _traverse(W, t, symbols, state)
 			-- true: accept the result but do not add anything to the return table
 			-- Treat everything else as an error
 			elseif chunk ~= true then
-				W:error(interp(lang.err_bad_return, typ_ch))
+				W:error(pInterp(lang.err_bad_return, typ_ch))
 			end
 
 			-- repeat the token?
@@ -322,11 +322,11 @@ function M.checkSymbols(symbols)
 
 	for k, v in pairs(symbols) do
 		if type(k) ~= "string" then
-			error(interp(lang.check_symbol_k_bad_type, type(k)))
+			error(pInterp(lang.check_symbol_k_bad_type, type(k)))
 
 		elseif type(v) ~= "string" and type(v) ~= "number" and type(v) ~= "function" and v ~= "table" and v ~= true then
 			local got = v == false and "false" or type(v)
-			error(interp(lang.check_symbol_v_bad_type, k, got))
+			error(pInterp(lang.check_symbol_v_bad_type, k, got))
 		end
 	end
 end
@@ -351,11 +351,11 @@ local function _checkWords(t, _sym, _depth)
 			_checkWords(v, _sym, _depth + 1)
 
 		elseif type(v) ~= "string" then
-			error(interp(lang.check_word_bad_value, _depth, i, v, type(v)))
+			error(pInterp(lang.check_word_bad_value, _depth, i, v, type(v)))
 
 		elseif not v:sub(1, 1):match("['\"]") then
 			if not _sym[v] then
-				error(interp(lang.check_word_missing_sym, _depth, i, v))
+				error(pInterp(lang.check_word_missing_sym, _depth, i, v))
 			end
 		end
 	end

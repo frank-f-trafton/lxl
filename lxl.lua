@@ -1,5 +1,5 @@
 -- Lua XML Library
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
@@ -10,9 +10,8 @@ local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 local lxl = {}
 
 
-local interp = require(PATH .. "pile_interp")
 local namespace = require(PATH .. "lxl_namespace")
-local pAssert = require(PATH .. "pile_assert")
+local pAssert = require(PATH .. "p_assert")
 local shared = require(PATH .. "lxl_shared")
 local struct = require(PATH .. "lxl_struct")
 local xIn = require(PATH .. "lxl_in")
@@ -40,6 +39,7 @@ function lxl.newParser()
 		reject_doctype = false,
 		reject_internal_subset = false,
 		reject_unexp_ent = false,
+		terse_mode = false,
 		warn_dupe_decl = false,
 
 		-- writing out
@@ -166,14 +166,14 @@ function _mt_parser:getRejectInternalSubset()
 end
 
 
-function _mt_parser:setCopyDocType(enabled)
+function _mt_parser:setCopyDoctype(enabled)
 	self.copy_doctype = not not enabled
 
 	return self
 end
 
 
-function _mt_parser:getCopyDocType()
+function _mt_parser:getCopyDoctype()
 	return self.copy_doctype
 end
 
@@ -202,26 +202,26 @@ function _mt_parser:getWarnDuplicateEntityDeclarations()
 end
 
 
-function _mt_parser:setWriteXMLDeclaration(enabled)
+function _mt_parser:setWriteXmlDeclaration(enabled)
 	self.out_xml_decl = not not enabled
 
 	return self
 end
 
 
-function _mt_parser:getWriteXMLDeclaration()
+function _mt_parser:getWriteXmlDeclaration()
 	return self.out_xml_decl
 end
 
 
-function _mt_parser:setWriteDocType(enabled)
+function _mt_parser:setWriteDoctype(enabled)
 	self.out_doc_type = not not enabled
 
 	return self
 end
 
 
-function _mt_parser:getWriteDocType()
+function _mt_parser:getWriteDoctype()
 	return self.out_doc_type
 end
 
@@ -270,6 +270,16 @@ function _mt_parser:getWriteBigEndian()
 end
 
 
+function _mt_parser:setTerseMode(enabled)
+	self.terse_mode = not not enabled
+end
+
+
+function _mt_parser:getTerseMode()
+	return self.terse_mode
+end
+
+
 function _mt_parser:toTable(str, name)
 	pAssert.type(1, str, "string")
 
@@ -277,7 +287,7 @@ function _mt_parser:toTable(str, name)
 end
 
 
-function _mt_parser:toString(xml_obj, name)
+function _mt_parser:toString(xml_obj)
 	pAssert.type(1, xml_obj, "table")
 
 	return xOut.parse(xml_obj, self)
@@ -316,8 +326,8 @@ function lxl.fragmentToString(element)
 end
 
 
-function lxl.newXMLObject()
-	return struct.newXMLObject()
+function lxl.newXmlObject()
+	return struct.newXmlObject()
 end
 
 

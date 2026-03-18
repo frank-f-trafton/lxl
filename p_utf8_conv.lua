@@ -1,5 +1,5 @@
--- PILE UTF-8 Conversion Functions
--- VERSION: 2.101
+-- PILE Base: pUtf8Conv
+-- VERSION: 2.105
 -- https://github.com/frank-f-trafton/pile_base
 
 
@@ -37,9 +37,12 @@ SOFTWARE.
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
 
 
-local _argType = require(PATH .. "pile_assert").type
-local interp = require(PATH .. "pile_interp")
-local pUTF8 = require(PATH .. "pile_utf8")
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
+local pUtf8 = require(PATH .. "p_utf8")
+
+
+local _argType = pAssert.type
 
 
 local lang = {
@@ -52,13 +55,13 @@ local lang = {
 }
 
 
-local stringFromCode, codeFromString, step = pUTF8.stringFromCode, pUTF8.codeFromString, pUTF8.step
+local stringFromCode, codeFromString, step = pUtf8.stringFromCode, pUtf8.codeFromString, pUtf8.step
 
 
 local concat, char = table.concat, string.char
 
 
-local function latin1_utf8(s)
+local function fromLatin1ToUtf8(s)
 	_argType(1, s, "string")
 
 	local t = {}
@@ -70,7 +73,7 @@ local function latin1_utf8(s)
 end
 
 
-local function utf8_latin1(s, unmapped)
+local function fromUtf8ToLatin1(s, unmapped)
 	_argType(1, s, "string")
 	-- don't assert `unmapped`
 
@@ -112,7 +115,7 @@ local function combine16Bit(s, i, big_en)
 end
 
 
-local function utf16_utf8(s, big_en)
+local function fromUtf16ToUtf8(s, big_en)
 	_argType(1, s, "string")
 
 	local t, i = {}, 1
@@ -160,7 +163,7 @@ local function split16Bit(v, big_en)
 end
 
 
-local function utf8_utf16(s, big_en)
+local function fromUtf8ToUtf16(s, big_en)
 	_argType(1, s, "string")
 
 	if s == "" then return "" end
@@ -169,7 +172,7 @@ local function utf8_utf16(s, big_en)
 	while i do
 		local c, err = codeFromString(s, i)
 		if not c then
-			return nil, interp(lang.err_u8_decode, err), i
+			return nil, pInterp(lang.err_u8_decode, err), i
 		end
 
 		local  v1, v2
@@ -197,8 +200,8 @@ end
 
 return {
 	lang = lang,
-	latin1_utf8 = latin1_utf8,
-	utf8_latin1 = utf8_latin1,
-	utf16_utf8 = utf16_utf8,
-	utf8_utf16 = utf8_utf16
+	fromLatin1ToUtf8 = fromLatin1ToUtf8,
+	fromUtf8ToLatin1 = fromUtf8ToLatin1,
+	fromUtf16ToUtf8 = fromUtf16ToUtf8,
+	fromUtf8ToUtf16 = fromUtf8ToUtf16
 }

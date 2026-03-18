@@ -1,5 +1,6 @@
 = Lua XML Library: Appendix
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 
@@ -9,7 +10,6 @@ include::snippets/header.adoc[]
 toc::[]
 
 
-[#terminology]
 == Terminology
 
 * The term __URI__ is used in place of __namespace name__ because there are already too many things in the XML spec with the word __name__ in their names.
@@ -17,61 +17,58 @@ toc::[]
 * __PEReference__ is used in place of parameter entity reference.
 
 
-[#handling-of-perefs]
 == Handling of PEReferences
 
-(This section originates from a pile of miscellaneous comments for the function __sym.PEReference()__ in __lxl_in.lua__.)
+(This section originates from a pile of miscellaneous comments for the function `sym.PEReference()` in `lxl_in.lua`.)
 
-As a non-validating processor, we are not obligated to process entity declarations within the replacement text of a PEReference. (See: https://www.w3.org/TR/REC-xml/#vc-entdeclared[Well-formedness constraint: Entity Declared].) In practice, this means that LXL never expands PEReferences.
+As a non-validating processor, we are not obligated to process entity declarations within the replacement text of a PEReference. (See: https://www.w3.org/TR/REC-xml/#vc-entdeclared[**Well-formedness constraint: Entity Declared**].) In practice, this means that LXL never expands PEReferences.
 
-Unless `standalone` is `yes`, we are not required to process declarations after the first PEReference that is ignored in the internal subset (see: https://www.w3.org/TR/REC-xml/#as-PE[§4.4.8 Included as PE]).
+Unless `standalone` is `yes`, we are not required to process declarations after the first PEReference that is ignored in the internal subset (see: https://www.w3.org/TR/REC-xml/#as-PE[**§4.4.8 Included as PE**]).
 
-In the DTD internal subset, PEReferences cannot appear inside of markup declarations. (No nesting, basically.) This rule doesn't apply in the case of external subsets, which we don't touch because this is non-validating. (See: https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset[Well-formedness constraint: PEs in Internal Subset]
+In the DTD internal subset, PEReferences cannot appear inside of markup declarations. (No nesting, basically.) This rule doesn't apply in the case of external subsets, which LXL doesn't touch because it's non-validating. (See: https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset[**Well-formedness constraint: PEs in Internal Subset**]
 
-There is a rule to expand PEReferences when they appear in the text of an EntityValue (see: https://www.w3.org/TR/REC-xml/#inliteral[§4.4.5 Included in Literal]). In the internal subset, this rule never comes into play because it is overridden by https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset[Well-formedness constraint: PEs in Internal Subset].
+There is a rule to expand PEReferences when they appear in the text of an EntityValue (see: https://www.w3.org/TR/REC-xml/#inliteral[**§4.4.5 Included in Literal**]). In the internal subset, this rule never comes into play because it is overridden by https://www.w3.org/TR/REC-xml/#wfc-PEinInternalSubset[**Well-formedness constraint: PEs in Internal Subset**].
 
-As mentioned in https://www.xml.com/axml/axml.html[Tim Bray's annotated version of the original XML spec], The text of https://www.w3.org/TR/REC-xml/#indtd[Well-formedness constraint: In DTD] is a little misleading. It says that PEReferences must not appear outside of the DTD. What it means is that substrings like `%foobar;` just won't be recognized as PEReferences elsewhere.
+As mentioned in https://www.xml.com/axml/axml.html[**Tim Bray's annotated version of the original XML spec**], the text of https://www.w3.org/TR/REC-xml/#indtd[**Well-formedness constraint: In DTD**] is a little misleading. It says that PEReferences must not appear outside of the DTD. What it means is that substrings like `%foobar;` just won't be recognized as PEReferences elsewhere.
 
 
-[#unexpanded-entity-references]
 == Unexpanded Entity References
 
-Here are some more notes about xref:api.adoc#api-unexp[Unexp nodes].
+Here are some more notes about <<api.adoc#_api_unexp,Unexp nodes>>.
 
 Normally, an unexpanded entity reference halts processing. These nodes can appear in the output when the following conditions are met:
 
 * The `standalone` property is `no` or was not set.
 
-* A PEReference is encountered in the DTD internal subset and not read. (This processor skips all PEReferences; for more info, see: https://www.w3.org/TR/REC-xml/#as-PE[§4.4.8 Included as PE].)
+* A PEReference is encountered in the DTD internal subset and not read. (This processor skips all PEReferences; see https://www.w3.org/TR/REC-xml/#as-PE[**§4.4.8 Included as PE**].)
 
 * Later, a general entity reference is encountered in the document content, and the XML processor did not collect a declaration that defines it.
 
 You will not encounter unexpanded references in a document that lacks a DTD internal subset, or if `standalone` is `yes`, or if the internal subset contains no PEReferences. You will also not see them within attribute values, where failing to dereference a general entity is always an error.
 
-This object addresses the requirement in https://www.w3.org/TR/REC-xml/#include-if-valid[§4.4.3 Included If Validating] to inform the application that an entity was recognized but not dereferenced.
+This object addresses the requirement in https://www.w3.org/TR/REC-xml/#include-if-valid[**§4.4.3 Included If Validating**] to inform the application that an entity was recognized but not dereferenced.
 
-You can halt on all unexpanded entities with `xmlParser:setRejectUnexpandedEntities(true)`.
+You can halt on all unexpanded entities with `XmlParser:setRejectUnexpandedEntities(true)`.
 
 
-[#serializing-doctype]
 == Serializing DOCTYPE
 
-This library does not fully capture the state of the DOCTYPE tag, and it does not serialize out the `doctype` node (which just contains the DOCTYPE name, and any comments or PIs found within the DTD internal subset). That said, the following methods are provided for collecting the DOCTYPE substring from a document and writing it out.
-
-=== Collecting DOCTYPE with xmlParser
-
-Call `xmlParser:setCopyDocType(true)`. If the incoming document contains a DOCTYPE tag, then its substring will be assigned to `xml_object.doctype_str`.
+LXL does not fully capture the state of the DOCTYPE tag, and it does not serialize out the Doctype node (which just contains the DOCTYPE name, and any comments or PIs found within the DTD internal subset). That said, the following methods are provided for collecting the DOCTYPE substring from a document and writing it out.
 
 
-=== Writing DOCTYPE with xmlObject
+=== Collecting DOCTYPE with XmlParser
 
-Call `xmlParser:setWriteDocType(true)`. If `xml_object.doctype_str` is a string, then its contents will be inserted before the root element when serializing out. Note that the well-formedness of `doctype_str` is not verified at all.
+Call `XmlParser:setCopyDoctype(true)`. If the incoming document contains a DOCTYPE tag, then its substring will be assigned to `xml_object.doctype_str`.
 
 
-[#invalid-namespace-state]
+=== Writing DOCTYPE with XmlObject
+
+Call `XmlParser:setWriteDoctype(true)`. If `xml_object.doctype_str` is a string, then its contents will be inserted before the root element when serializing out. Note that the well-formedness of `doctype_str` is not verified at all.
+
+
 == Invalid Namespace State
 
-When an xmlParser is configured to handle XML Namespaces, while converting a string to an xmlObject, it will halt when it encounters a namespace-related problem.
+When an XmlParser is configured to handle XML Namespaces, while converting a string to an <<api.adoc#_api_xmlobject,XmlObject>>, it will halt when it encounters a namespace-related problem.
 
 The namespace state is invalid when:
 
@@ -89,20 +86,20 @@ The namespace state is invalid when:
 
 * An element contains duplicate namespaced attributes which resolve to the same URI + local name pair.
 
-The situation is different when manipulating an xmlObject node tree. The namespace state in elements is not cached (attempts to do so resulted in brittle code), and the tree's namespace state can be rendered invalid by just renaming an element. You can call `xmlObject:checkNamespaceState()` after changing the tree to perform the same checks as the parser.
+The situation is different when manipulating an XmlObject node tree. The namespace state in <<api.adoc#_api_element,elements>> is not cached (attempts to do so resulted in brittle code), and the tree's namespace state can be rendered invalid by just renaming an element. You can call `XmlObject:checkNamespaceState()` after changing the tree to perform the same checks as the parser.
 
 
 == Links
 
-* W3C: https://www.w3.org/TR/REC-xml/[Extensible Markup Language (XML) 1.0 (Fifth Edition)]
+* W3C: https://www.w3.org/TR/REC-xml/[**Extensible Markup Language (XML) 1.0 (Fifth Edition)**]
 
-* Tim Bray: https://www.xml.com/axml/axml.html[The Annotated XML Specification]
+* Tim Bray: https://www.xml.com/axml/axml.html[**The Annotated XML Specification**]
 
-* W3C: https://www.w3.org/TR/xml-infoset[XML Information Set (Second Edition)]
+* W3C: https://www.w3.org/TR/xml-infoset[**XML Information Set (Second Edition)**]
 
-* W3C: https://www.w3.org/TR/REC-xml-names/[Namespaces in XML 1.0 (Third Edition)]
+* W3C: https://www.w3.org/TR/REC-xml-names/[**Namespaces in XML 1.0 (Third Edition)**]
 
-* W3C: https://www.w3.org/TR/2006/REC-xml-names11-20060816/[Namespaces in XML 1.1 (Second Edition)]
+* W3C: https://www.w3.org/TR/2006/REC-xml-names11-20060816/[**Namespaces in XML 1.1 (Second Edition)**]
 
 
 include::snippets/footer.adoc[]

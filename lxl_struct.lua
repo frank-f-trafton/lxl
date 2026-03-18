@@ -1,9 +1,9 @@
 -- Lua XML Library: Table structures for representing an XML node tree in Lua.
--- VERSION: 2.070
+-- VERSION: 2.075
 -- https://github.com/frank-f-trafton/lxl
 -- See LICENSE for licensing and copyright info.
 
--- (Use through 'xmlObject' tables created with lxl.lua)
+-- (Use through 'XmlObject' tables created with lxl.lua)
 
 
 local PATH = ... and (...):match("(.-)[^%.]+$") or ""
@@ -13,19 +13,21 @@ local struct = {}
 
 
 local namespace = require(PATH .. "lxl_namespace")
-local pAssert = require(PATH .. "pile_assert")
-local pTree = require(PATH .. "pile_tree")
+local pAssert = require(PATH .. "p_assert")
+local pInterp = require(PATH .. "p_interp")
+local pTree = require(PATH .. "p_tree")
 local shared = require(PATH .. "lxl_shared")
 
 
 local lang = shared.lang
-local interp = require(PATH .. "pile_interp")
+
+
 local _assertCharacters = shared.assertCharacters
 
 
 local function _checkSelf(t)
 	if type(t) ~= "table" then
-		error(interp(lang.struct_bad_self, type(t)))
+		error(pInterp(lang.struct_bad_self, type(t)))
 	end
 end
 
@@ -60,7 +62,7 @@ local function _find(self, id, name, i)
 	pAssert.type(1, id, "string")
 	pAssert.types(2, name, "nil", "string")
 	i = i or 1
-	pAssert.integerGE(3, i, 1)
+	pAssert.integerGe(3, i, 1)
 
 	if self.nodes then
 		for ii = i, #self.nodes do
@@ -78,9 +80,9 @@ local function _findNS(self, ns_uri, ns_local, i)
 	pAssert.type(1, ns_uri, "string")
 	pAssert.type(2, ns_local, "string")
 	i = i or 1
-	pAssert.integerGE(3, i, 1)
+	pAssert.integerGe(3, i, 1)
 
-	if not self:getXMLObject().namespace_mode then
+	if not self:getXmlObject().namespace_mode then
 		return
 	end
 
@@ -151,7 +153,7 @@ local function _newNodeDef(id)
 	local node_def = {
 		id = id,
 
-		getXMLObject = pTree.nodeGetRoot,
+		getXmlObject = pTree.nodeGetRoot,
 		getParent = pTree.nodeGetParent,
 		getChild = pTree.nodeGetChild,
 		getSiblings = pTree.nodeGetSiblings,
@@ -159,7 +161,7 @@ local function _newNodeDef(id)
 		getPreviousSibling = pTree.nodeGetPreviousSibling,
 		resolvePath = _resolvePath,
 		find = _find,
-		findNS = _findNS,
+		findInNamespace = _findNS,
 
 		destroy = _destroy
 	}
@@ -286,12 +288,12 @@ end
 _mt_cdata.getText = _getText
 
 
-function _mt_cdata:setCDSect(enabled)
+function _mt_cdata:setCdSect(enabled)
 	self.cd_sect = not not enabled
 end
 
 
-function _mt_cdata:getCDSect()
+function _mt_cdata:getCdSect()
 	return self.cd_sect
 end
 
@@ -348,7 +350,7 @@ function struct.newElement(self, name, i)
 end
 
 
--- NOTE: '_attribs' is for the parser, and should not be exposed to the library user through xmlObject.
+-- NOTE: '_attribs' is for the parser, and should not be exposed to the library user through XmlObject.
 function struct.newElementInternal(self, name, i, _attribs)
 	_checkSelf(self)
 	pAssert.type(1, name, "string")
@@ -406,7 +408,7 @@ function _mt_element:getNamespaceDeclarations(_decl)
 	for k, v in pairs(_decl) do
 		_decl[k] = nil
 	end
-	if not self:getXMLObject().namespace_mode then
+	if not self:getXmlObject().namespace_mode then
 		return _decl
 	end
 	local node = self
@@ -427,10 +429,10 @@ function _mt_element:getNamespaceDeclarations(_decl)
 end
 
 
-function _mt_element:GetNamespaceBinding(ns_uri)
+function _mt_element:getNamespaceBinding(ns_uri)
 	pAssert.type(1, ns_uri, "string")
 
-	if not self:getXMLObject().namespace_mode then
+	if not self:getXmlObject().namespace_mode then
 		return
 	end
 	-- Predefined namespaces
@@ -451,7 +453,7 @@ end
 
 
 function _mt_element:getNamespace()
-	local ns_mode = self:getXMLObject().namespace_mode
+	local ns_mode = self:getXmlObject().namespace_mode
 	if not ns_mode then
 		return
 	end
@@ -473,10 +475,10 @@ function _mt_element:getNamespaceAttribute(ns_uri, ns_local)
 	pAssert.type(1, ns_uri, "string")
 	pAssert.type(2, ns_local, "string")
 
-	if not self:getXMLObject().namespace_mode then
+	if not self:getXmlObject().namespace_mode then
 		return
 	end
-	local ns_prefix = self:GetNamespaceBinding(ns_uri)
+	local ns_prefix = self:getNamespaceBinding(ns_uri)
 	if ns_prefix then
 		local key = ns_prefix .. ":" .. ns_local
 		return self.attr[key], ns_prefix
@@ -502,7 +504,7 @@ end
 
 
 -- xml:space, xml:lang
-function _mt_element:getXMLSpecialAttribute(local_name)
+function _mt_element:getXmlSpecialAttribute(local_name)
 	local obj = self
 	repeat
 		local a_value = obj:getAttribute("xml:" .. local_name)
@@ -517,7 +519,7 @@ end
 local _mt_xml_obj = _newNodeDef("xml_object")
 
 
-function struct.newXMLObject()
+function struct.newXmlObject()
 	return setmetatable({
 		nodes = {},
 
@@ -527,7 +529,7 @@ function struct.newXMLObject()
 		standalone = nil,
 
 		-- Namespace mode
-		-- xmlParser sets this when loading from string
+		-- XmlParser sets this when loading from string
 		-- nil, "1.0", "1.1"
 		namespace_mode = nil,
 
@@ -547,7 +549,7 @@ function struct.newXMLObject()
 end
 
 
-function _mt_xml_obj:setXMLVersion(v)
+function _mt_xml_obj:setXmlVersion(v)
 	pAssert.types(1, v, "nil", "string")
 	if v and not v:match("1%.[0-9]+") then
 		error(lang.struct_bad_xml_ver)
@@ -557,12 +559,12 @@ function _mt_xml_obj:setXMLVersion(v)
 end
 
 
-function _mt_xml_obj:getXMLVersion()
+function _mt_xml_obj:getXmlVersion()
 	return self.version
 end
 
 
-function _mt_xml_obj:setXMLEncoding(e)
+function _mt_xml_obj:setXmlEncoding(e)
 	pAssert.types(1, e, "nil", "string")
 	if e ~= nil and e ~= "UTF-8" and e ~= "UTF-16" then
 		error(lang.struct_bad_xml_enc)
@@ -572,12 +574,12 @@ function _mt_xml_obj:setXMLEncoding(e)
 end
 
 
-function _mt_xml_obj:getXMLEncoding()
+function _mt_xml_obj:getXmlEncoding()
 	return self.encoding
 end
 
 
-function _mt_xml_obj:setXMLStandalone(s)
+function _mt_xml_obj:setXmlStandalone(s)
 	pAssert.types(1, s, "nil", "string")
 	if s ~= nil and s ~= "yes" and s ~= "no" then
 		error(lang.struct_bad_xml_sta)
@@ -586,7 +588,7 @@ function _mt_xml_obj:setXMLStandalone(s)
 end
 
 
-function _mt_xml_obj:getXMLStandalone()
+function _mt_xml_obj:getXmlStandalone()
 	return self.standalone
 end
 
@@ -673,7 +675,7 @@ local function _pruneSpace(self, xml_space)
 	local nodes = self.nodes
 	for i = #nodes, 1, -1 do
 		local child = nodes[i]
-		if (not xml_space or self:getXMLSpecialAttribute("space") ~= "preserve")
+		if (not xml_space or self:getXmlSpecialAttribute("space") ~= "preserve")
 		and child.id == "cdata" and not child.text:find("[^\9\10\13\32]")
 		then
 			table.remove(nodes, i)
@@ -700,7 +702,7 @@ function _mt_xml_obj:getRootElement()
 end
 
 
-function _mt_xml_obj:getDocType()
+function _mt_xml_obj:getDoctype()
 	for i, child in ipairs(self.nodes) do
 		if child.id == "doctype" then
 			return child
@@ -729,7 +731,7 @@ function _mt_xml_obj:checkNamespaceState()
 	for k, entity in pairs(self.g_entities) do
 		namespace.checkNoColon(k)
 	end
-	-- checkNoColon: notation declarations are not attached to the xmlObject tree.
+	-- checkNoColon: notation declarations are not attached to the XmlObject tree.
 	for i, node in ipairs(self.nodes) do
 		_checkNamespaceState(node, self.namespace_mode)
 	end

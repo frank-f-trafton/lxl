@@ -1,5 +1,6 @@
 = Lua XML Library: Home
 :source-highlighter: rouge
+:stylesheet: asciidoctor.css
 :linkcss:
 :toc: macro
 
@@ -7,7 +8,13 @@
 include::snippets/header.adoc[]
 
 
-LXL is a non-validating XML 1.0 processor for Lua 5.1 - 5.4.
+LXL is a non-validating XML 1.0 processor for https://www.lua.org/[**Lua**] 5.1 - 5.4.
+
+* https://www.github.com/frank-f-trafton/lxl[**Git repository**]
+
+* https://frank-f-trafton.github.io/lxl/index.html[**Online documentation**]
+
+The docs can be read offline by downloading the repo and pointing your web browser to the files in `docs/html5`.
 
 
 toc::[]
@@ -30,7 +37,7 @@ toc::[]
 
 * All PEReferences in the DTD Internal Subset are skipped; non-validating processors are not required to handle them.
 
-* Does not directly serialize DOCTYPE (see xref:appendix.adoc#serializing-doctype[Serializing DOCTYPE])
+* Does not xref:appendix.adoc#_serializing_doctype[directly serialize DOCTYPE]
 
 * No XML 1.1 features
 
@@ -93,27 +100,19 @@ lxl_namespace.lua
 lxl_out.lua
 lxl_shared.lua
 lxl_struct.lua
-pile_arg_check.lua
-pile_interp.lua
-pile_string_proc.lua
-pile_string_walk.lua
-pile_table.lua
-pile_tree.lua
-pile_utf8.lua
-pile_utf8_conv.lua
+p_assert.lua
+p_interp.lua
+p_name.lua
+p_string_proc.lua
+p_string_walk.lua
+p_table.lua
+p_tree.lua
+p_utf8.lua
+p_utf8_conv.lua
 ....
 
 
 All files beginning with `example` or `test` may be removed.
-
-
-== Links
-
-* https://www.github.com/frank-f-trafton/lxl[Git repository]
-
-* https://frank-f-trafton.github.io/lxl/index.html[Online documentation]
-
-The docs can be read offline by downloading the repo and pointing your web browser to the files in `docs/html5`.
 
 
 == License (MIT)
@@ -152,7 +151,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
 ----
 
 
