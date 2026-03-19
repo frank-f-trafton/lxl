@@ -1,3 +1,3 @@
-link:index.html[Home] |
-link:api.html[API] |
-link:appendix.html[Appendix]
+xref:index.adoc[Home] |
+xref:api.adoc[API] |
+xref:appendix.adoc[Appendix]

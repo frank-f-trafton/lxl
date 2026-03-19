@@ -37,7 +37,7 @@ toc::[]
 
 * All PEReferences in the DTD Internal Subset are skipped; non-validating processors are not required to handle them.
 
-* Does not xref:appendix.adoc#_serializing_doctype[directly serialize DOCTYPE]
+* Does not <<appendix.adoc#_serializing_doctype,directly serialize DOCTYPE>>
 
 * No XML 1.1 features
 

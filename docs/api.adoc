@@ -468,7 +468,7 @@ Element:getXmlSpecialAttribute(local_name)
 
 === Element:newCharacterData
 
-Adds a new <<#_api_characterdata,CharacterData>> node.
+Adds a new <<_api_characterdata,CharacterData>> node.
 
 [source,lua]
 ----
@@ -884,7 +884,7 @@ XML processing instructions cannot contain the substring `?>`.
 
 An Unexpanded Entity Reference is a general entity reference (e.g. `&foobar;`) that could not be expanded into its replacement text. Unexpanded references are not part of the https://www.w3.org/TR/REC-xml/[**core XML spec**], but they do have an entry in the https://www.w3.org/TR/xml-infoset/#infoitem.rse[**XML InfoSet**].
 
-More about Unexp nodes can be found in the xref:appendix.adoc#_unexpanded_entity_references[appendix], but generally speaking, you will rarely (if ever) encounter them.
+More about Unexp nodes can be found in the <<appendix.adoc#_unexpanded_entity_references,appendix>>, but generally speaking, you will rarely (if ever) encounter them.
 
 
 === Unexp:getName
