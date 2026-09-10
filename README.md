@@ -1,3 +1,9 @@
+# Moved to Codeberg
+
+New repo [here](https://codeberg.org/frank-f-trafton/lxl).
+
+----
+
 VERSION: 2.075
 
 # Lua XML Library
